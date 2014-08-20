@@ -11,8 +11,8 @@ import include.linguistics.WordInt;
 @SuppressWarnings("serial")
 public final class WordIntMap extends PackedScoreMap<WordInt> {
 
-	public WordIntMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public WordIntMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

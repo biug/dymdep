@@ -16,7 +16,7 @@ public abstract class PackedScoreMap<K> extends HashMap<K, PackedScore> {
 	public String name;
 	public int count;
 
-	public PackedScoreMap(final String input_name, final int table_size) {
+	public PackedScoreMap(final String input_name) {
 		super();
 		name = input_name;
 		count = 0;

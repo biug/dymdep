@@ -10,8 +10,8 @@ import include.linguistics.Lemma;
 @SuppressWarnings("serial")
 public final class LemmaMap extends PackedScoreMap<Lemma> {
 
-	public LemmaMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public LemmaMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

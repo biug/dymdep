@@ -15,8 +15,8 @@ import common.parser.implementations.arceager.Macros;
 @SuppressWarnings("serial")
 public final class WordSetOfLabelsMap extends PackedScoreMap<WordSetOfLabels> {
 
-	public WordSetOfLabelsMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public WordSetOfLabelsMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

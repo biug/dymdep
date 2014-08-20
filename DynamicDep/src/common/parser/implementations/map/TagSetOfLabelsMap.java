@@ -15,8 +15,8 @@ import common.pos.Tag;
 @SuppressWarnings("serial")
 public final class TagSetOfLabelsMap extends PackedScoreMap<TagSetOfLabels> {
 
-	public TagSetOfLabelsMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public TagSetOfLabelsMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

@@ -10,8 +10,8 @@ import include.linguistics.CoNLLCPOS;
 @SuppressWarnings("serial")
 public final class CoNLLCPOSMap extends PackedScoreMap<CoNLLCPOS> {
 
-	public CoNLLCPOSMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public CoNLLCPOSMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

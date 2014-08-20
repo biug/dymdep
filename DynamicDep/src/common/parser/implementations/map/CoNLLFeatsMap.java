@@ -10,8 +10,8 @@ import include.linguistics.CoNLLFeats;
 @SuppressWarnings("serial")
 public final class CoNLLFeatsMap extends PackedScoreMap<CoNLLFeats> {
 
-	public CoNLLFeatsMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public CoNLLFeatsMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

@@ -10,8 +10,8 @@ import include.linguistics.Word;
 @SuppressWarnings("serial")
 public final class WordMap extends PackedScoreMap<Word> {
 
-	public WordMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public WordMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

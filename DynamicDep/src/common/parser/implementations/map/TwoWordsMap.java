@@ -11,8 +11,8 @@ import include.linguistics.Word;
 @SuppressWarnings("serial")
 public final class TwoWordsMap extends PackedScoreMap<TwoWords> {
 
-	public TwoWordsMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public TwoWordsMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

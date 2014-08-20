@@ -13,8 +13,8 @@ import common.pos.Tag;
 @SuppressWarnings("serial")
 public final class WordWordTagMap extends PackedScoreMap<WordWordTag> {
 
-	public WordWordTagMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public WordWordTagMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

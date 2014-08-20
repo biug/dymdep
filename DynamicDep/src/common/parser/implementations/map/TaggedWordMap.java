@@ -14,8 +14,8 @@ public final class TaggedWordMap extends PackedScoreMap<TaggedWord> {
 
 	private static int middle;
 
-	public TaggedWordMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public TaggedWordMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

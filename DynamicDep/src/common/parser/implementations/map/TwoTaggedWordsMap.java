@@ -15,8 +15,8 @@ public final class TwoTaggedWordsMap extends PackedScoreMap<TwoTaggedWords> {
 	
 	private static int middle1, middle2;
 
-	public TwoTaggedWordsMap(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public TwoTaggedWordsMap(final String input_name) {
+		super(input_name);
 	}
 
 	@Override

@@ -10,8 +10,8 @@ import include.linguistics.TagSet2;
 @SuppressWarnings("serial")
 public final class TagSet2Map extends PackedScoreMap<TagSet2> {
 	
-	public TagSet2Map(final String input_name, final int table_size) {
-		super(input_name, table_size);
+	public TagSet2Map(final String input_name) {
+		super(input_name);
 	}
 
 	@Override
