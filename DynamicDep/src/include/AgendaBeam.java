@@ -1,6 +1,6 @@
 package include;
 
-import common.parser.implementations.arceager.StateItem;
+import common.parser.StateItemBase;
 
 /*
  * @author ZhangXun
@@ -9,20 +9,20 @@ import common.parser.implementations.arceager.StateItem;
 public final class AgendaBeam {
 	
 	private int m_nMaxSize;
-	private StateItem m_lBeam[][];
+	private StateItemBase m_lBeam[][];
 	private int m_nBeamSize[];
 	private int m_nGenerator;
 	private int m_nGenerated;
 	private int m_nGeneratorIndex;
 	
 	private void swap(final int which, final int index1, final int index2) {
-		StateItem sa = m_lBeam[which][index1];
+		StateItemBase sa = m_lBeam[which][index1];
 		m_lBeam[which][index1] = m_lBeam[which][index2];
 		m_lBeam[which][index2] = sa;
 	}
 	
 	private void push_heap(final int which, int base) {
-		StateItem[] items = m_lBeam[which];
+		StateItemBase[] items = m_lBeam[which];
 		while (base > 0) {
 			if (items[(base - 1) >> 1].more(items[base])) {
 				swap(which, base, (base - 1) >> 1);
@@ -35,9 +35,9 @@ public final class AgendaBeam {
 	
 	private void pop_heap(final int which) {
 		if (m_nBeamSize[which] <= 0) return;
-		StateItem[] items = m_lBeam[which];
+		StateItemBase[] items = m_lBeam[which];
 		swap(which, 0, --m_nBeamSize[which]);
-		StateItem item = items[0];
+		StateItemBase item = items[0];
 		int index = 0, child = 1;
 		while (child < m_nBeamSize[which]) {
 			if (child + 1 < m_nBeamSize[which] && !items[child + 1].more(items[child])) {
@@ -51,14 +51,14 @@ public final class AgendaBeam {
 		push_heap(which, index);
 	}
 	
-	public AgendaBeam(final int nBeamSize) {
+	public AgendaBeam(final int nBeamSize, StateItemBase item) {
 		m_nMaxSize = nBeamSize;
-		m_lBeam = new StateItem[2][];
-		m_lBeam[0] = new StateItem[m_nMaxSize];
-		m_lBeam[1] = new StateItem[m_nMaxSize];
+		m_lBeam = new StateItemBase[2][];
+		m_lBeam[0] = new StateItemBase[m_nMaxSize];
+		m_lBeam[1] = new StateItemBase[m_nMaxSize];
 		for (int i = 0; i < m_nMaxSize; ++i) {
-			m_lBeam[0][i] = new StateItem();
-			m_lBeam[1][i] = new StateItem();
+			m_lBeam[0][i] = item.generateItem();
+			m_lBeam[1][i] = item.generateItem();
 		}
 		m_nBeamSize = new int[2];
 		clear();
@@ -75,7 +75,7 @@ public final class AgendaBeam {
 		m_nGenerated = 1;
 	}
 	
-	public StateItem generatorStart() {
+	public StateItemBase generatorStart() {
 		if (m_nBeamSize[m_nGenerator] != 0) {
 			m_nGeneratorIndex = 0;
 			return m_lBeam[m_nGenerator][m_nGeneratorIndex];
@@ -84,7 +84,7 @@ public final class AgendaBeam {
 		}
 	}
 	
-	public StateItem generatorNext() {
+	public StateItemBase generatorNext() {
 		++m_nGeneratorIndex;
 		if (m_nGeneratorIndex >= m_nBeamSize[m_nGenerator]) {
 			return null;
@@ -100,7 +100,7 @@ public final class AgendaBeam {
 		return m_nBeamSize[m_nGenerated];
 	}
 	
-	public StateItem candidateItem() {
+	public StateItemBase candidateItem() {
 		if (m_nBeamSize[m_nGenerated] == m_nMaxSize) {
 			pop_heap(m_nGenerated);
 		}
@@ -111,7 +111,7 @@ public final class AgendaBeam {
 		push_heap(m_nGenerated, m_nBeamSize[m_nGenerated] - 1);
 	}
 	
-	public void pushCandidate(final StateItem item) {
+	public void pushCandidate(final StateItemBase item) {
 		if (m_nBeamSize[m_nGenerated] == m_nMaxSize) {
 			if (!item.more(m_lBeam[m_nGenerated][0])) {
 				return;
@@ -128,18 +128,18 @@ public final class AgendaBeam {
 		clear(m_nGenerated);
 	}
 	
-	public StateItem bestGenerator() {
-		StateItem[] items = m_lBeam[m_nGenerator];
-		StateItem item = items[0];
+	public StateItemBase bestGenerator() {
+		StateItemBase[] items = m_lBeam[m_nGenerator];
+		StateItemBase item = items[0];
 		for (int i = 1, max_size = m_nBeamSize[m_nGenerator]; i < max_size; ++i) {
-			if (item.less(items[i])) {
+			if (items[i].more(item)) {
 				item = items[i];
 			}
 		}
 		return item;
 	}
 	
-	public StateItem generator(final int n) {
+	public StateItemBase generator(final int n) {
 		if (n >= m_nBeamSize[m_nGenerator]) {
 			return null;
 		}

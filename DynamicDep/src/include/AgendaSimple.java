@@ -1,6 +1,6 @@
 package include;
 
-import common.parser.implementations.arceager.ScoredAction;
+import common.parser.ScoredAction;
 
 /*
  * agenda for ScoredAction

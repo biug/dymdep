@@ -9,12 +9,13 @@ import java.util.ArrayList;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.DependencyParser;
+import common.parser.StateItemBase;
 
 /*
  * @author ZhangXun
  */
 
-public class StateItem {
+public class StateItem extends StateItemBase {
 	
 	public final int OFF_STACK = 0;
 	public final int ON_STACK_SHIFT = 1;
@@ -22,10 +23,11 @@ public class StateItem {
 	
 	private int stack_back;
 	private int headstack_back;
-	
-	protected ArrayList<Integer> m_Stack;
-	protected ArrayList<Integer> m_HeadStack;
+
 	protected int m_nNextWord;
+	
+	protected int[] m_Stack;
+	protected int[] m_HeadStack;
 	protected int[] m_lHeads;
 	protected int[] m_lDepsL;
 	protected int[] m_lDepsR;
@@ -39,37 +41,13 @@ public class StateItem {
 	protected int m_nLastAction;
 	protected ArrayList<TaggedWord> m_lCache;
 	
-	public long score;
-	
 	protected int m_lLabels[];
-	
-	public StateItem() {
-		stack_back = -1;
-		headstack_back = -1;
-		m_Stack = new ArrayList<Integer>();
-		m_HeadStack = new ArrayList<Integer>();
-		m_lHeads = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepsL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepsR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepNumL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepNumR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepTagL = new SetOfLabels[Macros.MAX_SENTENCE_SIZE];
-		m_lDepTagR = new SetOfLabels[Macros.MAX_SENTENCE_SIZE];
-		for (int i = 0; i < Macros.MAX_SENTENCE_SIZE; ++i) {
-			m_lDepTagL[i] = new SetOfLabels();
-			m_lDepTagR[i] = new SetOfLabels();
-		}
-		m_lSibling = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lCache = null;
-		m_lLabels = new int[Macros.MAX_SENTENCE_SIZE];
-		clear();
-	}
 	
 	public StateItem(ArrayList<TaggedWord> cache) {
 		stack_back = -1;
 		headstack_back = -1;
-		m_Stack = new ArrayList<Integer>();
-		m_HeadStack = new ArrayList<Integer>();
+		m_Stack = new int[Macros.MAX_SENTENCE_SIZE];
+		m_HeadStack = new int[Macros.MAX_SENTENCE_SIZE << 1];
 		m_lHeads = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepsL = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepsR = new int[Macros.MAX_SENTENCE_SIZE];
@@ -87,12 +65,40 @@ public class StateItem {
 		clear();
 	}
 	
-	public final boolean more(final StateItem item) {
-		return score > item.score;
+	@Override
+	public final boolean more(final StateItemBase itembase) {
+		return score > ((StateItem)itembase).score;
 	}
 	
-	public final boolean less(final StateItem item) {
-		return score < item.score;
+	@Override
+	public void copy(final StateItemBase itembase) {
+		int length;
+		StateItem item = (StateItem)itembase;
+		stack_back = item.stack_back;
+		headstack_back = item.headstack_back;
+		System.arraycopy(item.m_Stack, 0, m_Stack, 0, stack_back + 1);
+		System.arraycopy(item.m_HeadStack, 0, m_HeadStack, 0, headstack_back + 1);
+		m_nNextWord = item.m_nNextWord;
+		m_nLastAction = item.m_nLastAction;
+		m_lCache = item.m_lCache;
+		score = item.score;
+		length = m_nNextWord + 1;
+		System.arraycopy(item.m_lHeads, 0, m_lHeads, 0, length);
+		System.arraycopy(item.m_lDepsL, 0, m_lDepsL, 0, length);
+		System.arraycopy(item.m_lDepsR, 0, m_lDepsR, 0, length);
+		System.arraycopy(item.m_lDepNumL, 0, m_lDepNumL, 0, length);
+		System.arraycopy(item.m_lDepNumR, 0, m_lDepNumR, 0, length);
+		System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
+		System.arraycopy(item.m_lLabels, 0, m_lLabels, 0, length);
+		for (int i = 0; i < length; ++i) {
+			m_lDepTagL[i].set(item.m_lDepTagL[i]);
+			m_lDepTagR[i].set(item.m_lDepTagR[i]);
+		}
+	}
+	
+	@Override
+	public StateItemBase generateItem() {
+		return new StateItem(null);
 	}
 	
 	@Override
@@ -114,7 +120,7 @@ public class StateItem {
 		if (stack_back != item.stack_back) {
 			return false;
 		}
-		if (stack_back > 0 && m_Stack.get(stack_back).intValue() != item.m_Stack.get(stack_back).intValue()) {
+		if (stack_back > 0 && m_Stack[stack_back] != item.m_Stack[stack_back]) {
 			return false;
 		}
 		return true;
@@ -129,15 +135,11 @@ public class StateItem {
 	}
 	
 	public final int stacktop() {
-		return m_Stack.get(stack_back).intValue();
+		return m_Stack[stack_back];
 	}
 	
 	public final int stackbottom() {
-		return m_Stack.get(0).intValue();
-	}
-	
-	public final int stackitem(final int index) {
-		return m_Stack.get(index).intValue();
+		return m_Stack[0];
 	}
 	
 	public final boolean headstackempty() {
@@ -145,11 +147,7 @@ public class StateItem {
 	}
 	
 	public final int headstacktop() {
-		return m_HeadStack.get(headstack_back).intValue();
-	}
-	
-	public final int headstackitem(final int index) {
-		return m_HeadStack.get(index).intValue();
+		return m_HeadStack[headstack_back];
 	}
 	
 	public final int headstacksize() {
@@ -204,17 +202,14 @@ public class StateItem {
 		m_nNextWord = 0;
 		stack_back = -1;
 		headstack_back = -1;
-		m_Stack.clear();
-		m_HeadStack.clear();
 		score = 0;
 		m_nLastAction = Macros.NO_ACTION;
 		ClearNext();
 	}
 	
 	public void ArcLeft(int lab) {
-		int left = m_Stack.get(stack_back).intValue();
-		m_Stack.remove(stack_back--);
-		m_HeadStack.remove(headstack_back--);
+		int left = m_Stack[stack_back--];
+		--headstack_back;
 		m_lHeads[left] = m_nNextWord;
 		m_lLabels[left] = lab;
 		m_lDepTagL[m_nNextWord].add(lab);
@@ -225,8 +220,8 @@ public class StateItem {
 	}
 	
 	public void ArcRight(int lab) {
-		int left = m_Stack.get(stack_back++).intValue();
-		m_Stack.add(Integer.valueOf(m_nNextWord));
+		int left = m_Stack[stack_back];
+		m_Stack[++stack_back] = m_nNextWord;
 		m_lHeads[m_nNextWord] = left;
 		m_lLabels[m_nNextWord] = lab;
 		m_lDepTagR[left].add(lab);
@@ -238,23 +233,20 @@ public class StateItem {
 	}
 
 	public void Shift() {
-		++stack_back;
-		m_Stack.add(Integer.valueOf(m_nNextWord));
-		++headstack_back;
-		m_HeadStack.add(Integer.valueOf(m_nNextWord++));
+		m_Stack[++stack_back] = m_nNextWord;
+		m_HeadStack[++headstack_back] = m_nNextWord++;
 		ClearNext();
 		m_nLastAction = Action.encodeAction(Macros.SHIFT);
 	}
 	
 	public void Reduce() {
-		m_Stack.remove(stack_back--);
+		--stack_back;
 		m_nLastAction = Action.encodeAction(Macros.REDUCE);
 	}
 	
 	public void PopRoot() {
-		m_lLabels[m_Stack.get(stack_back).intValue()] = Macros.DEP_ROOT;
+		m_lLabels[m_Stack[stack_back--]] = Macros.DEP_ROOT;
 		m_nLastAction = Action.encodeAction(Macros.POP_ROOT);
-		m_Stack.remove(stack_back--);
 	}
 	
 	public void ClearNext() {
@@ -269,8 +261,9 @@ public class StateItem {
 		m_lLabels[m_nNextWord] = Macros.DEP_NONE;
 	}
 	
-	public void Move(final int ac) {
-		switch (Action.getUnlabeledAction(ac)) {
+	@Override
+	public void Move(final int action) {
+		switch (Action.getUnlabeledAction(action)) {
 		case Macros.NO_ACTION:
 			return;
 		case Macros.SHIFT:
@@ -280,10 +273,10 @@ public class StateItem {
 			Reduce();
 			return;
 		case Macros.ARC_LEFT:
-			ArcLeft(Action.getLabel(ac));
+			ArcLeft(Action.getLabel(action));
 			return;
 		case Macros.ARC_RIGHT:
-			ArcRight(Action.getLabel(ac));
+			ArcRight(Action.getLabel(action));
 			return;
 		case Macros.POP_ROOT:
 			PopRoot();
@@ -291,6 +284,7 @@ public class StateItem {
 		}
 	}
 	
+	@Override
 	public boolean StandardMoveStep(final DependencyParser tree, final ArrayList<DependencyLabel> m_lCacheLabel) {
 		int top;
 		if (m_nNextWord == (int)(tree.size())) {
@@ -303,12 +297,12 @@ public class StateItem {
 			}
 		}
 		if (stack_back >= 0) {
-			top = m_Stack.get(stack_back).intValue();
+			top = m_Stack[stack_back];
 			while (!(m_lHeads[top] == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD)) {
 				top = m_lHeads[top];
 			}
 			if (tree.get(top).head == m_nNextWord) {
-				if (top == m_Stack.get(stack_back).intValue()) {
+				if (top == m_Stack[stack_back]) {
 					ArcLeft(m_lCacheLabel.get(top).hashCode());
 					return false;
 				} else {
@@ -322,7 +316,7 @@ public class StateItem {
 			Shift();
 			return true;
 		} else {
-			top = m_Stack.get(stack_back).intValue();
+			top = m_Stack[stack_back];
 			if (tree.get(m_nNextWord).head == top) {
 				ArcRight(m_lCacheLabel.get(m_nNextWord).hashCode());
 				return true;
@@ -333,14 +327,17 @@ public class StateItem {
 		}
 	}
 	
+	@Override
 	public void StandardFinish() {
 		assert (stack_back == -1);
 	}
 	
-	public int FollowMove(final StateItem item) {
+	@Override
+	public int FollowMove(final StateItemBase itembase) {
 		int top;
+		StateItem item = (StateItem)itembase;
 		if (m_nNextWord == item.m_nNextWord) {
-			top = m_Stack.get(stack_back).intValue();
+			top = m_Stack[stack_back];
 			if (item.m_lHeads[top] == m_nNextWord) {
 				return Action.encodeAction(Macros.ARC_LEFT, item.m_lLabels[top]);
 			} else if (item.m_lHeads[top] != DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD) {
@@ -350,12 +347,12 @@ public class StateItem {
 			}
 		}
 		if (stack_back >= 0) {
-			top = m_Stack.get(stack_back).intValue();
+			top = m_Stack[stack_back];
 			while (!(m_lHeads[top] == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD)) {
 				top = m_lHeads[top];
 			}
 			if (item.head(top) == m_nNextWord) {
-				if (top == m_Stack.get(stack_back).intValue()) {
+				if (top == m_Stack[stack_back]) {
 					return Action.encodeAction(Macros.ARC_LEFT, item.m_lLabels[top]);
 				} else {
 					return Action.encodeAction(Macros.REDUCE);
@@ -366,7 +363,7 @@ public class StateItem {
 				item.head(m_nNextWord) > m_nNextWord) {
 			return Action.encodeAction(Macros.SHIFT);
 		} else {
-			top = m_Stack.get(stack_back).intValue();
+			top = m_Stack[stack_back];
 			if (item.head(m_nNextWord) == top) {
 				return Action.encodeAction(Macros.ARC_RIGHT, item.m_lLabels[m_nNextWord]);
 			} else {
@@ -375,36 +372,12 @@ public class StateItem {
 		}
 	}
 	
+	@Override
 	public void GenerateTree(final TwoStringsVector input, DependencyParser output) {
 		output.clear();
 		for (int i = 0, input_size = this.size(); i < input_size; ++i) {
 			output.add(new DependencyTreeNode(input.get(i).m_string1, input.get(i).m_string2, m_lHeads[i], DependencyLabel.str(m_lLabels[i])));
 		}
 	}
-	
-	public void copy(final StateItem item) {
-		stack_back = item.stack_back;
-		m_Stack.clear();
-		m_Stack.addAll(item.m_Stack);
-		headstack_back = item.headstack_back;
-		m_HeadStack.clear();
-		m_HeadStack.addAll(item.m_HeadStack);
-		m_nNextWord = item.m_nNextWord;
-		m_nLastAction = item.m_nLastAction;
-		m_lCache = item.m_lCache;
-		score = item.score;
-		int length = m_nNextWord + 1;
-		System.arraycopy(item.m_lHeads, 0, m_lHeads, 0, length);
-		System.arraycopy(item.m_lDepsL, 0, m_lDepsL, 0, length);
-		System.arraycopy(item.m_lDepsR, 0, m_lDepsR, 0, length);
-		System.arraycopy(item.m_lDepNumL, 0, m_lDepNumL, 0, length);
-		System.arraycopy(item.m_lDepNumR, 0, m_lDepNumR, 0, length);
-		System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
-		System.arraycopy(item.m_lLabels, 0, m_lLabels, 0, length);
-		for (int i = 0; i < length; ++i) {
-			m_lDepTagL[i].set(item.m_lDepTagL[i]);
-			m_lDepTagR[i].set(item.m_lDepTagR[i]);
-		}
-	}
-	
+
 }

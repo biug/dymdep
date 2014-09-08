@@ -8,11 +8,11 @@ public final class PackedScoreType {
 	
 	private int packed_size;
 	
-	protected int scores[];
+	protected long scores[];
 	
 	public PackedScoreType(final int size) {
 		packed_size = size;
-		scores = new int[size];
+		scores = new long[size];
 	}
 	
 	public void reset() {
@@ -30,7 +30,7 @@ public final class PackedScoreType {
 		return true;
 	}
 	
-	public final int at(final int index) {
+	public final long at(final int index) {
 		return scores[index];
 	}
 	
@@ -38,7 +38,7 @@ public final class PackedScoreType {
 		scores[index] = score;
 	}
 	
-	public final void addOne(final int index, final int score) {
+	public final void addOne(final int index, final long score) {
 		scores[index] += score;
 	}
 	

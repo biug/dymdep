@@ -1,4 +1,4 @@
-package common.parser.implementations.arceager;
+package common.parser;
 
 /*
  * record action and score

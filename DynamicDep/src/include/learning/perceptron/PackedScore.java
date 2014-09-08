@@ -18,7 +18,7 @@ public final class PackedScore {
 		scores = new HashMap<Integer, Score>();
 	}
 	
-	public int score(final int index, final int n) {
+	public long score(final int index, final int n) {
 		Score s = scores.get(Integer.valueOf(index));
 		if (s != null) {
 			return s.score(n);
@@ -87,7 +87,7 @@ public final class PackedScore {
 		for (String subarg : args) {
 			String[] subargs = subarg.split(" : ");
 			scores.put(Integer.valueOf(subargs[0]),
-					new Score(Integer.parseInt(subargs[1].split(" / ")[0]), Integer.parseInt(subargs[1].split(" / ")[1])));
+					new Score(Integer.parseInt(subargs[1].split(" / ")[0]), Long.parseLong(subargs[1].split(" / ")[1])));
 		}
 	}
 	

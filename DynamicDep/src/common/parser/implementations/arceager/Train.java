@@ -22,6 +22,10 @@ public class Train {
 		int nCount = 0;
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(sOutputFile)), "UTF-8"));
 		while (ref_sent.readSentenceFromInputStream(br)) {
+			if (ref_sent.size() > Macros.MAX_SENTENCE_SIZE) {
+				System.out.println("skip");
+				continue;
+			}
 			++nCount;
 			parser.train(ref_sent, nCount);
 		}
