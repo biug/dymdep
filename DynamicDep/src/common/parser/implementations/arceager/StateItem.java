@@ -95,8 +95,8 @@ public class StateItem extends StateItemBase {
 		System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
 		System.arraycopy(item.m_lLabels, 0, m_lLabels, 0, length);
 		for (int i = 0; i < length; ++i) {
-			m_lDepTagL[i].set(item.m_lDepTagL[i]);
-			m_lDepTagR[i].set(item.m_lDepTagR[i]);
+			m_lDepTagL[i].copy(item.m_lDepTagL[i]);
+			m_lDepTagR[i].copy(item.m_lDepTagR[i]);
 		}
 	}
 	

@@ -18,6 +18,12 @@ public class Arc {
 		direction = arc.direction;
 	}
 	
+	public void copy(final Arc arc) {
+		other = arc.other;
+		label = arc.label;
+		direction = arc.direction;
+	}
+	
 	public boolean more(final Arc arc) {
 		return other == arc.other ? false : (other > arc.other);
 	}

@@ -26,11 +26,12 @@ public class StateItem extends StateItemBase {
 	public final int ON_STACK_SHIFT = 1;
 	public final int ON_STACK_ARCRIGHT = 2;
 	
-	private int stack_back;
+	protected int stack_back;
 	protected int[] m_lHeadsBack;
 	protected int[] m_lDepsLBack;
 	protected int[] m_lDepsRBack;
 	protected int[] m_lRightArcsBack;
+	protected int[] m_lRightArcsSeek;
 	
 	protected int m_nNextWord;
 	
@@ -57,6 +58,7 @@ public class StateItem extends StateItemBase {
 		m_lDepsLBack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepsRBack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lRightArcsBack = new int[MacrosDag.MAX_SENTENCE_SIZE];
+		m_lRightArcsSeek = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		
 		m_lStack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lHeads = new int[MacrosDag.MAX_SENTENCE_SIZE][];
@@ -72,6 +74,7 @@ public class StateItem extends StateItemBase {
 		
 		for (int i = 0; i < MacrosDag.MAX_SENTENCE_SIZE; ++i) {
 			m_lHeadsBack[i] = m_lDepsLBack[i] = m_lDepsRBack[i] = m_lRightArcsBack[i] = -1;
+			m_lRightArcsSeek[i] = 0;
 			
 			m_lHeads[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lLabels[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
@@ -106,6 +109,7 @@ public class StateItem extends StateItemBase {
 			System.arraycopy(item.m_lDepsLBack, 0, m_lDepsLBack, 0, length);
 			System.arraycopy(item.m_lDepsRBack, 0, m_lDepsRBack, 0, length);
 			System.arraycopy(item.m_lRightArcsBack, 0, m_lRightArcsBack, 0, length);
+			System.arraycopy(item.m_lRightArcsSeek, 0, m_lRightArcsSeek, 0, length);
 			for (int i = 0; i < length; ++i) {
 				if (m_lHeadsBack[i] >= 0) {
 					System.arraycopy(item.m_lHeads[i], 0, m_lHeads[i], 0, m_lHeadsBack[i] + 1);
@@ -113,14 +117,16 @@ public class StateItem extends StateItemBase {
 				}
 				if (m_lDepsLBack[i] >= 0) System.arraycopy(item.m_lDepsL[i], 0, m_lDepsL[i], 0, m_lDepsLBack[i] + 1);
 				if (m_lDepsRBack[i] >= 0) System.arraycopy(item.m_lDepsR[i], 0, m_lDepsR[i], 0, m_lDepsRBack[i] + 1);
-				if (m_lRightArcsBack[i] >= 0) System.arraycopy(item.m_lRightArcs[i], 0, m_lRightArcs[i], 0, m_lRightArcsBack[i]);
+				for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
+					m_lRightArcs[i][j].copy(item.m_lRightArcs[i][j]);
+				}
 			}
 			System.arraycopy(item.m_lDepNumL, 0, m_lDepNumL, 0, length);
 			System.arraycopy(item.m_lDepNumR, 0, m_lDepNumR, 0, length);
 			System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
 			for (int i = 0; i < length; ++i) {
-				m_lDepTagL[i].set(item.m_lDepTagL[i]);
-				m_lDepTagR[i].set(item.m_lDepTagR[i]);
+				m_lDepTagL[i].copy(item.m_lDepTagL[i]);
+				m_lDepTagR[i].copy(item.m_lDepTagR[i]);
 			}
 		}
 	}
@@ -307,25 +313,25 @@ public class StateItem extends StateItemBase {
 		DependencyDag dag = (DependencyDag)graph;
 		if (stack_back >= 0) {
 			top = m_lStack[stack_back];
-			DependencyDagNode nodes = ((DependencyDagNode)dag.nodes[top]);
-			if (nodes.righttail == -1) {
+			DependencyDagNode node = ((DependencyDagNode)dag.nodes[top]);
+			if (node.rightseek > node.righttail) {
 				Reduce();
 				return;
 			}
-			Arc rightnode = nodes.NearestRight();
+			Arc rightnode = node.NearestRight();
 			if (rightnode.other == m_nNextWord) {
-				--nodes.righttail;
+				++node.rightseek;
 				if (rightnode.direction == MacrosDag.LEFT_DIRECTION) {
 					ArcLeft(rightnode.label);
-					--nodes.headstail;
+					++node.headsseek;
 				} else {
 					ArcRight(rightnode.label);
-					--nodes.childrentail;
+					++node.childrenseek;
 				}
 				return;
 			} else if (stack_back >= 1) {
 				int top2nd = m_lStack[stack_back - 1];
-				Iterator<Arc> itrtop = nodes.rightarcs.iterator();
+				Iterator<Arc> itrtop = node.rightarcs.iterator();
 				Iterator<Arc> itrtop2nd = ((DependencyDagNode)dag.nodes[top2nd]).rightarcs.iterator();
 				while (itrtop.hasNext() && itrtop2nd.hasNext()) {
 					if (itrtop.next().more(itrtop2nd.next())) {
@@ -364,13 +370,14 @@ public class StateItem extends StateItemBase {
 				}
 			} else if (stack_back >= 1) {
 				int top2nd = m_lStack[stack_back - 1];
-				int itrtop = item.m_lRightArcsBack[top], itrtop2nd = item.m_lRightArcsBack[top2nd];
-				while (itrtop >= 0 && itrtop2nd >= 0) {
-					if (item.m_lRightArcs[top][itrtop--].more(item.m_lRightArcs[top2nd][itrtop2nd--])) {
+				int itrtop = item.m_lRightArcsSeek[top], itrtop2nd = item.m_lRightArcsSeek[top2nd];
+				int itrtoptail = item.m_lRightArcsBack[top], itrtop2ndtail = item.m_lRightArcsBack[top2nd];
+				while (itrtop <= itrtoptail && itrtop2nd <= itrtop2ndtail) {
+					if (item.m_lRightArcs[top][itrtop++].more(item.m_lRightArcs[top2nd][itrtop2nd++])) {
 						return MacrosDag.SWAP;
 					}
 				}
-				if (itrtop >= 0) {
+				if (itrtop <= item.m_lRightArcsBack[top]) {
 					return MacrosDag.SWAP;
 				}
 			}

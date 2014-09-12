@@ -379,6 +379,7 @@ public final class DepParser extends DepParserBase {
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
+			++((StateItem)output).m_lRightArcsSeek[itemForStates.m_lStack[itemForStates.stack_back]];
 			itemForState.Move(action);
 		}
 	}
@@ -389,6 +390,11 @@ public final class DepParser extends DepParserBase {
 			int action = itemForStates.FollowMove(output);
 			int correct_action = itemForStates.FollowMove(correct);
 			if (action == correct_action) {
+				if (action >= MacrosDag.AL_FIRST){
+					int back = itemForStates.m_lStack[itemForStates.stack_back];
+					++((StateItem)output).m_lRightArcsSeek[back];
+					++((StateItem)correct).m_lRightArcsSeek[back];
+				}
 				itemForStates.Move(action);
 			} else {
 				break;

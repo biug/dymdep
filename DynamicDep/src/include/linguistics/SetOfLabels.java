@@ -56,7 +56,7 @@ public final class SetOfLabels {
 		return m_code == ((SetOfLabels)o).m_code;
 	}
 	
-	public void set(final SetOfLabels tagset) {
+	public void copy(final SetOfLabels tagset) {
 		m_code = tagset.m_code;
 	}
 	

@@ -8,19 +8,15 @@ public class DependencyDagNode extends DependencyNodeBase {
 	
 	public String ccgtag;
 	public int righttail;
-	public int headstail;
-	public int childrentail;
-	public ArrayList<Arc> heads;
-	public ArrayList<Arc> children;
-	public ArrayList<Arc> rightarcs;
+	public int rightseek, headsseek, childrenseek;
+	public ArrayList<Arc> heads, children, rightarcs;
 	
 	public DependencyDagNode() {
 		word = "";
 		postag = "";
 		ccgtag = "";
 		righttail = -1;
-		headstail = -1;
-		childrentail = -1;
+		rightseek = headsseek = childrenseek = 0;
 		heads = new ArrayList<Arc>();
 		children = new ArrayList<Arc>();
 		rightarcs = new ArrayList<Arc>();
@@ -31,8 +27,7 @@ public class DependencyDagNode extends DependencyNodeBase {
 		postag = p;
 		ccgtag = c;
 		righttail = -1;
-		headstail = -1;
-		childrentail = -1;
+		rightseek = headsseek = childrenseek = 0;
 		heads = new ArrayList<Arc>();
 		children = new ArrayList<Arc>();
 		rightarcs = new ArrayList<Arc>();
@@ -48,14 +43,14 @@ public class DependencyDagNode extends DependencyNodeBase {
 	}
 	
 	public Arc NearestHead() {
-		return heads.get(headstail);
+		return heads.get(headsseek);
 	}
 	
 	public Arc NearestChild() {
-		return children.get(childrentail);
+		return children.get(childrenseek);
 	}
 	
 	public Arc NearestRight() {
-		return rightarcs.get(righttail);
+		return rightarcs.get(rightseek);
 	}
 }

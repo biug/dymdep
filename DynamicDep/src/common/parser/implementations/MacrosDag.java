@@ -23,9 +23,9 @@ public final class MacrosDag extends MacrosBase {
 	public final static int NO_ACTION = 0;
 	public final static int SHIFT = 1;
 	public final static int REDUCE = 2;
-	public final static int ARC_LEFT = 3;
-	public final static int ARC_RIGHT = 4;
-	public final static int SWAP = 5;
+	public final static int SWAP = 3;
+	public final static int ARC_LEFT = 4;
+	public final static int ARC_RIGHT = 5;
 	
 	public static int AL_FIRST;
 	public static int AR_FIRST;
@@ -52,7 +52,7 @@ public final class MacrosDag extends MacrosBase {
 		while ((1 << DEP_BITS_SIZE) < DEP_COUNT) {
 			++DEP_BITS_SIZE;
 		}
-		AL_FIRST = SWAP + 1;
+		AL_FIRST = ARC_RIGHT + 1;
 		AR_FIRST = AL_FIRST + DEP_COUNT - 1;
 		ACTION_MAX = AR_FIRST + DEP_COUNT - 1;
 		br.close();
