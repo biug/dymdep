@@ -4,7 +4,7 @@ import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.Word;
 import include.linguistics.WordTagTag;
 
-import common.pos.Tag;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
@@ -22,8 +22,8 @@ public final class WordTagTagMap extends PackedScoreMap<WordTagTag> {
 		String[] args = str.split(" , ");
 		return new WordTagTag(
 				new Word(args[0].substring(1, args[0].length() - 1)),
-				new Tag(args[1]),
-				new Tag(args[2]));
+				new POSTag(args[1]),
+				new POSTag(args[2]));
 	}
 
 	@Override

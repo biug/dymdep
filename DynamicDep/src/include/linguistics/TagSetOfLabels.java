@@ -2,13 +2,13 @@ package include.linguistics;
 
 import include.util.Tuple2;
 
-import common.pos.Tag;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
  */
 
-public final class TagSetOfLabels extends Tuple2<Tag, SetOfLabels> {
+public final class TagSetOfLabels extends Tuple2<POSTag, SetOfLabels> {
 	
 	public TagSetOfLabels() {
 		super();
@@ -18,13 +18,13 @@ public final class TagSetOfLabels extends Tuple2<Tag, SetOfLabels> {
 		super(tag_tagset);
 	}
 	
-	public TagSetOfLabels(final Tag tag, final SetOfLabels tagset) {
+	public TagSetOfLabels(final POSTag tag, final SetOfLabels tagset) {
 		super(tag, tagset);
 	}
 
 	@Override
-	public Tag create_object1(final Tag tag) {
-		return new Tag(tag);
+	public POSTag create_object1(final POSTag tag) {
+		return new POSTag(tag);
 	}
 
 	@Override

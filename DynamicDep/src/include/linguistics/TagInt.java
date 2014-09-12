@@ -2,13 +2,13 @@ package include.linguistics;
 
 import include.util.Tuple2;
 
-import common.pos.Tag;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
  */
 
-public final class TagInt extends Tuple2<Tag, Integer> {
+public final class TagInt extends Tuple2<POSTag, Integer> {
 	
 	public TagInt() {
 		super();
@@ -18,13 +18,13 @@ public final class TagInt extends Tuple2<Tag, Integer> {
 		super(tag_int);
 	}
 	
-	public TagInt(final Tag tag, final Integer integer) {
+	public TagInt(final POSTag tag, final Integer integer) {
 		super(tag, integer);
 	}
 
 	@Override
-	public Tag create_object1(final Tag tag) {
-		return new Tag(tag);
+	public POSTag create_object1(final POSTag tag) {
+		return new POSTag(tag);
 	}
 
 	@Override

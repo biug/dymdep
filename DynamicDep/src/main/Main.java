@@ -2,7 +2,7 @@ package main;
 
 import java.io.IOException;
 
-import common.parser.implementations.arceager.Macros;
+import common.parser.implementations.MacrosTree;
 import common.parser.implementations.arceager.Parse;
 import common.parser.implementations.arceager.Train;
 
@@ -34,7 +34,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		Macros.loadMacros(args[0]);
+		MacrosTree.loadMacros(args[0]);
 		if (args[1].equals("train")) {
 			train(args[2], args[3], Integer.parseInt(args[4]));
 		} else if (args[1].equals("parse")) {

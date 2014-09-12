@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import common.parser.DependencyParser;
+import common.parser.implementations.DependencyTree;
 
 /*
  * @author ZhangXun
@@ -18,14 +18,10 @@ public class Train {
 		System.out.println("Training iteration is started...");
 		System.out.flush();
 		DepParser parser = new DepParser(sFeatureFile, true);
-		DependencyParser ref_sent = new DependencyParser();
+		DependencyTree ref_sent = new DependencyTree();
 		int nCount = 0;
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(sOutputFile)), "UTF-8"));
 		while (ref_sent.readSentenceFromInputStream(br)) {
-			if (ref_sent.size() > Macros.MAX_SENTENCE_SIZE) {
-				System.out.println("skip");
-				continue;
-			}
 			++nCount;
 			parser.train(ref_sent, nCount);
 		}

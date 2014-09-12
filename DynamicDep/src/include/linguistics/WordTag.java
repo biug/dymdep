@@ -2,13 +2,13 @@ package include.linguistics;
 
 import include.util.Tuple2;
 
-import common.pos.Tag;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
  */
 
-public final class WordTag extends Tuple2<Word, Tag> {
+public final class WordTag extends Tuple2<Word, POSTag> {
 	
 	public WordTag() {
 		super();
@@ -18,7 +18,7 @@ public final class WordTag extends Tuple2<Word, Tag> {
 		super(word_tag);
 	}
 	
-	public WordTag(final Word word, final Tag tag) {
+	public WordTag(final Word word, final POSTag tag) {
 		super(word, tag);
 	}
 
@@ -28,8 +28,8 @@ public final class WordTag extends Tuple2<Word, Tag> {
 	}
 
 	@Override
-	public Tag create_object2(final Tag tag) {
-		return new Tag(tag);
+	public POSTag create_object2(final POSTag tag) {
+		return new POSTag(tag);
 	}
 	
 }

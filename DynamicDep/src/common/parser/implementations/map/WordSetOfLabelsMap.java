@@ -4,9 +4,8 @@ import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.SetOfLabels;
 import include.linguistics.Word;
 import include.linguistics.WordSetOfLabels;
-
 import common.dependency.label.DependencyLabel;
-import common.parser.implementations.arceager.Macros;
+import common.parser.implementations.MacrosTree;
 
 /*
  * @author ZhangXun
@@ -36,7 +35,7 @@ public final class WordSetOfLabelsMap extends PackedScoreMap<WordSetOfLabels> {
 	public String generateStringFromKey(final WordSetOfLabels key) {
 		String retval = "[" + key.first().toString() + "] , [ ";
 		SetOfLabels sot = key.second();
-		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+		for (int label = 0; label < MacrosTree.DEP_COUNT; ++label) {
 			if (sot.contains(label)) {
 				retval += (DependencyLabel.str(label) + " ");
 			}

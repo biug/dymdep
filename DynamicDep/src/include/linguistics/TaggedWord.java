@@ -1,7 +1,7 @@
 package include.linguistics;
 
-import common.parser.implementations.arceager.Macros;
-import common.pos.Tag;
+import common.parser.implementations.MacrosTree;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
@@ -9,22 +9,22 @@ import common.pos.Tag;
 
 public final class TaggedWord {
 	
-	private static final Tag empty_tag = new Tag(Macros.TAG_NONE);
+	private static final POSTag empty_tag = new POSTag(MacrosTree.POSTAG_NONE);
 	
 	public Word word;
-	public Tag tag;
+	public POSTag tag;
 	
 	public TaggedWord() {
 		word = new Word();
-		tag = new Tag();
+		tag = new POSTag();
 	}
 	
 	public TaggedWord(final String s, final String t) {
 		word = new Word(s);
-		tag = new Tag(t);
+		tag = new POSTag(t);
 	}
 	
-	public TaggedWord(final Word word, final Tag tag) {
+	public TaggedWord(final Word word, final POSTag tag) {
 		this.word = word;
 		this.tag = tag;
 	}
@@ -42,10 +42,10 @@ public final class TaggedWord {
 	
 	@Override
 	public int hashCode() {
-		return ((word.hashCode()) << Macros.TAG_BITS_SIZE) | (tag.hashCode());
+		return ((word.hashCode()) << MacrosTree.POSTAG_BITS_SIZE) | (tag.hashCode());
 	}
 	
-	public void load(final Word word, final Tag tag) {
+	public void load(final Word word, final POSTag tag) {
 		this.word = word;
 		this.tag = tag;
 	}

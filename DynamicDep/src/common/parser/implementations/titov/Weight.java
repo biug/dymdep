@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import common.parser.WeightBase;
+import common.parser.implementations.MacrosDag;
 import common.parser.implementations.map.CoNLLCPOSMap;
 import common.parser.implementations.map.CoNLLFeatsMap;
 import common.parser.implementations.map.IntMap;
@@ -391,8 +392,8 @@ public final class Weight extends WeightBase {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 			bw.write("Dependency labels:");
 			bw.newLine();
-			for (int i = Macros.DEP_FIRST; i < Macros.DEP_COUNT; ++i) {
-				bw.write(Macros.DEP_STRINGS[i] + " ");
+			for (int i = MacrosDag.DEP_FIRST; i < MacrosDag.DEP_COUNT; ++i) {
+				bw.write(MacrosDag.DEP_STRINGS[i] + " ");
 			}
 			bw.newLine();
 			bw.newLine();

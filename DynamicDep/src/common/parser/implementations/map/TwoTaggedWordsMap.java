@@ -1,7 +1,6 @@
 package common.parser.implementations.map;
 
-import common.parser.implementations.arceager.Macros;
-
+import common.parser.implementations.MacrosTree;
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.TaggedWord;
 import include.linguistics.TwoTaggedWords;
@@ -22,8 +21,8 @@ public final class TwoTaggedWordsMap extends PackedScoreMap<TwoTaggedWords> {
 	@Override
 	public TwoTaggedWords loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
-		middle1 = args[0].lastIndexOf(Macros.SEPARTOR);
-		middle2 = args[1].lastIndexOf(Macros.SEPARTOR);
+		middle1 = args[0].lastIndexOf(MacrosTree.SEPARTOR);
+		middle2 = args[1].lastIndexOf(MacrosTree.SEPARTOR);
 		return new TwoTaggedWords(
 				new TaggedWord(args[0].substring(0, middle1), args[0].substring(middle1 + 1)),
 				new TaggedWord(args[1].substring(0, middle2), args[1].substring(middle2 + 1)));
@@ -31,9 +30,9 @@ public final class TwoTaggedWordsMap extends PackedScoreMap<TwoTaggedWords> {
 
 	@Override
 	public String generateStringFromKey(final TwoTaggedWords key) {
-		return key.first().word.toString() + Macros.SEPARTOR + key.first().tag.toString() +
+		return key.first().word.toString() + MacrosTree.SEPARTOR + key.first().tag.toString() +
 				" , " +
-				key.second().word.toString() + Macros.SEPARTOR + key.second().tag.toString();
+				key.second().word.toString() + MacrosTree.SEPARTOR + key.second().tag.toString();
 	}
 
 	@Override

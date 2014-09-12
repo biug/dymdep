@@ -9,7 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import common.parser.DependencyParser;
+import common.parser.implementations.DependencyTree;
+import common.parser.implementations.MacrosTree;
 
 /*
  * @author ZhangXun
@@ -29,22 +30,22 @@ public class Parse {
 			BufferedWriter os_scores = null;
 			long[] scores = null;
 			TwoStringsVector input_sent = new TwoStringsVector();
-			DependencyParser[] output_sent = null;
+			DependencyTree[] output_sent = null;
 			
 			if (bScores) {
 				scores = new long[nBest];
 				os_scores = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(sOutputFile + ".scores")), "UTF-8"));
 			}
 			
-			output_sent = new DependencyParser[nBest];
+			output_sent = new DependencyTree[nBest];
 			for (int index = 0; index < nBest; ++index) {
-				output_sent[index] = new DependencyParser();
+				output_sent[index] = new DependencyTree();
 			}
 			
 			while (input_reader.readTaggedSentence(input_sent)) {
-				if (input_sent.size() > Macros.MAX_SENTENCE_SIZE) {
+				if (input_sent.size() > MacrosTree.MAX_SENTENCE_SIZE) {
 					for (int index = 0; index < nBest; ++index) {
-						output_sent[index].clear();
+						output_sent[index].length = 0;
 						if (bScores) {
 							scores[index] = 0;
 						}

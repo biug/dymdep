@@ -3,7 +3,7 @@ package common.parser.implementations.map;
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.TagTagInt;
 
-import common.pos.Tag;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
@@ -20,8 +20,8 @@ public final class TagTagIntMap extends PackedScoreMap<TagTagInt> {
 	public TagTagInt loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
 		return new TagTagInt(
-				new Tag(args[0]),
-				new Tag(args[1]),
+				new POSTag(args[0]),
+				new POSTag(args[1]),
 				Integer.valueOf(args[2]));
 	}
 

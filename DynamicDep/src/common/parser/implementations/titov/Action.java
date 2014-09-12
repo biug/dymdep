@@ -1,6 +1,6 @@
 package common.parser.implementations.titov;
 
-import common.parser.implementations.arceager.Macros;
+import common.parser.implementations.MacrosTree;
 
 /*
  * @author ZhangXun
@@ -9,10 +9,10 @@ import common.parser.implementations.arceager.Macros;
 public final class Action {
 	
 	public static int encodeAction(final int action, final int label) {
-		if (action == Macros.ARC_LEFT) {
-			return label == 0 ? Macros.ARC_LEFT : Macros.AL_FIRST + label - 1;
-		} else if (action == Macros.ARC_RIGHT) {
-			return label == 0 ? Macros.ARC_RIGHT : Macros.AR_FIRST + label - 1;
+		if (action == MacrosTree.ARC_LEFT) {
+			return label == 0 ? MacrosTree.ARC_LEFT : MacrosTree.AL_FIRST + label - 1;
+		} else if (action == MacrosTree.ARC_RIGHT) {
+			return label == 0 ? MacrosTree.ARC_RIGHT : MacrosTree.AR_FIRST + label - 1;
 		} else {
 			return action;
 		}
@@ -23,22 +23,22 @@ public final class Action {
 	}
 	
 	public static int getUnlabeledAction(final int action) {
-		if (action < Macros.AL_FIRST) {
+		if (action < MacrosTree.AL_FIRST) {
 			return action;
-		} else if (action < Macros.AR_FIRST) {
-			return Macros.ARC_LEFT;
+		} else if (action < MacrosTree.AR_FIRST) {
+			return MacrosTree.ARC_LEFT;
 		} else {
-			return Macros.ARC_RIGHT;
+			return MacrosTree.ARC_RIGHT;
 		}
 	}
 	
 	public static int getLabel(final int action) {
-		if (action < Macros.AL_FIRST) {
+		if (action < MacrosTree.AL_FIRST) {
 			return 0;
-		} else if (action < Macros.AR_FIRST) {
-			return action - Macros.AL_FIRST + 1;
+		} else if (action < MacrosTree.AR_FIRST) {
+			return action - MacrosTree.AL_FIRST + 1;
 		} else {
-			return action - Macros.AR_FIRST + 1;
+			return action - MacrosTree.AR_FIRST + 1;
 		}
 	}
 }

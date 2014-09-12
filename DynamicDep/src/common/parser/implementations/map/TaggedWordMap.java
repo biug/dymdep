@@ -1,7 +1,6 @@
 package common.parser.implementations.map;
 
-import common.parser.implementations.arceager.Macros;
-
+import common.parser.implementations.MacrosTree;
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.TaggedWord;
 
@@ -20,13 +19,13 @@ public final class TaggedWordMap extends PackedScoreMap<TaggedWord> {
 
 	@Override
 	public TaggedWord loadKeyFromString(final String str) {
-		middle = str.lastIndexOf(Macros.SEPARTOR);
+		middle = str.lastIndexOf(MacrosTree.SEPARTOR);
 		return new TaggedWord(str.substring(0, middle), str.substring(middle+1));
 	}
 
 	@Override
 	public String generateStringFromKey(final TaggedWord key) {
-		return key.word.toString() + Macros.SEPARTOR + key.tag.toString();
+		return key.word.toString() + MacrosTree.SEPARTOR + key.tag.toString();
 	}
 
 	@Override

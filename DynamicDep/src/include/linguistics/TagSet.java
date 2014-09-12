@@ -1,7 +1,7 @@
 package include.linguistics;
 
-import common.parser.implementations.arceager.Macros;
-import common.pos.Tag;
+import common.parser.implementations.MacrosTree;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
@@ -29,7 +29,7 @@ public class TagSet {
 	}
 	
 	private final void attach(final int code) {
-		m_nHash = ((m_nHash << Macros.TAG_BITS_SIZE) | code);
+		m_nHash = ((m_nHash << MacrosTree.POSTAG_BITS_SIZE) | code);
 	}
 	
 	@Override
@@ -50,8 +50,8 @@ public class TagSet {
 			if (!retval.isEmpty()) {
 				retval = " " + retval;
 			}
-			retval = Tag.str(hs & ((1 << Macros.TAG_BITS_SIZE) - 1)) + retval;
-			hs >>= Macros.TAG_BITS_SIZE;
+			retval = POSTag.str(hs & ((1 << MacrosTree.POSTAG_BITS_SIZE) - 1)) + retval;
+			hs >>= MacrosTree.POSTAG_BITS_SIZE;
 		}
 		return retval;
 	}
@@ -60,7 +60,7 @@ public class TagSet {
 		clear();
 		String[] args = s.substring(2, s.length() - 2).split(" ");
 		for (int i = 0; i < size; ++i) {
-			this.attach(Tag.code(args[i]));
+			this.attach(POSTag.code(args[i]));
 		}
 	}
 	

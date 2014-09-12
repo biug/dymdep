@@ -1,6 +1,5 @@
 package common.parser.implementations.arceager;
 
-import include.linguistics.DependencyTreeNode;
 import include.linguistics.SetOfLabels;
 import include.linguistics.TaggedWord;
 import include.linguistics.TwoStringsVector;
@@ -8,14 +7,19 @@ import include.linguistics.TwoStringsVector;
 import java.util.ArrayList;
 
 import common.dependency.label.DependencyLabel;
-import common.parser.DependencyParser;
+import common.parser.DependencyGraphBase;
 import common.parser.StateItemBase;
+import common.parser.implementations.DependencyTree;
+import common.parser.implementations.DependencyTreeNode;
+import common.parser.implementations.MacrosTree;
 
 /*
  * @author ZhangXun
  */
 
 public class StateItem extends StateItemBase {
+	
+	public long score;
 	
 	public final int OFF_STACK = 0;
 	public final int ON_STACK_SHIFT = 1;
@@ -46,22 +50,22 @@ public class StateItem extends StateItemBase {
 	public StateItem(ArrayList<TaggedWord> cache) {
 		stack_back = -1;
 		headstack_back = -1;
-		m_Stack = new int[Macros.MAX_SENTENCE_SIZE];
-		m_HeadStack = new int[Macros.MAX_SENTENCE_SIZE << 1];
-		m_lHeads = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepsL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepsR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepNumL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepNumR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lDepTagL = new SetOfLabels[Macros.MAX_SENTENCE_SIZE];
-		m_lDepTagR = new SetOfLabels[Macros.MAX_SENTENCE_SIZE];
-		for (int i = 0; i < Macros.MAX_SENTENCE_SIZE; ++i) {
+		m_Stack = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_HeadStack = new int[MacrosTree.MAX_SENTENCE_SIZE << 1];
+		m_lHeads = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepsL = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepsR = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepNumL = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepNumR = new int[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepTagL = new SetOfLabels[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepTagR = new SetOfLabels[MacrosTree.MAX_SENTENCE_SIZE];
+		for (int i = 0; i < MacrosTree.MAX_SENTENCE_SIZE; ++i) {
 			m_lDepTagL[i] = new SetOfLabels();
 			m_lDepTagR[i] = new SetOfLabels();
 		}
-		m_lSibling = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lSibling = new int[MacrosTree.MAX_SENTENCE_SIZE];
 		m_lCache = cache;
-		m_lLabels = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lLabels = new int[MacrosTree.MAX_SENTENCE_SIZE];
 		clear();
 	}
 	
@@ -155,7 +159,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean afterreduce() {
-		return Action.getUnlabeledAction(m_nLastAction) == Macros.REDUCE;
+		return Action.getUnlabeledAction(m_nLastAction) == MacrosTree.REDUCE;
 	}
 	
 	public final int head(final int index) {
@@ -203,7 +207,7 @@ public class StateItem extends StateItemBase {
 		stack_back = -1;
 		headstack_back = -1;
 		score = 0;
-		m_nLastAction = Macros.NO_ACTION;
+		m_nLastAction = MacrosTree.NO_ACTION;
 		ClearNext();
 	}
 	
@@ -216,7 +220,7 @@ public class StateItem extends StateItemBase {
 		m_lSibling[left] = m_lDepsL[m_nNextWord];
 		m_lDepsL[m_nNextWord] = left;
 		++m_lDepNumL[m_nNextWord];
-		m_nLastAction = Action.encodeAction(Macros.ARC_LEFT, lab);
+		m_nLastAction = Action.encodeAction(MacrosTree.ARC_LEFT, lab);
 	}
 	
 	public void ArcRight(int lab) {
@@ -229,24 +233,24 @@ public class StateItem extends StateItemBase {
 		m_lDepsR[left] = m_nNextWord++;
 		++m_lDepNumR[left];
 		ClearNext();
-		m_nLastAction = Action.encodeAction(Macros.ARC_RIGHT, lab);
+		m_nLastAction = Action.encodeAction(MacrosTree.ARC_RIGHT, lab);
 	}
 
 	public void Shift() {
 		m_Stack[++stack_back] = m_nNextWord;
 		m_HeadStack[++headstack_back] = m_nNextWord++;
 		ClearNext();
-		m_nLastAction = Action.encodeAction(Macros.SHIFT);
+		m_nLastAction = Action.encodeAction(MacrosTree.SHIFT);
 	}
 	
 	public void Reduce() {
 		--stack_back;
-		m_nLastAction = Action.encodeAction(Macros.REDUCE);
+		m_nLastAction = Action.encodeAction(MacrosTree.REDUCE);
 	}
 	
 	public void PopRoot() {
-		m_lLabels[m_Stack[stack_back--]] = Macros.DEP_ROOT;
-		m_nLastAction = Action.encodeAction(Macros.POP_ROOT);
+		m_lLabels[m_Stack[stack_back--]] = MacrosTree.DEP_ROOT;
+		m_nLastAction = Action.encodeAction(MacrosTree.POP_ROOT);
 	}
 	
 	public void ClearNext() {
@@ -258,42 +262,43 @@ public class StateItem extends StateItemBase {
 		m_lDepTagL[m_nNextWord].clear();
 		m_lDepTagR[m_nNextWord].clear();
 		m_lSibling[m_nNextWord] = DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD;
-		m_lLabels[m_nNextWord] = Macros.DEP_NONE;
+		m_lLabels[m_nNextWord] = MacrosTree.DEP_NONE;
 	}
 	
 	@Override
 	public void Move(final int action) {
 		switch (Action.getUnlabeledAction(action)) {
-		case Macros.NO_ACTION:
+		case MacrosTree.NO_ACTION:
 			return;
-		case Macros.SHIFT:
+		case MacrosTree.SHIFT:
 			Shift();
 			return;
-		case Macros.REDUCE:
+		case MacrosTree.REDUCE:
 			Reduce();
 			return;
-		case Macros.ARC_LEFT:
+		case MacrosTree.ARC_LEFT:
 			ArcLeft(Action.getLabel(action));
 			return;
-		case Macros.ARC_RIGHT:
+		case MacrosTree.ARC_RIGHT:
 			ArcRight(Action.getLabel(action));
 			return;
-		case Macros.POP_ROOT:
+		case MacrosTree.POP_ROOT:
 			PopRoot();
 			return;
 		}
 	}
 	
 	@Override
-	public boolean StandardMoveStep(final DependencyParser tree, final ArrayList<DependencyLabel> m_lCacheLabel) {
+	public void StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
 		int top;
-		if (m_nNextWord == (int)(tree.size())) {
+		DependencyTree tree = (DependencyTree)graph;
+		if (m_nNextWord == tree.length) {
 			if (stack_back > 0) {
 				Reduce();
-				return false;
+				return;
 			} else {
 				PopRoot();
-				return false;
+				return;
 			}
 		}
 		if (stack_back >= 0) {
@@ -301,28 +306,26 @@ public class StateItem extends StateItemBase {
 			while (!(m_lHeads[top] == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD)) {
 				top = m_lHeads[top];
 			}
-			if (tree.get(top).head == m_nNextWord) {
+			if (((DependencyTreeNode)tree.nodes[top]).head == m_nNextWord) {
 				if (top == m_Stack[stack_back]) {
 					ArcLeft(m_lCacheLabel.get(top).hashCode());
-					return false;
+					return;
 				} else {
 					Reduce();
-					return false;
+					return;
 				}
 			}
 		}
-		if (tree.get(m_nNextWord).head == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD ||
-				tree.get(m_nNextWord).head > m_nNextWord) {
+		if (((DependencyTreeNode)tree.nodes[m_nNextWord]).head == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD ||
+				((DependencyTreeNode)tree.nodes[m_nNextWord]).head > m_nNextWord) {
 			Shift();
-			return true;
+			return;
 		} else {
 			top = m_Stack[stack_back];
-			if (tree.get(m_nNextWord).head == top) {
+			if (((DependencyTreeNode)tree.nodes[m_nNextWord]).head == top) {
 				ArcRight(m_lCacheLabel.get(m_nNextWord).hashCode());
-				return true;
 			} else {
 				Reduce();
-				return false;
 			}
 		}
 	}
@@ -339,11 +342,11 @@ public class StateItem extends StateItemBase {
 		if (m_nNextWord == item.m_nNextWord) {
 			top = m_Stack[stack_back];
 			if (item.m_lHeads[top] == m_nNextWord) {
-				return Action.encodeAction(Macros.ARC_LEFT, item.m_lLabels[top]);
+				return Action.encodeAction(MacrosTree.ARC_LEFT, item.m_lLabels[top]);
 			} else if (item.m_lHeads[top] != DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD) {
-				return Action.encodeAction(Macros.REDUCE);
+				return Action.encodeAction(MacrosTree.REDUCE);
 			} else {
-				return Action.encodeAction(Macros.POP_ROOT);
+				return Action.encodeAction(MacrosTree.POP_ROOT);
 			}
 		}
 		if (stack_back >= 0) {
@@ -353,30 +356,29 @@ public class StateItem extends StateItemBase {
 			}
 			if (item.head(top) == m_nNextWord) {
 				if (top == m_Stack[stack_back]) {
-					return Action.encodeAction(Macros.ARC_LEFT, item.m_lLabels[top]);
+					return Action.encodeAction(MacrosTree.ARC_LEFT, item.m_lLabels[top]);
 				} else {
-					return Action.encodeAction(Macros.REDUCE);
+					return Action.encodeAction(MacrosTree.REDUCE);
 				}
 			}
 		}
 		if (item.head(m_nNextWord) == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD ||
 				item.head(m_nNextWord) > m_nNextWord) {
-			return Action.encodeAction(Macros.SHIFT);
+			return Action.encodeAction(MacrosTree.SHIFT);
 		} else {
 			top = m_Stack[stack_back];
 			if (item.head(m_nNextWord) == top) {
-				return Action.encodeAction(Macros.ARC_RIGHT, item.m_lLabels[m_nNextWord]);
+				return Action.encodeAction(MacrosTree.ARC_RIGHT, item.m_lLabels[m_nNextWord]);
 			} else {
-				return Action.encodeAction(Macros.REDUCE);
+				return Action.encodeAction(MacrosTree.REDUCE);
 			}
 		}
 	}
 	
-	@Override
-	public void GenerateTree(final TwoStringsVector input, DependencyParser output) {
-		output.clear();
+	public void GenerateTree(final TwoStringsVector input, DependencyGraphBase output) {
+		output.length = 0;
 		for (int i = 0, input_size = this.size(); i < input_size; ++i) {
-			output.add(new DependencyTreeNode(input.get(i).m_string1, input.get(i).m_string2, m_lHeads[i], DependencyLabel.str(m_lLabels[i])));
+			output.nodes[output.length++] = new DependencyTreeNode(input.get(i).m_string1, input.get(i).m_string2, m_lHeads[i], DependencyLabel.str(m_lLabels[i]));
 		}
 	}
 

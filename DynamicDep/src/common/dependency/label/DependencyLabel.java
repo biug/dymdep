@@ -1,6 +1,6 @@
 package common.dependency.label;
 
-import common.parser.implementations.arceager.Macros;
+import common.parser.implementations.MacrosTree;
 
 /*
  * @author ZhangXun
@@ -19,9 +19,9 @@ public final class DependencyLabel {
 	}
 	
 	public void load(final String str) {
-		m_code = Macros.DEP_NONE;
-		for (int i = Macros.DEP_FIRST; i < Macros.DEP_COUNT; ++i) {
-			if (Macros.DEP_STRINGS[i].equals(str)) {
+		m_code = MacrosTree.DEP_NONE;
+		for (int i = MacrosTree.DEP_FIRST; i < MacrosTree.DEP_COUNT; ++i) {
+			if (MacrosTree.DEP_STRINGS[i].equals(str)) {
 				m_code = i;
 				return;
 			}
@@ -41,20 +41,20 @@ public final class DependencyLabel {
 	
 	@Override
 	public String toString() {
-		return Macros.DEP_STRINGS[m_code];
+		return MacrosTree.DEP_STRINGS[m_code];
 	}
 	
 	public static String str(final int code) {
-		return Macros.DEP_STRINGS[code];
+		return MacrosTree.DEP_STRINGS[code];
 	}
 	
 	public static int code(final String label) {
-		for (int i = Macros.DEP_FIRST; i < Macros.DEP_COUNT; ++i) {
-			if (Macros.DEP_STRINGS[i].equals(label)) {
+		for (int i = MacrosTree.DEP_FIRST; i < MacrosTree.DEP_COUNT; ++i) {
+			if (MacrosTree.DEP_STRINGS[i].equals(label)) {
 				return i;
 			}
 		}
-		return Macros.DEP_NONE;
+		return MacrosTree.DEP_NONE;
 	}
 	
 }

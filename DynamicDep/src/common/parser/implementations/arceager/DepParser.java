@@ -4,7 +4,6 @@ import include.AgendaBeam;
 import include.AgendaSimple;
 import include.learning.perceptron.PackedScoreType;
 import include.learning.perceptron.Score;
-import include.linguistics.DependencyTreeNode;
 import include.linguistics.SetOfLabels;
 import include.linguistics.TagInt;
 import include.linguistics.TagSet2;
@@ -24,14 +23,15 @@ import include.linguistics.WordWordInt;
 import include.linguistics.WordWordTag;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.DepParserBase;
-import common.parser.DependencyParser;
 import common.parser.ScoredAction;
 import common.parser.StateItemBase;
-import common.pos.Tag;
+import common.parser.implementations.DependencyTree;
+import common.parser.implementations.DependencyTreeNode;
+import common.parser.implementations.MacrosTree;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
@@ -58,8 +58,6 @@ public final class DepParser extends DepParserBase {
 	
 	private TwoStringsVector trainSentence;
 	
-	private DependencyParser[] outParser;
-	
 	private TwoTaggedWords st_word_tag_n0_word_tag;
 	private TwoWords st_word_n0_word;
 	
@@ -79,12 +77,12 @@ public final class DepParser extends DepParserBase {
 	public static final TaggedWord empty_taggedword = new TaggedWord();
 	public static final SetOfLabels empty_setoftags = new SetOfLabels();
 	
-	private int encodeTags(final Tag tag1, final Tag tag2) {
-		return ((tag1.hashCode() << (Macros.TAG_BITS_SIZE)) | (tag2.hashCode()));
+	private int encodeTags(final POSTag tag1, final POSTag tag2) {
+		return ((tag1.hashCode() << (MacrosTree.POSTAG_BITS_SIZE)) | (tag2.hashCode()));
 	}
 	
-	private int encodeTags(final Tag tag1, final Tag tag2, final Tag tag3) {
-		return ((tag1.hashCode() << (Macros.TAG_BITS_SIZE << 1)) | (tag2.hashCode() << (Macros.TAG_BITS_SIZE)) | (tag3.hashCode()));
+	private int encodeTags(final POSTag tag1, final POSTag tag2, final POSTag tag3) {
+		return ((tag1.hashCode() << (MacrosTree.POSTAG_BITS_SIZE << 1)) | (tag2.hashCode() << (MacrosTree.POSTAG_BITS_SIZE)) | (tag3.hashCode()));
 	}
 	
 	private int minVal(final int n1, final int n2) {
@@ -94,8 +92,8 @@ public final class DepParser extends DepParserBase {
 	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
 		super(sFeatureDBPath, bTrain);
 		
-		m_Agenda = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem(null));
-		m_Beam = new AgendaSimple(Macros.AGENDA_SIZE);
+		m_Agenda = new AgendaBeam(MacrosTree.AGENDA_SIZE, new StateItem(null));
+		m_Beam = new AgendaSimple(MacrosTree.AGENDA_SIZE);
 		
 		m_lCache = new ArrayList<TaggedWord>();
 		m_lCacheLabel = new ArrayList<DependencyLabel>();
@@ -110,12 +108,9 @@ public final class DepParser extends DepParserBase {
 		pCandidate = new StateItem(m_lCache);
 		correctState = new StateItem(m_lCache);
 		
-		packed_scores = new PackedScoreType(Macros.ACTION_MAX);
+		packed_scores = new PackedScoreType(MacrosTree.ACTION_MAX);
 		
 		trainSentence = new TwoStringsVector();
-		
-		outParser = new DependencyParser[1];
-		outParser[0] = new DependencyParser();
 		
 		st_word_tag_n0_word_tag = new TwoTaggedWords();
 		st_word_n0_word = new TwoWords();
@@ -175,29 +170,29 @@ public final class DepParser extends DepParserBase {
 		final Word n1_word = n1_word_tag.word;
 		final Word n2_word = n2_word_tag.word;
 		
-		final Tag st_tag = st_word_tag.tag;
-		final Tag sth_tag = sth_word_tag.tag;
-		final Tag sthh_tag = sthh_word_tag.tag;
-		final Tag stld_tag = stld_word_tag.tag;
-		final Tag strd_tag = strd_word_tag.tag;
-		final Tag stl2d_tag = stl2d_word_tag.tag;
-		final Tag str2d_tag = str2d_word_tag.tag;
-		final Tag n0_tag = n0_word_tag.tag;
-		final Tag n0ld_tag = n0ld_word_tag.tag;
-		final Tag n0l2d_tag = n0l2d_word_tag.tag;
-		final Tag n1_tag = n1_word_tag.tag;
-		final Tag n2_tag = n2_word_tag.tag;
+		final POSTag st_tag = st_word_tag.tag;
+		final POSTag sth_tag = sth_word_tag.tag;
+		final POSTag sthh_tag = sthh_word_tag.tag;
+		final POSTag stld_tag = stld_word_tag.tag;
+		final POSTag strd_tag = strd_word_tag.tag;
+		final POSTag stl2d_tag = stl2d_word_tag.tag;
+		final POSTag str2d_tag = str2d_word_tag.tag;
+		final POSTag n0_tag = n0_word_tag.tag;
+		final POSTag n0ld_tag = n0ld_word_tag.tag;
+		final POSTag n0l2d_tag = n0l2d_word_tag.tag;
+		final POSTag n1_tag = n1_word_tag.tag;
+		final POSTag n2_tag = n2_word_tag.tag;
 		
-		final int st_label = st_index == -1 ? Macros.DEP_NONE : item.label(st_index);
-		final int sth_label = sth_index == -1 ? Macros.DEP_NONE : item.label(sth_index);
-		final int stld_label = stld_index == -1 ? Macros.DEP_NONE : item.label(stld_index);
-		final int strd_label = strd_index == -1 ? Macros.DEP_NONE : item.label(strd_index);
-		final int stl2d_label = stl2d_index == -1 ? Macros.DEP_NONE : item.label(stl2d_index);
-		final int str2d_label = str2d_index == -1 ? Macros.DEP_NONE : item.label(strd_index); //PROBLEM!
-		final int n0ld_label = n0ld_index == -1 ? Macros.DEP_NONE : item.label(n0ld_index);
-		final int n0l2d_label = n0l2d_index == -1 ? Macros.DEP_NONE : item.label(n0l2d_index);
+		final int st_label = st_index == -1 ? MacrosTree.DEP_NONE : item.label(st_index);
+		final int sth_label = sth_index == -1 ? MacrosTree.DEP_NONE : item.label(sth_index);
+		final int stld_label = stld_index == -1 ? MacrosTree.DEP_NONE : item.label(stld_index);
+		final int strd_label = strd_index == -1 ? MacrosTree.DEP_NONE : item.label(strd_index);
+		final int stl2d_label = stl2d_index == -1 ? MacrosTree.DEP_NONE : item.label(stl2d_index);
+		final int str2d_label = str2d_index == -1 ? MacrosTree.DEP_NONE : item.label(strd_index); //PROBLEM!
+		final int n0ld_label = n0ld_index == -1 ? MacrosTree.DEP_NONE : item.label(n0ld_index);
+		final int n0l2d_label = n0l2d_index == -1 ? MacrosTree.DEP_NONE : item.label(n0l2d_index);
 		
-		final int st_n0_dist = Macros.encodeLinkDistance(st_index, n0_index);
+		final int st_n0_dist = MacrosTree.encodeLinkDistance(st_index, n0_index);
 		
 		final int st_rarity = st_index == -1 ? 0 : item.rightarity(st_index);
 		final int st_larity = st_index == -1 ? 0 : item.leftarity(st_index);
@@ -408,40 +403,40 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void reduce(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.REDUCE;
+		scoredaction.action = MacrosTree.REDUCE;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
 	public void arcleft(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_LEFT, label);
+		for (int label = MacrosTree.DEP_FIRST; label < MacrosTree.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(MacrosTree.ARC_LEFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
 	public void arcright(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_RIGHT, label);
+		for (int label = MacrosTree.DEP_FIRST; label < MacrosTree.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(MacrosTree.ARC_RIGHT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.SHIFT;
+		scoredaction.action = MacrosTree.SHIFT;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
 	public void poproot(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.POP_ROOT;
+		scoredaction.action = MacrosTree.POP_ROOT;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, DependencyParser[] retval, final DependencyParser correct, final int nBest, long[] scores) {
+	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, DependencyTree[] retval, final DependencyTree correct, final int nBest, long[] scores) {
 		final int length = sentence.size();
 		StateItem pGenerator;
 		
@@ -461,7 +456,7 @@ public final class DepParser extends DepParserBase {
 		m_lCacheLabel.clear();
 		if (bTrain) {
 			for (int index = 0; index < length; ++index) {
-				m_lCacheLabel.add(new DependencyLabel(correct.get(index).label));
+				m_lCacheLabel.add(new DependencyLabel(((DependencyTreeNode)correct.nodes[index]).label));
 			}
 		}
 		for (int index = 0; index < (length << 1); ++index) {
@@ -473,7 +468,7 @@ public final class DepParser extends DepParserBase {
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
 				m_Beam.clear();
 				packed_scores.reset();
-				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
+				getOrUpdateStackScore(pGenerator, packed_scores, MacrosTree.NO_ACTION);
 				if (pGenerator.size() == length) {
 					if (pGenerator.stacksize() > 1) {
 						reduce(pGenerator, packed_scores);
@@ -532,34 +527,31 @@ public final class DepParser extends DepParserBase {
 		for (int i = 0, retval_size = minVal(m_Agenda.generatorSize(), nBest); i < retval_size; ++i) {
 			pGenerator = (StateItem)m_Agenda.generator(i);
 			if (pGenerator != null) {
-				pGenerator.GenerateTree(sentence, retval[i]);
+				if (retval != null) pGenerator.GenerateTree(sentence, retval[i]);
 				if (scores != null) scores[i] = pGenerator.score;
 			}
 		}
 	}
 
-	@Override
-	public void parse(final TwoStringsVector sentence, DependencyParser[] retval,
+	public void parse(final TwoStringsVector sentence, DependencyTree[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
-			retval[i].clear();
+			retval[i].length = 0;
 			if (scores != null) scores[i] = 0;
 		}
 		work(0, false, sentence, retval, null, nBest, scores);
 	}
 
-	@Override
-	public void train(final DependencyParser correct, final int round) {
+	public void train(final DependencyTree correct, final int round) {
 		trainSentence.clear();
 		if (correct != null) {
-			Iterator<DependencyTreeNode> itr = correct.iterator();
-			while (itr.hasNext()) {
-				DependencyTreeNode node = itr.next();
-				trainSentence.add(new TwoStrings(node.word, node.tag));
+			for (int i = 0; i < correct.length; ++i) {
+				DependencyTreeNode node = (DependencyTreeNode)correct.nodes[i];
+				trainSentence.add(new TwoStrings(node.word, node.postag));
 			}
 		}
 		m_nTrainingRound = round;
-		work(round, true, trainSentence, outParser, correct, 1, null);
+		work(round, true, trainSentence, null, correct, 1, null);
 	}
 
 	@Override
