@@ -1,7 +1,7 @@
 package common.parser.implementations.arceager;
 
 import include.linguistics.SetOfLabels;
-import include.linguistics.TaggedWord;
+import include.linguistics.POSTaggedWord;
 import include.linguistics.TwoStringsVector;
 
 import java.util.ArrayList;
@@ -43,11 +43,11 @@ public class StateItem extends StateItemBase {
 	protected int m_lSibling[];
 	
 	protected int m_nLastAction;
-	protected ArrayList<TaggedWord> m_lCache;
+	protected ArrayList<POSTaggedWord> m_lCache;
 	
 	protected int m_lLabels[];
 	
-	public StateItem(ArrayList<TaggedWord> cache) {
+	public StateItem(ArrayList<POSTaggedWord> cache) {
 		stack_back = -1;
 		headstack_back = -1;
 		m_Stack = new int[MacrosTree.MAX_SENTENCE_SIZE];

@@ -1,5 +1,7 @@
 package common.parser.implementations.map;
 
+import common.parser.MacrosBase;
+
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.Word;
 import include.linguistics.WordWordInt;
@@ -21,7 +23,7 @@ public final class WordWordIntMap extends PackedScoreMap<WordWordInt> {
 		return new WordWordInt(
 				new Word(args[0].substring(1, args[0].length() - 1)),
 				new Word(args[1].substring(1, args[1].length() - 1)),
-				Integer.valueOf(args[2]));
+				MacrosBase.integer_cache[Integer.parseInt(args[2])]);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package common.parser.implementations.titov;
 
-import common.parser.implementations.MacrosTree;
+import common.parser.implementations.MacrosDag;
 
 /*
  * @author ZhangXun
@@ -9,10 +9,10 @@ import common.parser.implementations.MacrosTree;
 public final class Action {
 	
 	public static int encodeAction(final int action, final int label) {
-		if (action == MacrosTree.ARC_LEFT) {
-			return label == 0 ? MacrosTree.ARC_LEFT : MacrosTree.AL_FIRST + label - 1;
-		} else if (action == MacrosTree.ARC_RIGHT) {
-			return label == 0 ? MacrosTree.ARC_RIGHT : MacrosTree.AR_FIRST + label - 1;
+		if (action == MacrosDag.ARC_LEFT) {
+			return label == 0 ? MacrosDag.ARC_LEFT : MacrosDag.AL_FIRST + label - 1;
+		} else if (action == MacrosDag.ARC_RIGHT) {
+			return label == 0 ? MacrosDag.ARC_RIGHT : MacrosDag.AR_FIRST + label - 1;
 		} else {
 			return action;
 		}
@@ -23,22 +23,42 @@ public final class Action {
 	}
 	
 	public static int getUnlabeledAction(final int action) {
-		if (action < MacrosTree.AL_FIRST) {
+		if (action < MacrosDag.AL_FIRST) {
 			return action;
-		} else if (action < MacrosTree.AR_FIRST) {
-			return MacrosTree.ARC_LEFT;
+		} else if (action < MacrosDag.AR_FIRST) {
+			return MacrosDag.ARC_LEFT;
 		} else {
-			return MacrosTree.ARC_RIGHT;
+			return MacrosDag.ARC_RIGHT;
 		}
 	}
 	
 	public static int getLabel(final int action) {
-		if (action < MacrosTree.AL_FIRST) {
+		if (action < MacrosDag.AL_FIRST) {
 			return 0;
-		} else if (action < MacrosTree.AR_FIRST) {
-			return action - MacrosTree.AL_FIRST + 1;
+		} else if (action < MacrosDag.AR_FIRST) {
+			return action - MacrosDag.AL_FIRST + 1;
 		} else {
-			return action - MacrosTree.AR_FIRST + 1;
+			return action - MacrosDag.AR_FIRST + 1;
+		}
+	}
+	
+	public static void print(final int action) {
+		switch(getUnlabeledAction(action)) {
+		case MacrosDag.SHIFT:
+			System.out.println("shift");
+			return;
+		case MacrosDag.REDUCE:
+			System.out.println("reduce");
+			return;
+		case MacrosDag.SWAP:
+			System.out.println("swap");
+			return;
+		case MacrosDag.ARC_LEFT:
+			System.out.println("left");
+			return;
+		case MacrosDag.ARC_RIGHT:
+			System.out.println("right");
+			return;
 		}
 	}
 }

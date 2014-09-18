@@ -11,25 +11,33 @@ import java.io.OutputStreamWriter;
 
 import common.parser.WeightBase;
 import common.parser.implementations.MacrosDag;
-import common.parser.implementations.map.CoNLLCPOSMap;
-import common.parser.implementations.map.CoNLLFeatsMap;
+import common.parser.implementations.map.CCGTagCCGTagIntMap;
+import common.parser.implementations.map.CCGTagIntMap;
+import common.parser.implementations.map.CCGTagMap;
+import common.parser.implementations.map.CCGTagSet2Map;
+import common.parser.implementations.map.CCGTagSet3Map;
+import common.parser.implementations.map.CCGTagSetOfLabelsMap;
+import common.parser.implementations.map.CCGTaggedWordMap;
 import common.parser.implementations.map.IntMap;
 import common.parser.implementations.map.LemmaMap;
-import common.parser.implementations.map.TagIntMap;
-import common.parser.implementations.map.TagMap;
-import common.parser.implementations.map.TagSet2Map;
-import common.parser.implementations.map.TagSet3Map;
-import common.parser.implementations.map.TagSetOfLabelsMap;
-import common.parser.implementations.map.TagTagIntMap;
-import common.parser.implementations.map.TaggedWordMap;
-import common.parser.implementations.map.TwoTaggedWordsMap;
+import common.parser.implementations.map.POSTagIntMap;
+import common.parser.implementations.map.POSTagMap;
+import common.parser.implementations.map.POSTagPOSTagIntMap;
+import common.parser.implementations.map.POSTagSet2Map;
+import common.parser.implementations.map.POSTagSet3Map;
+import common.parser.implementations.map.POSTagSetOfLabelsMap;
+import common.parser.implementations.map.POSTaggedWordMap;
+import common.parser.implementations.map.TwoCCGTaggedWordsMap;
+import common.parser.implementations.map.TwoPOSTaggedWordsMap;
 import common.parser.implementations.map.TwoWordsMap;
+import common.parser.implementations.map.WordCCGTagCCGTagMap;
 import common.parser.implementations.map.WordIntMap;
 import common.parser.implementations.map.WordMap;
+import common.parser.implementations.map.WordPOSTagPOSTagMap;
 import common.parser.implementations.map.WordSetOfLabelsMap;
-import common.parser.implementations.map.WordTagTagMap;
+import common.parser.implementations.map.WordWordCCGTagMap;
 import common.parser.implementations.map.WordWordIntMap;
-import common.parser.implementations.map.WordWordTagMap;
+import common.parser.implementations.map.WordWordPOSTagMap;
 
 /*
  * @author ZhangXun
@@ -38,218 +46,298 @@ import common.parser.implementations.map.WordWordTagMap;
 public final class Weight extends WeightBase {
 	
 	public WordMap m_mapSTw;
-	public TagMap m_mapSTt;
-	public TaggedWordMap m_mapSTwt;
+	public POSTagMap m_mapSTpt;
+	public POSTaggedWordMap m_mapSTwpt;
+	public CCGTagMap m_mapSTct;
+	public CCGTaggedWordMap m_mapSTwct;
 
 	public WordMap m_mapN0w;
-	public TagMap m_mapN0t;
-	public TaggedWordMap m_mapN0wt;
+	public POSTagMap m_mapN0pt;
+	public POSTaggedWordMap m_mapN0wpt;
+	public CCGTagMap m_mapN0ct;
+	public CCGTaggedWordMap m_mapN0wct;
 
 	public WordMap m_mapN1w;
-	public TagMap m_mapN1t;
-	public TaggedWordMap m_mapN1wt;
+	public POSTagMap m_mapN1pt;
+	public POSTaggedWordMap m_mapN1wpt;
+	public CCGTagMap m_mapN1ct;
+	public CCGTaggedWordMap m_mapN1wct;
 
 	public WordMap m_mapN2w;
-	public TagMap m_mapN2t;
-	public TaggedWordMap m_mapN2wt;
+	public POSTagMap m_mapN2pt;
+	public POSTaggedWordMap m_mapN2wpt;
+	public CCGTagMap m_mapN2ct;
+	public CCGTaggedWordMap m_mapN2wct;
 
 	public WordMap m_mapSTHw;
-	public TagMap m_mapSTHt;
+	public POSTagMap m_mapSTHpt;
+	public CCGTagMap m_mapSTHct;
 	public IntMap m_mapSTi;
 
 	public WordMap m_mapSTHHw;
-	public TagMap m_mapSTHHt;
+	public POSTagMap m_mapSTHHpt;
+	public CCGTagMap m_mapSTHHct;
 	public IntMap m_mapSTHi;
 
 	public WordMap m_mapSTLDw;
-	public TagMap m_mapSTLDt;
+	public POSTagMap m_mapSTLDpt;
+	public CCGTagMap m_mapSTLDct;
 	public IntMap m_mapSTLDi;
 
 	public WordMap m_mapSTRDw;
-	public TagMap m_mapSTRDt;
+	public POSTagMap m_mapSTRDpt;
+	public CCGTagMap m_mapSTRDct;
 	public IntMap m_mapSTRDi;
 
 	public WordMap m_mapN0LDw;
-	public TagMap m_mapN0LDt;
+	public POSTagMap m_mapN0LDpt;
+	public CCGTagMap m_mapN0LDct;
 	public IntMap m_mapN0LDi;
 
 	public WordMap m_mapSTL2Dw;
-	public TagMap m_mapSTL2Dt;
+	public POSTagMap m_mapSTL2Dpt;
+	public CCGTagMap m_mapSTL2Dct;
 	public IntMap m_mapSTL2Di;
 
 	public WordMap m_mapSTR2Dw;
-	public TagMap m_mapSTR2Dt;
+	public POSTagMap m_mapSTR2Dpt;
+	public CCGTagMap m_mapSTR2Dct;
 	public IntMap m_mapSTR2Di;
 
 	public WordMap m_mapN0L2Dw;
-	public TagMap m_mapN0L2Dt;
+	public POSTagMap m_mapN0L2Dpt;
+	public CCGTagMap m_mapN0L2Dct;
 	public IntMap m_mapN0L2Di;
 
 	public WordMap m_mapHTw;
-	public TagMap m_mapHTt;
-	public TaggedWordMap m_mapHTwt;
+	public POSTagMap m_mapHTpt;
+	public POSTaggedWordMap m_mapHTwpt;
+	public CCGTagMap m_mapHTct;
+	public CCGTaggedWordMap m_mapHTwct;
 
-	public TwoTaggedWordsMap m_mapSTwtN0wt;
-	public WordWordTagMap m_mapSTwtN0w;
-	public WordWordTagMap m_mapSTwN0wt;
-	public WordTagTagMap m_mapSTtN0wt;
-	public WordTagTagMap m_mapSTwtN0t;
+	public TwoPOSTaggedWordsMap m_mapSTwptN0wpt;
+	public WordWordPOSTagMap m_mapSTwptN0w;
+	public WordWordPOSTagMap m_mapSTwN0wpt;
+	public WordPOSTagPOSTagMap m_mapSTptN0wpt;
+	public WordPOSTagPOSTagMap m_mapSTwptN0pt;
+	public TwoCCGTaggedWordsMap m_mapSTwctN0wct;
+	public WordWordCCGTagMap m_mapSTwctN0w;
+	public WordWordCCGTagMap m_mapSTwN0wct;
+	public WordCCGTagCCGTagMap m_mapSTctN0wct;
+	public WordCCGTagCCGTagMap m_mapSTwctN0ct;
 	public TwoWordsMap m_mapSTwN0w;
 	
-	public TagSet2Map m_mapSTtN0t;
-	public TagSet2Map m_mapN0tN1t;
-	public TagSet3Map m_mapN0tN1tN2t;
-	public TagSet3Map m_mapSTtN0tN1t;
-	public TagSet3Map m_mapSTtN0tN0LDt;
-	public TagSet3Map m_mapN0tN0LDtN0L2Dt;
-	public TagSet3Map m_mapSTHtSTtN0t;
-	public TagSet3Map m_mapHTtHT2tN0t;
-	public TagSet3Map m_mapSTHHtSTHtSTt;
-	public TagSet3Map m_mapSTtSTLDtN0t;
-	public TagSet3Map m_mapSTtSTLDtSTL2Dt;
-	public TagSet3Map m_mapSTtSTRDtN0t;
-	public TagSet3Map m_mapSTtSTRDtSTR2Dt;
+	public POSTagSet2Map m_mapSTptN0pt;
+	public POSTagSet2Map m_mapN0ptN1pt;
+	public POSTagSet3Map m_mapN0ptN1ptN2pt;
+	public POSTagSet3Map m_mapSTptN0ptN1pt;
+	public POSTagSet3Map m_mapSTptN0ptN0LDpt;
+	public POSTagSet3Map m_mapN0ptN0LDptN0L2Dpt;
+	public POSTagSet3Map m_mapSTHptSTptN0pt;
+	public POSTagSet3Map m_mapHTptHT2ptN0pt;
+	public POSTagSet3Map m_mapSTHHptSTHptSTpt;
+	public POSTagSet3Map m_mapSTptSTLDptN0pt;
+	public POSTagSet3Map m_mapSTptSTLDptSTL2Dpt;
+	public POSTagSet3Map m_mapSTptSTRDptN0pt;
+	public POSTagSet3Map m_mapSTptSTRDptSTR2Dpt;
+	
+	public CCGTagSet2Map m_mapSTctN0ct;
+	public CCGTagSet2Map m_mapN0ctN1ct;
+	public CCGTagSet3Map m_mapN0ctN1ctN2ct;
+	public CCGTagSet3Map m_mapSTctN0ctN1ct;
+	public CCGTagSet3Map m_mapSTctN0ctN0LDct;
+	public CCGTagSet3Map m_mapN0ctN0LDctN0L2Dct;
+	public CCGTagSet3Map m_mapSTHctSTctN0ct;
+	public CCGTagSet3Map m_mapHTctHT2ctN0ct;
+	public CCGTagSet3Map m_mapSTHHctSTHctSTct;
+	public CCGTagSet3Map m_mapSTctSTLDctN0ct;
+	public CCGTagSet3Map m_mapSTctSTLDctSTL2Dct;
+	public CCGTagSet3Map m_mapSTctSTRDctN0ct;
+	public CCGTagSet3Map m_mapSTctSTRDctSTR2Dct;
 
 	public WordIntMap m_mapSTwd;
-	public TagIntMap m_mapSTtd;
+	public POSTagIntMap m_mapSTptd;
+	public CCGTagIntMap m_mapSTctd;
 	public WordIntMap m_mapN0wd;
-	public TagIntMap m_mapN0td;
+	public POSTagIntMap m_mapN0ptd;
+	public CCGTagIntMap m_mapN0ctd;
 	public WordWordIntMap m_mapSTwN0wd;
-	public TagTagIntMap m_mapSTtN0td;
+	public POSTagPOSTagIntMap m_mapSTptN0ptd;
+	public CCGTagCCGTagIntMap m_mapSTctN0ctd;
 
 	public WordIntMap m_mapSTwra;
-	public TagIntMap m_mapSTtra;
+	public POSTagIntMap m_mapSTptra;
+	public CCGTagIntMap m_mapSTctra;
 	public WordIntMap m_mapSTwla;
-	public TagIntMap m_mapSTtla;
+	public POSTagIntMap m_mapSTptla;
+	public CCGTagIntMap m_mapSTctla;
 	public WordIntMap m_mapN0wla;
-	public TagIntMap m_mapN0tla;
+	public POSTagIntMap m_mapN0ptla;
+	public CCGTagIntMap m_mapN0ctla;
 
 	public WordSetOfLabelsMap m_mapSTwrp;
-	public TagSetOfLabelsMap m_mapSTtrp;
+	public POSTagSetOfLabelsMap m_mapSTptrp;
+	public CCGTagSetOfLabelsMap m_mapSTctrp;
 	public WordSetOfLabelsMap m_mapSTwlp;
-	public TagSetOfLabelsMap m_mapSTtlp;
+	public POSTagSetOfLabelsMap m_mapSTptlp;
+	public CCGTagSetOfLabelsMap m_mapSTctlp;
 	public WordSetOfLabelsMap m_mapN0wlp;
-	public TagSetOfLabelsMap m_mapN0tlp;
+	public POSTagSetOfLabelsMap m_mapN0ptlp;
+	public CCGTagSetOfLabelsMap m_mapN0ctlp;
 
 	public LemmaMap m_mapSTl;
-	public CoNLLCPOSMap m_mapSTc;
-	public CoNLLFeatsMap m_mapSTf;
 
 	public LemmaMap m_mapN0l;
-	public CoNLLCPOSMap m_mapN0c;
-	public CoNLLFeatsMap m_mapN0f;
 
 	public LemmaMap m_mapN1l;
-	public CoNLLCPOSMap m_mapN1c;
-	public CoNLLFeatsMap m_mapN1f;
 	
 	public Weight(final String sPath, final boolean bTrain) {
 		super(sPath, bTrain);
 		m_mapSTw = new WordMap("StackWord");
-		m_mapSTt = new TagMap("StackTag");
-		m_mapSTwt = new TaggedWordMap("StackWordTag");
+		m_mapSTpt = new POSTagMap("StackPOSTag");
+		m_mapSTwpt = new POSTaggedWordMap("StackWordPOSTag");
+		m_mapSTct = new CCGTagMap("StackCCGTag");
+		m_mapSTwct = new CCGTaggedWordMap("StackWordCCGTag");
 
 		m_mapN0w = new WordMap("NextWord");
-		m_mapN0t = new TagMap("NextTag");
-		m_mapN0wt = new TaggedWordMap("NextWordTag");
+		m_mapN0pt = new POSTagMap("NextPOSTag");
+		m_mapN0wpt = new POSTaggedWordMap("NextWordPOSTag");
+		m_mapN0ct = new CCGTagMap("NextCCGTag");
+		m_mapN0wct = new CCGTaggedWordMap("NextWordCCGTag");
 
 		m_mapN1w = new WordMap("Next+1Word");
-		m_mapN1t = new TagMap("Next+1Tag");
-		m_mapN1wt = new TaggedWordMap("Next+1WordTag");
+		m_mapN1pt = new POSTagMap("Next+1POSTag");
+		m_mapN1wpt = new POSTaggedWordMap("Next+1WordPOSTag");
+		m_mapN1ct = new CCGTagMap("Next+1CCGTag");
+		m_mapN1wct = new CCGTaggedWordMap("Next+1WordCCGTag");
 
 		m_mapN2w = new WordMap("Next+2Word");
-		m_mapN2t = new TagMap("Next+2Tag");
-		m_mapN2wt = new TaggedWordMap("Next+2WordTag");
+		m_mapN2pt = new POSTagMap("Next+2POSTag");
+		m_mapN2wpt = new POSTaggedWordMap("Next+2WordPOSTag");
+		m_mapN2ct = new CCGTagMap("Next+2CCGTag");
+		m_mapN2wct = new CCGTaggedWordMap("Next+2WordCCGTag");
 
 		m_mapSTHw = new WordMap("StackHeadWord");
-		m_mapSTHt = new TagMap("StackHeadTag");
+		m_mapSTHpt = new POSTagMap("StackHeadPOSTag");
+		m_mapSTHct = new CCGTagMap("StackHeadCCGTag");
 		m_mapSTi = new IntMap("StackLabel");
 
 		m_mapSTHHw = new WordMap("StackHeadHeadWord");
-		m_mapSTHHt = new TagMap("StackHeadHeadTag");
+		m_mapSTHHpt = new POSTagMap("StackHeadHeadPOSTag");
+		m_mapSTHHct = new CCGTagMap("StackHeadHeadCCGTag");
 		m_mapSTHi = new IntMap("StackLabel");
 
 		m_mapSTLDw = new WordMap("StackLDWord");
-		m_mapSTLDt = new TagMap("StackLDTag");
+		m_mapSTLDpt = new POSTagMap("StackLDPOSTag");
+		m_mapSTLDct = new CCGTagMap("StackLDCCGTag");
 		m_mapSTLDi = new IntMap("StackLDLabel");
 
 		m_mapSTRDw = new WordMap("StackRDWord");
-		m_mapSTRDt = new TagMap("StackRDTag");
+		m_mapSTRDpt = new POSTagMap("StackRDPOSTag");
+		m_mapSTRDct = new CCGTagMap("StackRDCCGTag");
 		m_mapSTRDi = new IntMap("StackRDLabel");
 
 		m_mapN0LDw = new WordMap("NextLDWord");
-		m_mapN0LDt = new TagMap("NextLDTag");
+		m_mapN0LDpt = new POSTagMap("NextLDPOSTag");
+		m_mapN0LDct = new CCGTagMap("NextLDCCGTag");
 		m_mapN0LDi = new IntMap("NextLDLabel");
 
 		m_mapSTL2Dw = new WordMap("StackL2DWord");
-		m_mapSTL2Dt = new TagMap("StackL2DTag");
+		m_mapSTL2Dpt = new POSTagMap("StackL2DPOSTag");
+		m_mapSTL2Dct = new CCGTagMap("StackL2DCCGTag");
 		m_mapSTL2Di = new IntMap("StackL2DLabel");
 
 		m_mapSTR2Dw = new WordMap("StackR2DWord");
-		m_mapSTR2Dt = new TagMap("StackR2DTag");
+		m_mapSTR2Dpt = new POSTagMap("StackR2DPOSTag");
+		m_mapSTR2Dct = new CCGTagMap("StackR2DCCGTag");
 		m_mapSTR2Di = new IntMap("StackR2DLabel");
 
 		m_mapN0L2Dw = new WordMap("NextL2DWord");
-		m_mapN0L2Dt = new TagMap("NextL2DTag");
+		m_mapN0L2Dpt = new POSTagMap("NextL2DPOSTag");
+		m_mapN0L2Dct = new CCGTagMap("NextL2DCCGTag");
 		m_mapN0L2Di = new IntMap("NextL2DLabel");
 
 		m_mapHTw = new WordMap("HeadStackWord");
-		m_mapHTt = new TagMap("HeadStackTag");
-		m_mapHTwt = new TaggedWordMap("HeadStackWordTag");
+		m_mapHTpt = new POSTagMap("HeadStackPOSTag");
+		m_mapHTwpt = new POSTaggedWordMap("HeadStackWordPOSTag");
+		m_mapHTct = new CCGTagMap("HeadStackCCGTag");
+		m_mapHTwct = new CCGTaggedWordMap("HeadStackWordCCGTag");
 
-		m_mapSTwtN0wt = new TwoTaggedWordsMap("StackWordTagNextWordTag");
-		m_mapSTwtN0w = new WordWordTagMap("StackWordTagNextWord");
-		m_mapSTwN0wt = new WordWordTagMap("StackWordNextWordTag");
-		m_mapSTtN0wt = new WordTagTagMap("StackTagNextWordTag");
-		m_mapSTwtN0t = new WordTagTagMap("StackWordTagNextTag");
+		m_mapSTwptN0wpt = new TwoPOSTaggedWordsMap("StackWordPOSTagNextWordPOSTag");
+		m_mapSTwptN0w = new WordWordPOSTagMap("StackWordPOSTagNextWord");
+		m_mapSTwN0wpt = new WordWordPOSTagMap("StackWordNextWordPOSTag");
+		m_mapSTptN0wpt = new WordPOSTagPOSTagMap("StackPOSTagNextWordPOSTag");
+		m_mapSTwptN0pt = new WordPOSTagPOSTagMap("StackWordPOSTagNextPOSTag");
+		m_mapSTptN0pt = new POSTagSet2Map("StackPOSTagNextPOSTag");
+		m_mapSTwctN0wct = new TwoCCGTaggedWordsMap("StackWordCCGTagNextWordCCGTag");
+		m_mapSTwctN0w = new WordWordCCGTagMap("StackWordCCGTagNextWord");
+		m_mapSTwN0wct = new WordWordCCGTagMap("StackWordNextWordPOSTag");
+		m_mapSTctN0wct = new WordCCGTagCCGTagMap("StackCCGTagNextWordCCGTag");
+		m_mapSTwctN0ct = new WordCCGTagCCGTagMap("StackWordCCGTagNextCCGTag");
+		m_mapSTctN0ct = new CCGTagSet2Map("StackCCGTagNextCCGTag");
 		m_mapSTwN0w = new TwoWordsMap("StackWordNextWord");
-		m_mapSTtN0t = new TagSet2Map("StackTagNextTag");
 		
-		m_mapN0tN1t = new TagSet2Map("NextTagNext+1Tag");
-		m_mapN0tN1tN2t = new TagSet3Map("NextTagTrigram");
-		m_mapSTtN0tN1t = new TagSet3Map("StackTagNextTagNext+1Tag");
-		m_mapSTtN0tN0LDt = new TagSet3Map("StackTagNextTagNextLDTag");
-		m_mapN0tN0LDtN0L2Dt = new TagSet3Map("StackTagNextTagNextLDTagNextTagNextL2DTag");
-		m_mapSTHtSTtN0t = new TagSet3Map("StackHeadTagStackTagNextTag");
-		m_mapHTtHT2tN0t = new TagSet3Map("HeadStackTagHeadStack2TagNextTag");
-		m_mapSTHHtSTHtSTt = new TagSet3Map("StackHeadHeadTagStackHeadTagStackTag");
-		m_mapSTtSTLDtN0t = new TagSet3Map("StackTagStackLDTagNextTag");
-		m_mapSTtSTLDtSTL2Dt = new TagSet3Map("StackTagStackLDTagStackL2DTag");
-		m_mapSTtSTRDtN0t = new TagSet3Map("StackTagStackRDTagNextTag");
-		m_mapSTtSTRDtSTR2Dt = new TagSet3Map("StackTagStackRDTagStackR2DTag");
+		m_mapN0ptN1pt = new POSTagSet2Map("NextPOSTagNext+1POSTag");
+		m_mapN0ptN1ptN2pt = new POSTagSet3Map("NextPOSTagTrigram");
+		m_mapSTptN0ptN1pt = new POSTagSet3Map("StackPOSTagNextPOSTagNext+1POSTag");
+		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTag");
+		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTagNextPOSTagNextL2DPOSTag");
+		m_mapSTHptSTptN0pt = new POSTagSet3Map("StackHeadPOSTagStackPOSTagNextPOSTag");
+		m_mapHTptHT2ptN0pt = new POSTagSet3Map("HeadStackPOSTagHeadStack2POSTagNextPOSTag");
+		m_mapSTHHptSTHptSTpt = new POSTagSet3Map("StackHeadHeadPOSTagStackHeadPOSTagStackPOSTag");
+		m_mapSTptSTLDptN0pt = new POSTagSet3Map("StackPOSTagStackLDPOSTagNextPOSTag");
+		m_mapSTptSTLDptSTL2Dpt = new POSTagSet3Map("StackPOSTagStackLDPOSTagStackL2DPOSTag");
+		m_mapSTptSTRDptN0pt = new POSTagSet3Map("StackPOSTagStackRDPOSTagNextPOSTag");
+		m_mapSTptSTRDptSTR2Dpt = new POSTagSet3Map("StackPOSTagStackRDPOSTagStackR2DPOSTag");
+
+		m_mapN0ctN1ct = new CCGTagSet2Map("NextCCGTagNext+1CCGTag");
+		m_mapN0ctN1ctN2ct = new CCGTagSet3Map("NextCCGTagTrigram");
+		m_mapSTctN0ctN1ct = new CCGTagSet3Map("StackCCGTagNextCCGTagNext+1CCGTag");
+		m_mapSTctN0ctN0LDct = new CCGTagSet3Map("StackCCGTagNextCCGTagNextLDCCGTag");
+		m_mapN0ctN0LDctN0L2Dct = new CCGTagSet3Map("StackCCGTagNextCCGTagNextLDCCGTagNextCCGTagNextL2DCCGTag");
+		m_mapSTHctSTctN0ct = new CCGTagSet3Map("StackHeadCCGTagStackCCGTagNextCCGTag");
+		m_mapHTctHT2ctN0ct = new CCGTagSet3Map("HeadStackCCGTagHeadStack2CCGTagNextCCGTag");
+		m_mapSTHHctSTHctSTct = new CCGTagSet3Map("StackHeadHeadCCGTagStackHeadCCGTagStackCCGTag");
+		m_mapSTctSTLDctN0ct = new CCGTagSet3Map("StackCCGTagStackLDCCGTagNextCCGTag");
+		m_mapSTctSTLDctSTL2Dct = new CCGTagSet3Map("StackCCGTagStackLDCCGTagStackL2DCCGTag");
+		m_mapSTctSTRDctN0ct = new CCGTagSet3Map("StackCCGTagStackRDCCGTagNextCCGTag");
+		m_mapSTctSTRDctSTR2Dct = new CCGTagSet3Map("StackCCGTagStackRDCCGTagStackR2DCCGTag");
 
 		m_mapSTwd = new WordIntMap("StackWordDist");
-		m_mapSTtd = new TagIntMap("StackTagDist");
+		m_mapSTptd = new POSTagIntMap("StackPOSTagDist");
+		m_mapSTctd = new CCGTagIntMap("StackCCGTagDist");
 		m_mapN0wd = new WordIntMap("NextWordDist");
-		m_mapN0td = new TagIntMap("NextTagDist");
+		m_mapN0ptd = new POSTagIntMap("NextPOSTagDist");
+		m_mapN0ctd = new CCGTagIntMap("NextCCGTagDist");
 		m_mapSTwN0wd = new WordWordIntMap("StackWordNextWordDist");
-		m_mapSTtN0td = new TagTagIntMap("StackTagNextTagDist");
+		m_mapSTptN0ptd = new POSTagPOSTagIntMap("StackPOSTagNextPOSTagDist");
+		m_mapSTctN0ctd = new CCGTagCCGTagIntMap("StackCCGTagNextCCGTagDist");
 
 		m_mapSTwra = new WordIntMap("StackWordRightArity");
-		m_mapSTtra = new TagIntMap("StackTagRightArity");
+		m_mapSTptra = new POSTagIntMap("StackPOSTagRightArity");
+		m_mapSTctra = new CCGTagIntMap("StackCCGTagRightArity");
 		m_mapSTwla = new WordIntMap("StackWordLeftArity");
-		m_mapSTtla = new TagIntMap("StackTagLeftArity");
+		m_mapSTptla = new POSTagIntMap("StackPOSTagLeftArity");
+		m_mapSTctla = new CCGTagIntMap("StackCCGTagLeftArity");
 		m_mapN0wla = new WordIntMap("NextWordRightArity");
-		m_mapN0tla = new TagIntMap("NextTagRightArity");
+		m_mapN0ptla = new POSTagIntMap("NextPOSTagRightArity");
+		m_mapN0ctla = new CCGTagIntMap("NextCCGTagRightArity");
 
 		m_mapSTwrp = new WordSetOfLabelsMap("StackWordRightSetoftags");
-		m_mapSTtrp = new TagSetOfLabelsMap("StackTagRightSetoftags");
+		m_mapSTptrp = new POSTagSetOfLabelsMap("StackPOSTagRightSetoftags");
+		m_mapSTctrp = new CCGTagSetOfLabelsMap("StackCCGTagRightSetoftags");
 		m_mapSTwlp = new WordSetOfLabelsMap("StackWordLeftSetoftags");
-		m_mapSTtlp = new TagSetOfLabelsMap("StackTagLeftSetoftags");
+		m_mapSTptlp = new POSTagSetOfLabelsMap("StackPOSTagLeftSetoftags");
+		m_mapSTctlp = new CCGTagSetOfLabelsMap("StackCCGTagLeftSetoftags");
 		m_mapN0wlp = new WordSetOfLabelsMap("Next0WordLeftSetoftags");
-		m_mapN0tlp = new TagSetOfLabelsMap("Next0TagLeftSetoftags");
+		m_mapN0ptlp = new POSTagSetOfLabelsMap("Next0POSTagLeftSetoftags");
+		m_mapN0ctlp = new CCGTagSetOfLabelsMap("Next0CCGTagLeftSetoftags");
 
 		m_mapSTl = new LemmaMap("StackLemma");
-		m_mapSTc = new CoNLLCPOSMap("StackCPOS");
-		m_mapSTf = new CoNLLFeatsMap("StackFeats");
 
 		m_mapN0l = new LemmaMap("NextLemma");
-		m_mapN0c = new CoNLLCPOSMap("NextCPOS");
-		m_mapN0f = new CoNLLFeatsMap("NextFeats");
 
 		m_mapN1l = new LemmaMap("Next+1Lemma");
-		m_mapN1c = new CoNLLCPOSMap("Next+1CPOS");
-		m_mapN1f = new CoNLLFeatsMap("Next+1Feats");
 		
 		loadScores();
 	}
@@ -271,110 +359,150 @@ public final class Weight extends WeightBase {
 			br.readLine();
 			
 			m_mapSTw.loadScoresFromFileStream(br);
-			m_mapSTt.loadScoresFromFileStream(br);
-			m_mapSTwt.loadScoresFromFileStream(br);
+			m_mapSTpt.loadScoresFromFileStream(br);
+			m_mapSTwpt.loadScoresFromFileStream(br);
+			m_mapSTct.loadScoresFromFileStream(br);
+			m_mapSTwct.loadScoresFromFileStream(br);
 
 			m_mapN0w.loadScoresFromFileStream(br);
-			m_mapN0t.loadScoresFromFileStream(br);
-			m_mapN0wt.loadScoresFromFileStream(br);
+			m_mapN0pt.loadScoresFromFileStream(br);
+			m_mapN0wpt.loadScoresFromFileStream(br);
+			m_mapN0ct.loadScoresFromFileStream(br);
+			m_mapN0wct.loadScoresFromFileStream(br);
 
 			m_mapN1w.loadScoresFromFileStream(br);
-			m_mapN1t.loadScoresFromFileStream(br);
-			m_mapN1wt.loadScoresFromFileStream(br);
+			m_mapN1pt.loadScoresFromFileStream(br);
+			m_mapN1wpt.loadScoresFromFileStream(br);
+			m_mapN1ct.loadScoresFromFileStream(br);
+			m_mapN1wct.loadScoresFromFileStream(br);
 
 			m_mapN2w.loadScoresFromFileStream(br);
-			m_mapN2t.loadScoresFromFileStream(br);
-			m_mapN2wt.loadScoresFromFileStream(br);
+			m_mapN2pt.loadScoresFromFileStream(br);
+			m_mapN2wpt.loadScoresFromFileStream(br);
+			m_mapN2ct.loadScoresFromFileStream(br);
+			m_mapN2wct.loadScoresFromFileStream(br);
 
 			m_mapSTHw.loadScoresFromFileStream(br);
-			m_mapSTHt.loadScoresFromFileStream(br);
+			m_mapSTHpt.loadScoresFromFileStream(br);
+			m_mapSTHct.loadScoresFromFileStream(br);
 			m_mapSTi.loadScoresFromFileStream(br);
 
 			m_mapSTHHw.loadScoresFromFileStream(br);
-			m_mapSTHHt.loadScoresFromFileStream(br);
+			m_mapSTHHpt.loadScoresFromFileStream(br);
+			m_mapSTHHct.loadScoresFromFileStream(br);
 			m_mapSTHi.loadScoresFromFileStream(br);
 
 			m_mapSTLDw.loadScoresFromFileStream(br);
-			m_mapSTLDt.loadScoresFromFileStream(br);
+			m_mapSTLDpt.loadScoresFromFileStream(br);
+			m_mapSTLDct.loadScoresFromFileStream(br);
 			m_mapSTLDi.loadScoresFromFileStream(br);
 
 			m_mapSTRDw.loadScoresFromFileStream(br);
-			m_mapSTRDt.loadScoresFromFileStream(br);
+			m_mapSTRDpt.loadScoresFromFileStream(br);
+			m_mapSTRDct.loadScoresFromFileStream(br);
 			m_mapSTRDi.loadScoresFromFileStream(br);
 
 			m_mapN0LDw.loadScoresFromFileStream(br);
-			m_mapN0LDt.loadScoresFromFileStream(br);
+			m_mapN0LDpt.loadScoresFromFileStream(br);
+			m_mapN0LDct.loadScoresFromFileStream(br);
 			m_mapN0LDi.loadScoresFromFileStream(br);
 
 			m_mapSTL2Dw.loadScoresFromFileStream(br);
-			m_mapSTL2Dt.loadScoresFromFileStream(br);
+			m_mapSTL2Dpt.loadScoresFromFileStream(br);
+			m_mapSTL2Dct.loadScoresFromFileStream(br);
 			m_mapSTL2Di.loadScoresFromFileStream(br);
 
 			m_mapSTR2Dw.loadScoresFromFileStream(br);
-			m_mapSTR2Dt.loadScoresFromFileStream(br);
+			m_mapSTR2Dpt.loadScoresFromFileStream(br);
+			m_mapSTR2Dct.loadScoresFromFileStream(br);
 			m_mapSTR2Di.loadScoresFromFileStream(br);
 
 			m_mapN0L2Dw.loadScoresFromFileStream(br);
-			m_mapN0L2Dt.loadScoresFromFileStream(br);
+			m_mapN0L2Dpt.loadScoresFromFileStream(br);
+			m_mapN0L2Dct.loadScoresFromFileStream(br);
 			m_mapN0L2Di.loadScoresFromFileStream(br);
 
 			m_mapHTw.loadScoresFromFileStream(br);
-			m_mapHTt.loadScoresFromFileStream(br);
-			m_mapHTwt.loadScoresFromFileStream(br);
+			m_mapHTpt.loadScoresFromFileStream(br);
+			m_mapHTwpt.loadScoresFromFileStream(br);
+			m_mapHTct.loadScoresFromFileStream(br);
+			m_mapHTwct.loadScoresFromFileStream(br);
 
-			m_mapSTwtN0wt.loadScoresFromFileStream(br);
-			m_mapSTwtN0w.loadScoresFromFileStream(br);
-			m_mapSTwN0wt.loadScoresFromFileStream(br);
-			m_mapSTtN0wt.loadScoresFromFileStream(br);
-			m_mapSTwtN0t.loadScoresFromFileStream(br);
+			m_mapSTwptN0wpt.loadScoresFromFileStream(br);
+			m_mapSTwptN0w.loadScoresFromFileStream(br);
+			m_mapSTwN0wpt.loadScoresFromFileStream(br);
+			m_mapSTptN0wpt.loadScoresFromFileStream(br);
+			m_mapSTwptN0pt.loadScoresFromFileStream(br);
+			m_mapSTptN0pt.loadScoresFromFileStream(br);
+			m_mapSTwctN0wct.loadScoresFromFileStream(br);
+			m_mapSTwctN0w.loadScoresFromFileStream(br);
+			m_mapSTwN0wct.loadScoresFromFileStream(br);
+			m_mapSTctN0wct.loadScoresFromFileStream(br);
+			m_mapSTwctN0ct.loadScoresFromFileStream(br);
+			m_mapSTctN0ct.loadScoresFromFileStream(br);
 			m_mapSTwN0w.loadScoresFromFileStream(br);
-			m_mapSTtN0t.loadScoresFromFileStream(br);
+			
+			m_mapN0ptN1pt.loadScoresFromFileStream(br);
+			m_mapN0ptN1ptN2pt.loadScoresFromFileStream(br);
+			m_mapSTptN0ptN1pt.loadScoresFromFileStream(br);
+			m_mapSTptN0ptN0LDpt.loadScoresFromFileStream(br);
+			m_mapN0ptN0LDptN0L2Dpt.loadScoresFromFileStream(br);
+			m_mapSTHptSTptN0pt.loadScoresFromFileStream(br);
+			m_mapHTptHT2ptN0pt.loadScoresFromFileStream(br);
+			m_mapSTHHptSTHptSTpt.loadScoresFromFileStream(br);
+			m_mapSTptSTLDptN0pt.loadScoresFromFileStream(br);
+			m_mapSTptSTLDptSTL2Dpt.loadScoresFromFileStream(br);
+			m_mapSTptSTRDptN0pt.loadScoresFromFileStream(br);
+			m_mapSTptSTRDptSTR2Dpt.loadScoresFromFileStream(br);
 
-			m_mapN0tN1t.loadScoresFromFileStream(br);
-			m_mapN0tN1tN2t.loadScoresFromFileStream(br);
-			m_mapSTtN0tN1t.loadScoresFromFileStream(br);
-			m_mapSTtN0tN0LDt.loadScoresFromFileStream(br);
-			m_mapN0tN0LDtN0L2Dt.loadScoresFromFileStream(br);
-			m_mapSTHtSTtN0t.loadScoresFromFileStream(br);
-			m_mapHTtHT2tN0t.loadScoresFromFileStream(br);
-			m_mapSTHHtSTHtSTt.loadScoresFromFileStream(br);
-			m_mapSTtSTLDtN0t.loadScoresFromFileStream(br);
-			m_mapSTtSTLDtSTL2Dt.loadScoresFromFileStream(br);
-			m_mapSTtSTRDtN0t.loadScoresFromFileStream(br);
-			m_mapSTtSTRDtSTR2Dt.loadScoresFromFileStream(br);
+			m_mapN0ctN1ct.loadScoresFromFileStream(br);
+			m_mapN0ctN1ctN2ct.loadScoresFromFileStream(br);
+			m_mapSTctN0ctN1ct.loadScoresFromFileStream(br);
+			m_mapSTctN0ctN0LDct.loadScoresFromFileStream(br);
+			m_mapN0ctN0LDctN0L2Dct.loadScoresFromFileStream(br);
+			m_mapSTHctSTctN0ct.loadScoresFromFileStream(br);
+			m_mapHTctHT2ctN0ct.loadScoresFromFileStream(br);
+			m_mapSTHHctSTHctSTct.loadScoresFromFileStream(br);
+			m_mapSTctSTLDctN0ct.loadScoresFromFileStream(br);
+			m_mapSTctSTLDctSTL2Dct.loadScoresFromFileStream(br);
+			m_mapSTctSTRDctN0ct.loadScoresFromFileStream(br);
+			m_mapSTctSTRDctSTR2Dct.loadScoresFromFileStream(br);
 
 			m_mapSTwd.loadScoresFromFileStream(br);
-			m_mapSTtd.loadScoresFromFileStream(br);
+			m_mapSTptd.loadScoresFromFileStream(br);
+			m_mapSTctd.loadScoresFromFileStream(br);
 			m_mapN0wd.loadScoresFromFileStream(br);
-			m_mapN0td.loadScoresFromFileStream(br);
+			m_mapN0ptd.loadScoresFromFileStream(br);
+			m_mapN0ctd.loadScoresFromFileStream(br);
 			m_mapSTwN0wd.loadScoresFromFileStream(br);
-			m_mapSTtN0td.loadScoresFromFileStream(br);
+			m_mapSTptN0ptd.loadScoresFromFileStream(br);
+			m_mapSTctN0ctd.loadScoresFromFileStream(br);
 
 			m_mapSTwra.loadScoresFromFileStream(br);
-			m_mapSTtra.loadScoresFromFileStream(br);
+			m_mapSTptra.loadScoresFromFileStream(br);
+			m_mapSTctra.loadScoresFromFileStream(br);
 			m_mapSTwla.loadScoresFromFileStream(br);
-			m_mapSTtla.loadScoresFromFileStream(br);
+			m_mapSTptla.loadScoresFromFileStream(br);
+			m_mapSTctla.loadScoresFromFileStream(br);
 			m_mapN0wla.loadScoresFromFileStream(br);
-			m_mapN0tla.loadScoresFromFileStream(br);
+			m_mapN0ptla.loadScoresFromFileStream(br);
+			m_mapN0ctla.loadScoresFromFileStream(br);
 
 			m_mapSTwrp.loadScoresFromFileStream(br);
-			m_mapSTtrp.loadScoresFromFileStream(br);
+			m_mapSTptrp.loadScoresFromFileStream(br);
+			m_mapSTctrp.loadScoresFromFileStream(br);
 			m_mapSTwlp.loadScoresFromFileStream(br);
-			m_mapSTtlp.loadScoresFromFileStream(br);
+			m_mapSTptlp.loadScoresFromFileStream(br);
+			m_mapSTctlp.loadScoresFromFileStream(br);
 			m_mapN0wlp.loadScoresFromFileStream(br);
-			m_mapN0tlp.loadScoresFromFileStream(br);
+			m_mapN0ptlp.loadScoresFromFileStream(br);
+			m_mapN0ctlp.loadScoresFromFileStream(br);
 
 			m_mapSTl.loadScoresFromFileStream(br);
-			m_mapSTc.loadScoresFromFileStream(br);
-			m_mapSTf.loadScoresFromFileStream(br);
 
 			m_mapN0l.loadScoresFromFileStream(br);
-			m_mapN0c.loadScoresFromFileStream(br);
-			m_mapN0f.loadScoresFromFileStream(br);
 
 			m_mapN1l.loadScoresFromFileStream(br);
-			m_mapN1c.loadScoresFromFileStream(br);
-			m_mapN1f.loadScoresFromFileStream(br);
 			
 			br.close();
 		} catch (IOException e) {
@@ -399,110 +527,150 @@ public final class Weight extends WeightBase {
 			bw.newLine();
 			
 			m_mapSTw.saveScoresToFileStream(bw);
-			m_mapSTt.saveScoresToFileStream(bw);
-			m_mapSTwt.saveScoresToFileStream(bw);
+			m_mapSTpt.saveScoresToFileStream(bw);
+			m_mapSTwpt.saveScoresToFileStream(bw);
+			m_mapSTct.saveScoresToFileStream(bw);
+			m_mapSTwct.saveScoresToFileStream(bw);
 
 			m_mapN0w.saveScoresToFileStream(bw);
-			m_mapN0t.saveScoresToFileStream(bw);
-			m_mapN0wt.saveScoresToFileStream(bw);
+			m_mapN0pt.saveScoresToFileStream(bw);
+			m_mapN0wpt.saveScoresToFileStream(bw);
+			m_mapN0ct.saveScoresToFileStream(bw);
+			m_mapN0wct.saveScoresToFileStream(bw);
 
 			m_mapN1w.saveScoresToFileStream(bw);
-			m_mapN1t.saveScoresToFileStream(bw);
-			m_mapN1wt.saveScoresToFileStream(bw);
+			m_mapN1pt.saveScoresToFileStream(bw);
+			m_mapN1wpt.saveScoresToFileStream(bw);
+			m_mapN1ct.saveScoresToFileStream(bw);
+			m_mapN1wct.saveScoresToFileStream(bw);
 
 			m_mapN2w.saveScoresToFileStream(bw);
-			m_mapN2t.saveScoresToFileStream(bw);
-			m_mapN2wt.saveScoresToFileStream(bw);
+			m_mapN2pt.saveScoresToFileStream(bw);
+			m_mapN2wpt.saveScoresToFileStream(bw);
+			m_mapN2ct.saveScoresToFileStream(bw);
+			m_mapN2wct.saveScoresToFileStream(bw);
 
 			m_mapSTHw.saveScoresToFileStream(bw);
-			m_mapSTHt.saveScoresToFileStream(bw);
+			m_mapSTHpt.saveScoresToFileStream(bw);
+			m_mapSTHct.saveScoresToFileStream(bw);
 			m_mapSTi.saveScoresToFileStream(bw);
 
 			m_mapSTHHw.saveScoresToFileStream(bw);
-			m_mapSTHHt.saveScoresToFileStream(bw);
+			m_mapSTHHpt.saveScoresToFileStream(bw);
+			m_mapSTHHct.saveScoresToFileStream(bw);
 			m_mapSTHi.saveScoresToFileStream(bw);
 
 			m_mapSTLDw.saveScoresToFileStream(bw);
-			m_mapSTLDt.saveScoresToFileStream(bw);
+			m_mapSTLDpt.saveScoresToFileStream(bw);
+			m_mapSTLDct.saveScoresToFileStream(bw);
 			m_mapSTLDi.saveScoresToFileStream(bw);
 
 			m_mapSTRDw.saveScoresToFileStream(bw);
-			m_mapSTRDt.saveScoresToFileStream(bw);
+			m_mapSTRDpt.saveScoresToFileStream(bw);
+			m_mapSTRDct.saveScoresToFileStream(bw);
 			m_mapSTRDi.saveScoresToFileStream(bw);
 
 			m_mapN0LDw.saveScoresToFileStream(bw);
-			m_mapN0LDt.saveScoresToFileStream(bw);
+			m_mapN0LDpt.saveScoresToFileStream(bw);
+			m_mapN0LDct.saveScoresToFileStream(bw);
 			m_mapN0LDi.saveScoresToFileStream(bw);
 
 			m_mapSTL2Dw.saveScoresToFileStream(bw);
-			m_mapSTL2Dt.saveScoresToFileStream(bw);
+			m_mapSTL2Dpt.saveScoresToFileStream(bw);
+			m_mapSTL2Dct.saveScoresToFileStream(bw);
 			m_mapSTL2Di.saveScoresToFileStream(bw);
 
 			m_mapSTR2Dw.saveScoresToFileStream(bw);
-			m_mapSTR2Dt.saveScoresToFileStream(bw);
+			m_mapSTR2Dpt.saveScoresToFileStream(bw);
+			m_mapSTR2Dct.saveScoresToFileStream(bw);
 			m_mapSTR2Di.saveScoresToFileStream(bw);
 
 			m_mapN0L2Dw.saveScoresToFileStream(bw);
-			m_mapN0L2Dt.saveScoresToFileStream(bw);
+			m_mapN0L2Dpt.saveScoresToFileStream(bw);
+			m_mapN0L2Dct.saveScoresToFileStream(bw);
 			m_mapN0L2Di.saveScoresToFileStream(bw);
 
 			m_mapHTw.saveScoresToFileStream(bw);
-			m_mapHTt.saveScoresToFileStream(bw);
-			m_mapHTwt.saveScoresToFileStream(bw);
+			m_mapHTpt.saveScoresToFileStream(bw);
+			m_mapHTwpt.saveScoresToFileStream(bw);
+			m_mapHTct.saveScoresToFileStream(bw);
+			m_mapHTwct.saveScoresToFileStream(bw);
 
-			m_mapSTwtN0wt.saveScoresToFileStream(bw);
-			m_mapSTwtN0w.saveScoresToFileStream(bw);
-			m_mapSTwN0wt.saveScoresToFileStream(bw);
-			m_mapSTtN0wt.saveScoresToFileStream(bw);
-			m_mapSTwtN0t.saveScoresToFileStream(bw);
+			m_mapSTwptN0wpt.saveScoresToFileStream(bw);
+			m_mapSTwptN0w.saveScoresToFileStream(bw);
+			m_mapSTwN0wpt.saveScoresToFileStream(bw);
+			m_mapSTptN0wpt.saveScoresToFileStream(bw);
+			m_mapSTwptN0pt.saveScoresToFileStream(bw);
+			m_mapSTptN0pt.saveScoresToFileStream(bw);
+			m_mapSTwctN0wct.saveScoresToFileStream(bw);
+			m_mapSTwctN0w.saveScoresToFileStream(bw);
+			m_mapSTwN0wct.saveScoresToFileStream(bw);
+			m_mapSTctN0wct.saveScoresToFileStream(bw);
+			m_mapSTwctN0ct.saveScoresToFileStream(bw);
+			m_mapSTctN0ct.saveScoresToFileStream(bw);
 			m_mapSTwN0w.saveScoresToFileStream(bw);
-			m_mapSTtN0t.saveScoresToFileStream(bw);
+			
+			m_mapN0ptN1pt.saveScoresToFileStream(bw);
+			m_mapN0ptN1ptN2pt.saveScoresToFileStream(bw);
+			m_mapSTptN0ptN1pt.saveScoresToFileStream(bw);
+			m_mapSTptN0ptN0LDpt.saveScoresToFileStream(bw);
+			m_mapN0ptN0LDptN0L2Dpt.saveScoresToFileStream(bw);
+			m_mapSTHptSTptN0pt.saveScoresToFileStream(bw);
+			m_mapHTptHT2ptN0pt.saveScoresToFileStream(bw);
+			m_mapSTHHptSTHptSTpt.saveScoresToFileStream(bw);
+			m_mapSTptSTLDptN0pt.saveScoresToFileStream(bw);
+			m_mapSTptSTLDptSTL2Dpt.saveScoresToFileStream(bw);
+			m_mapSTptSTRDptN0pt.saveScoresToFileStream(bw);
+			m_mapSTptSTRDptSTR2Dpt.saveScoresToFileStream(bw);
 
-			m_mapN0tN1t.saveScoresToFileStream(bw);
-			m_mapN0tN1tN2t.saveScoresToFileStream(bw);
-			m_mapSTtN0tN1t.saveScoresToFileStream(bw);
-			m_mapSTtN0tN0LDt.saveScoresToFileStream(bw);
-			m_mapN0tN0LDtN0L2Dt.saveScoresToFileStream(bw);
-			m_mapSTHtSTtN0t.saveScoresToFileStream(bw);
-			m_mapHTtHT2tN0t.saveScoresToFileStream(bw);
-			m_mapSTHHtSTHtSTt.saveScoresToFileStream(bw);
-			m_mapSTtSTLDtN0t.saveScoresToFileStream(bw);
-			m_mapSTtSTLDtSTL2Dt.saveScoresToFileStream(bw);
-			m_mapSTtSTRDtN0t.saveScoresToFileStream(bw);
-			m_mapSTtSTRDtSTR2Dt.saveScoresToFileStream(bw);
+			m_mapN0ctN1ct.saveScoresToFileStream(bw);
+			m_mapN0ctN1ctN2ct.saveScoresToFileStream(bw);
+			m_mapSTctN0ctN1ct.saveScoresToFileStream(bw);
+			m_mapSTctN0ctN0LDct.saveScoresToFileStream(bw);
+			m_mapN0ctN0LDctN0L2Dct.saveScoresToFileStream(bw);
+			m_mapSTHctSTctN0ct.saveScoresToFileStream(bw);
+			m_mapHTctHT2ctN0ct.saveScoresToFileStream(bw);
+			m_mapSTHHctSTHctSTct.saveScoresToFileStream(bw);
+			m_mapSTctSTLDctN0ct.saveScoresToFileStream(bw);
+			m_mapSTctSTLDctSTL2Dct.saveScoresToFileStream(bw);
+			m_mapSTctSTRDctN0ct.saveScoresToFileStream(bw);
+			m_mapSTctSTRDctSTR2Dct.saveScoresToFileStream(bw);
 
 			m_mapSTwd.saveScoresToFileStream(bw);
-			m_mapSTtd.saveScoresToFileStream(bw);
+			m_mapSTptd.saveScoresToFileStream(bw);
+			m_mapSTctd.saveScoresToFileStream(bw);
 			m_mapN0wd.saveScoresToFileStream(bw);
-			m_mapN0td.saveScoresToFileStream(bw);
+			m_mapN0ptd.saveScoresToFileStream(bw);
+			m_mapN0ctd.saveScoresToFileStream(bw);
 			m_mapSTwN0wd.saveScoresToFileStream(bw);
-			m_mapSTtN0td.saveScoresToFileStream(bw);
+			m_mapSTptN0ptd.saveScoresToFileStream(bw);
+			m_mapSTctN0ctd.saveScoresToFileStream(bw);
 
 			m_mapSTwra.saveScoresToFileStream(bw);
-			m_mapSTtra.saveScoresToFileStream(bw);
+			m_mapSTptra.saveScoresToFileStream(bw);
+			m_mapSTctra.saveScoresToFileStream(bw);
 			m_mapSTwla.saveScoresToFileStream(bw);
-			m_mapSTtla.saveScoresToFileStream(bw);
+			m_mapSTptla.saveScoresToFileStream(bw);
+			m_mapSTctla.saveScoresToFileStream(bw);
 			m_mapN0wla.saveScoresToFileStream(bw);
-			m_mapN0tla.saveScoresToFileStream(bw);
+			m_mapN0ptla.saveScoresToFileStream(bw);
+			m_mapN0ctla.saveScoresToFileStream(bw);
 
 			m_mapSTwrp.saveScoresToFileStream(bw);
-			m_mapSTtrp.saveScoresToFileStream(bw);
+			m_mapSTptrp.saveScoresToFileStream(bw);
+			m_mapSTctrp.saveScoresToFileStream(bw);
 			m_mapSTwlp.saveScoresToFileStream(bw);
-			m_mapSTtlp.saveScoresToFileStream(bw);
+			m_mapSTptlp.saveScoresToFileStream(bw);
+			m_mapSTctlp.saveScoresToFileStream(bw);
 			m_mapN0wlp.saveScoresToFileStream(bw);
-			m_mapN0tlp.saveScoresToFileStream(bw);
+			m_mapN0ptlp.saveScoresToFileStream(bw);
+			m_mapN0ctlp.saveScoresToFileStream(bw);
 
 			m_mapSTl.saveScoresToFileStream(bw);
-			m_mapSTc.saveScoresToFileStream(bw);
-			m_mapSTf.saveScoresToFileStream(bw);
 
 			m_mapN0l.saveScoresToFileStream(bw);
-			m_mapN0c.saveScoresToFileStream(bw);
-			m_mapN0f.saveScoresToFileStream(bw);
 
 			m_mapN1l.saveScoresToFileStream(bw);
-			m_mapN1c.saveScoresToFileStream(bw);
-			m_mapN1f.saveScoresToFileStream(bw);
 			
 			bw.newLine();
 			
@@ -518,110 +686,150 @@ public final class Weight extends WeightBase {
 		System.out.flush();
 
 		m_mapSTw.computeAverage(round);
-		m_mapSTt.computeAverage(round);
-		m_mapSTwt.computeAverage(round);
+		m_mapSTpt.computeAverage(round);
+		m_mapSTwpt.computeAverage(round);
+		m_mapSTct.computeAverage(round);
+		m_mapSTwct.computeAverage(round);
 
 		m_mapN0w.computeAverage(round);
-		m_mapN0t.computeAverage(round);
-		m_mapN0wt.computeAverage(round);
+		m_mapN0pt.computeAverage(round);
+		m_mapN0wpt.computeAverage(round);
+		m_mapN0ct.computeAverage(round);
+		m_mapN0wct.computeAverage(round);
 
 		m_mapN1w.computeAverage(round);
-		m_mapN1t.computeAverage(round);
-		m_mapN1wt.computeAverage(round);
+		m_mapN1pt.computeAverage(round);
+		m_mapN1wpt.computeAverage(round);
+		m_mapN1ct.computeAverage(round);
+		m_mapN1wct.computeAverage(round);
 
 		m_mapN2w.computeAverage(round);
-		m_mapN2t.computeAverage(round);
-		m_mapN2wt.computeAverage(round);
+		m_mapN2pt.computeAverage(round);
+		m_mapN2wpt.computeAverage(round);
+		m_mapN2ct.computeAverage(round);
+		m_mapN2wct.computeAverage(round);
 
 		m_mapSTHw.computeAverage(round);
-		m_mapSTHt.computeAverage(round);
+		m_mapSTHpt.computeAverage(round);
+		m_mapSTHct.computeAverage(round);
 		m_mapSTi.computeAverage(round);
 
 		m_mapSTHHw.computeAverage(round);
-		m_mapSTHHt.computeAverage(round);
+		m_mapSTHHpt.computeAverage(round);
+		m_mapSTHHct.computeAverage(round);
 		m_mapSTHi.computeAverage(round);
 
 		m_mapSTLDw.computeAverage(round);
-		m_mapSTLDt.computeAverage(round);
+		m_mapSTLDpt.computeAverage(round);
+		m_mapSTLDct.computeAverage(round);
 		m_mapSTLDi.computeAverage(round);
 
 		m_mapSTRDw.computeAverage(round);
-		m_mapSTRDt.computeAverage(round);
+		m_mapSTRDpt.computeAverage(round);
+		m_mapSTRDct.computeAverage(round);
 		m_mapSTRDi.computeAverage(round);
 
 		m_mapN0LDw.computeAverage(round);
-		m_mapN0LDt.computeAverage(round);
+		m_mapN0LDpt.computeAverage(round);
+		m_mapN0LDct.computeAverage(round);
 		m_mapN0LDi.computeAverage(round);
 
 		m_mapSTL2Dw.computeAverage(round);
-		m_mapSTL2Dt.computeAverage(round);
+		m_mapSTL2Dpt.computeAverage(round);
+		m_mapSTL2Dct.computeAverage(round);
 		m_mapSTL2Di.computeAverage(round);
 
 		m_mapSTR2Dw.computeAverage(round);
-		m_mapSTR2Dt.computeAverage(round);
+		m_mapSTR2Dpt.computeAverage(round);
+		m_mapSTR2Dct.computeAverage(round);
 		m_mapSTR2Di.computeAverage(round);
 
 		m_mapN0L2Dw.computeAverage(round);
-		m_mapN0L2Dt.computeAverage(round);
+		m_mapN0L2Dpt.computeAverage(round);
+		m_mapN0L2Dct.computeAverage(round);
 		m_mapN0L2Di.computeAverage(round);
 
 		m_mapHTw.computeAverage(round);
-		m_mapHTt.computeAverage(round);
-		m_mapHTwt.computeAverage(round);
+		m_mapHTpt.computeAverage(round);
+		m_mapHTwpt.computeAverage(round);
+		m_mapHTct.computeAverage(round);
+		m_mapHTwct.computeAverage(round);
 
-		m_mapSTwtN0wt.computeAverage(round);
-		m_mapSTwtN0w.computeAverage(round);
-		m_mapSTwN0wt.computeAverage(round);
-		m_mapSTtN0wt.computeAverage(round);
-		m_mapSTwtN0t.computeAverage(round);
+		m_mapSTwptN0wpt.computeAverage(round);
+		m_mapSTwptN0w.computeAverage(round);
+		m_mapSTwN0wpt.computeAverage(round);
+		m_mapSTptN0wpt.computeAverage(round);
+		m_mapSTwptN0pt.computeAverage(round);
+		m_mapSTptN0pt.computeAverage(round);
+		m_mapSTwctN0wct.computeAverage(round);
+		m_mapSTwctN0w.computeAverage(round);
+		m_mapSTwN0wct.computeAverage(round);
+		m_mapSTctN0wct.computeAverage(round);
+		m_mapSTwctN0ct.computeAverage(round);
+		m_mapSTctN0ct.computeAverage(round);
 		m_mapSTwN0w.computeAverage(round);
-		m_mapSTtN0t.computeAverage(round);
+		
+		m_mapN0ptN1pt.computeAverage(round);
+		m_mapN0ptN1ptN2pt.computeAverage(round);
+		m_mapSTptN0ptN1pt.computeAverage(round);
+		m_mapSTptN0ptN0LDpt.computeAverage(round);
+		m_mapN0ptN0LDptN0L2Dpt.computeAverage(round);
+		m_mapSTHptSTptN0pt.computeAverage(round);
+		m_mapHTptHT2ptN0pt.computeAverage(round);
+		m_mapSTHHptSTHptSTpt.computeAverage(round);
+		m_mapSTptSTLDptN0pt.computeAverage(round);
+		m_mapSTptSTLDptSTL2Dpt.computeAverage(round);
+		m_mapSTptSTRDptN0pt.computeAverage(round);
+		m_mapSTptSTRDptSTR2Dpt.computeAverage(round);
 
-		m_mapN0tN1t.computeAverage(round);
-		m_mapN0tN1tN2t.computeAverage(round);
-		m_mapSTtN0tN1t.computeAverage(round);
-		m_mapSTtN0tN0LDt.computeAverage(round);
-		m_mapN0tN0LDtN0L2Dt.computeAverage(round);
-		m_mapSTHtSTtN0t.computeAverage(round);
-		m_mapHTtHT2tN0t.computeAverage(round);
-		m_mapSTHHtSTHtSTt.computeAverage(round);
-		m_mapSTtSTLDtN0t.computeAverage(round);
-		m_mapSTtSTLDtSTL2Dt.computeAverage(round);
-		m_mapSTtSTRDtN0t.computeAverage(round);
-		m_mapSTtSTRDtSTR2Dt.computeAverage(round);
+		m_mapN0ctN1ct.computeAverage(round);
+		m_mapN0ctN1ctN2ct.computeAverage(round);
+		m_mapSTctN0ctN1ct.computeAverage(round);
+		m_mapSTctN0ctN0LDct.computeAverage(round);
+		m_mapN0ctN0LDctN0L2Dct.computeAverage(round);
+		m_mapSTHctSTctN0ct.computeAverage(round);
+		m_mapHTctHT2ctN0ct.computeAverage(round);
+		m_mapSTHHctSTHctSTct.computeAverage(round);
+		m_mapSTctSTLDctN0ct.computeAverage(round);
+		m_mapSTctSTLDctSTL2Dct.computeAverage(round);
+		m_mapSTctSTRDctN0ct.computeAverage(round);
+		m_mapSTctSTRDctSTR2Dct.computeAverage(round);
 
 		m_mapSTwd.computeAverage(round);
-		m_mapSTtd.computeAverage(round);
+		m_mapSTptd.computeAverage(round);
+		m_mapSTctd.computeAverage(round);
 		m_mapN0wd.computeAverage(round);
-		m_mapN0td.computeAverage(round);
+		m_mapN0ptd.computeAverage(round);
+		m_mapN0ctd.computeAverage(round);
 		m_mapSTwN0wd.computeAverage(round);
-		m_mapSTtN0td.computeAverage(round);
+		m_mapSTptN0ptd.computeAverage(round);
+		m_mapSTctN0ctd.computeAverage(round);
 
 		m_mapSTwra.computeAverage(round);
-		m_mapSTtra.computeAverage(round);
+		m_mapSTptra.computeAverage(round);
+		m_mapSTctra.computeAverage(round);
 		m_mapSTwla.computeAverage(round);
-		m_mapSTtla.computeAverage(round);
+		m_mapSTptla.computeAverage(round);
+		m_mapSTctla.computeAverage(round);
 		m_mapN0wla.computeAverage(round);
-		m_mapN0tla.computeAverage(round);
+		m_mapN0ptla.computeAverage(round);
+		m_mapN0ctla.computeAverage(round);
 
 		m_mapSTwrp.computeAverage(round);
-		m_mapSTtrp.computeAverage(round);
+		m_mapSTptrp.computeAverage(round);
+		m_mapSTctrp.computeAverage(round);
 		m_mapSTwlp.computeAverage(round);
-		m_mapSTtlp.computeAverage(round);
+		m_mapSTptlp.computeAverage(round);
+		m_mapSTctlp.computeAverage(round);
 		m_mapN0wlp.computeAverage(round);
-		m_mapN0tlp.computeAverage(round);
+		m_mapN0ptlp.computeAverage(round);
+		m_mapN0ctlp.computeAverage(round);
 
 		m_mapSTl.computeAverage(round);
-		m_mapSTc.computeAverage(round);
-		m_mapSTf.computeAverage(round);
 
 		m_mapN0l.computeAverage(round);
-		m_mapN0c.computeAverage(round);
-		m_mapN0f.computeAverage(round);
 
 		m_mapN1l.computeAverage(round);
-		m_mapN1c.computeAverage(round);
-		m_mapN1f.computeAverage(round);
 		
 		System.out.println("done.");
 	}

@@ -2,9 +2,9 @@ package main;
 
 import java.io.IOException;
 
-import common.parser.implementations.MacrosTree;
-import common.parser.implementations.arceager.Parse;
-import common.parser.implementations.arceager.Train;
+import common.parser.implementations.MacrosDag;
+import common.parser.implementations.titov.Parse;
+import common.parser.implementations.titov.Train;
 
 /*
  * @author ZhangXun
@@ -34,7 +34,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		MacrosTree.loadMacros(args[0]);
+		MacrosDag.loadMacros(args[0]);
 		if (args[1].equals("train")) {
 			train(args[2], args[3], Integer.parseInt(args[4]));
 		} else if (args[1].equals("parse")) {

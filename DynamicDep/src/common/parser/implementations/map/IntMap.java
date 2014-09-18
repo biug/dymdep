@@ -1,5 +1,7 @@
 package common.parser.implementations.map;
 
+import common.parser.MacrosBase;
+
 import include.learning.perceptron.PackedScoreMap;
 
 /*
@@ -15,7 +17,7 @@ public final class IntMap extends PackedScoreMap<Integer> {
 
 	@Override
 	public Integer loadKeyFromString(final String str) {
-		return Integer.valueOf(str);
+		return MacrosBase.integer_cache[Integer.parseInt(str)];
 	}
 
 	@Override

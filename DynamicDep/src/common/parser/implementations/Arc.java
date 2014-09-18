@@ -6,6 +6,12 @@ public class Arc {
 	public int label;
 	public int direction;
 	
+	public Arc() {
+		other = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+		label = MacrosDag.DEP_NONE;
+		direction = MacrosDag.LEFT_DIRECTION;
+	}
+	
 	public Arc(final int o, final int l, final int d) {
 		other = o;
 		label = l;
@@ -26,5 +32,13 @@ public class Arc {
 	
 	public boolean more(final Arc arc) {
 		return other == arc.other ? false : (other > arc.other);
+	}
+	
+	public void print(int now) {
+		if (direction == MacrosDag.LEFT_DIRECTION) {
+			System.out.println(now + " <- " + other + " : " + label);			
+		} else {
+			System.out.println(now + " -> " + other + " : " + label);
+		}
 	}
 }

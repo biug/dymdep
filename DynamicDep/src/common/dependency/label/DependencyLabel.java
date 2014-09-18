@@ -1,6 +1,6 @@
 package common.dependency.label;
 
-import common.parser.implementations.MacrosTree;
+import common.parser.MacrosBase;
 
 /*
  * @author ZhangXun
@@ -19,9 +19,9 @@ public final class DependencyLabel {
 	}
 	
 	public void load(final String str) {
-		m_code = MacrosTree.DEP_NONE;
-		for (int i = MacrosTree.DEP_FIRST; i < MacrosTree.DEP_COUNT; ++i) {
-			if (MacrosTree.DEP_STRINGS[i].equals(str)) {
+		m_code = MacrosBase.DEP_NONE;
+		for (int i = MacrosBase.DEP_FIRST; i < MacrosBase.DEP_COUNT; ++i) {
+			if (MacrosBase.DEP_STRINGS[i].equals(str)) {
 				m_code = i;
 				return;
 			}
@@ -41,20 +41,20 @@ public final class DependencyLabel {
 	
 	@Override
 	public String toString() {
-		return MacrosTree.DEP_STRINGS[m_code];
+		return MacrosBase.DEP_STRINGS[m_code];
 	}
 	
 	public static String str(final int code) {
-		return MacrosTree.DEP_STRINGS[code];
+		return MacrosBase.DEP_STRINGS[code];
 	}
 	
 	public static int code(final String label) {
-		for (int i = MacrosTree.DEP_FIRST; i < MacrosTree.DEP_COUNT; ++i) {
-			if (MacrosTree.DEP_STRINGS[i].equals(label)) {
+		for (int i = MacrosBase.DEP_FIRST; i < MacrosBase.DEP_COUNT; ++i) {
+			if (MacrosBase.DEP_STRINGS[i].equals(label)) {
 				return i;
 			}
 		}
-		return MacrosTree.DEP_NONE;
+		return MacrosBase.DEP_NONE;
 	}
 	
 }

@@ -1,6 +1,6 @@
 package common.pos;
 
-import common.parser.implementations.MacrosTree;
+import common.parser.MacrosBase;
 
 /*
  * @author ZhangXun
@@ -11,7 +11,7 @@ public final class POSTag {
 	protected int m_code;
 	
 	public POSTag() {
-		m_code = MacrosTree.POSTAG_NONE;
+		m_code = MacrosBase.POSTAG_NONE;
 	}
 	
 	public POSTag(final int t) {
@@ -38,7 +38,7 @@ public final class POSTag {
 	
 	@Override
 	public String toString() {
-		return MacrosTree.POSTAG_STRINGS[m_code];
+		return MacrosBase.POSTAG_STRINGS[m_code];
 	}
 
 	public void load(final int i) {
@@ -46,26 +46,17 @@ public final class POSTag {
 	}
 	
 	public void load(String s) {
-		m_code = MacrosTree.POSTAG_NONE;
-		for (int i = 0; i < MacrosTree.POSTAG_COUNT; ++i) {
-			if (MacrosTree.POSTAG_STRINGS[i].equals(s)) {
-				m_code = i;
-				return;
-			}
-		}		
+		Integer i = MacrosBase.POSTAG_MAP.get(s);
+		m_code = (i == null ? MacrosBase.POSTAG_NONE : i.intValue());	
 	}
 	
 	public static String str(final int t) {
-		return MacrosTree.POSTAG_STRINGS[t];
+		return MacrosBase.POSTAG_STRINGS[t];
 	}
 	
 	public static int code(final String s) {
-		for (int i = 1; i < MacrosTree.POSTAG_COUNT; ++i) {
-			if (MacrosTree.POSTAG_STRINGS[i].equals(s)) {
-				return i;
-			}
-		}
-		return MacrosTree.POSTAG_NONE;
+		Integer i = MacrosBase.POSTAG_MAP.get(s);
+		return (i == null ? MacrosBase.POSTAG_NONE : i.intValue());	
 	}
 	
 }

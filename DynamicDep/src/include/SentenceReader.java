@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-import common.parser.implementations.MacrosTree;
+import common.parser.MacrosBase;
 
 /*
  * read a sentence
@@ -51,7 +51,7 @@ public final class SentenceReader {
 			int index;
 			for (String taggedword : taggedwords) {
 				if (taggedword.isEmpty()) break;
-				index = taggedword.lastIndexOf(MacrosTree.SEPARTOR);
+				index = taggedword.lastIndexOf(MacrosBase.SEPARTOR);
 				vReturn.add(new TwoStrings(taggedword.substring(0, index), taggedword.substring(index + 1)));
 			}
 			return true;

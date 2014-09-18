@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import common.parser.MacrosBase;
+
 /*
  * @author ZhangXun
  */
@@ -19,7 +21,7 @@ public final class PackedScore {
 	}
 	
 	public long score(final int index, final int n) {
-		Score s = scores.get(Integer.valueOf(index));
+		Score s = scores.get(MacrosBase.integer_cache[index]);
 		if (s != null) {
 			return s.score(n);
 		} else {
@@ -28,7 +30,7 @@ public final class PackedScore {
 	}
 	
 	public void updateCurrent(final int index, final int added, final int round) {
-		Integer i = Integer.valueOf(index);
+		Integer i = MacrosBase.integer_cache[index];
 		Score s = scores.get(i);
 		if (s == null) {
 			s = new Score();
@@ -73,7 +75,7 @@ public final class PackedScore {
 	}
 	
 	public Score find(final int index) {
-		Integer i = Integer.valueOf(index);
+		Integer i = MacrosBase.integer_cache[index];
 		Score s = scores.get(i);
 		if (s == null) {
 			s = new Score();
@@ -86,7 +88,7 @@ public final class PackedScore {
 		String[] args = str.substring(2, str.length() - 2).split(" , ");
 		for (String subarg : args) {
 			String[] subargs = subarg.split(" : ");
-			scores.put(Integer.valueOf(subargs[0]),
+			scores.put(MacrosBase.integer_cache[Integer.parseInt(subargs[0])],
 					new Score(Integer.parseInt(subargs[1].split(" / ")[0]), Long.parseLong(subargs[1].split(" / ")[1])));
 		}
 	}

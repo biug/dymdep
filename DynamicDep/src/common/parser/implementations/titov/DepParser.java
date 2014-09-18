@@ -4,32 +4,36 @@ import include.AgendaBeam;
 import include.AgendaSimple;
 import include.learning.perceptron.PackedScoreType;
 import include.learning.perceptron.Score;
+import include.linguistics.CCGTaggedWord;
+import include.linguistics.POSCCGTaggedWord;
+import include.linguistics.POSTagInt;
+import include.linguistics.POSTagPOSTagInt;
+import include.linguistics.POSTagSet2;
+import include.linguistics.POSTagSet3;
+import include.linguistics.POSTagSetOfLabels;
+import include.linguistics.POSTaggedWord;
 import include.linguistics.SetOfLabels;
-import include.linguistics.TagInt;
-import include.linguistics.TagSet2;
-import include.linguistics.TagSet3;
-import include.linguistics.TagSetOfLabels;
-import include.linguistics.TagTagInt;
-import include.linguistics.TaggedWord;
-import include.linguistics.TwoStrings;
-import include.linguistics.TwoStringsVector;
-import include.linguistics.TwoTaggedWords;
+import include.linguistics.ThreeStrings;
+import include.linguistics.ThreeStringsVector;
+import include.linguistics.TwoPOSTaggedWords;
 import include.linguistics.TwoWords;
 import include.linguistics.Word;
 import include.linguistics.WordInt;
+import include.linguistics.WordPOSTagPOSTag;
 import include.linguistics.WordSetOfLabels;
-import include.linguistics.WordTagTag;
 import include.linguistics.WordWordInt;
-import include.linguistics.WordWordTag;
+import include.linguistics.WordWordPOSTag;
 
 import java.util.ArrayList;
 
 import common.parser.DepParserBase;
+import common.parser.MacrosBase;
 import common.parser.ScoredAction;
 import common.parser.StateItemBase;
 import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
 import common.parser.implementations.MacrosDag;
+import common.pos.CCGTag;
 import common.pos.POSTag;
 
 /*
@@ -41,7 +45,7 @@ public final class DepParser extends DepParserBase {
 	private AgendaBeam m_Agenda;
 	private AgendaSimple m_Beam;
 	
-	private ArrayList<TaggedWord> m_lCache;
+	private ArrayList<POSCCGTaggedWord> m_lCache;
 	
 	private int m_nTrainingRound;
 	private int m_nTotalErrors;
@@ -54,25 +58,25 @@ public final class DepParser extends DepParserBase {
 	private StateItem correctState;
 	private PackedScoreType packed_scores;
 	
-	private TwoStringsVector trainSentence;
+	private ThreeStringsVector trainSentence;
 	
-	private TwoTaggedWords st_word_tag_n0_word_tag;
+	private TwoPOSTaggedWords st_word_tag_n0_word_tag;
 	private TwoWords st_word_n0_word;
 	
 	private WordInt word_int;
-	private TagInt tag_int;
-	private WordTagTag word_tag_tag;
-	private WordWordTag word_word_tag;
+	private POSTagInt tag_int;
+	private WordPOSTagPOSTag word_tag_tag;
+	private WordWordPOSTag word_word_tag;
 	private WordWordInt word_word_int;
-	private TagTagInt tag_tag_int;
+	private POSTagPOSTagInt tag_tag_int;
 	private WordSetOfLabels word_tagset;
-	private TagSetOfLabels tag_tagset;
-	private TagSet2 set_of_2_tags;
-	private TagSet3 set_of_3_tags;
+	private POSTagSetOfLabels tag_tagset;
+	private POSTagSet2 set_of_2_tags;
+	private POSTagSet3 set_of_3_tags;
 	
 	private ScoredAction scoredaction;
 	
-	public static final TaggedWord empty_taggedword = new TaggedWord();
+	public static final POSCCGTaggedWord empty_posccgtaggedword = new POSCCGTaggedWord();
 	public static final SetOfLabels empty_setoftags = new SetOfLabels();
 	
 	private int encodeTags(final POSTag tag1, final POSTag tag2) {
@@ -90,38 +94,38 @@ public final class DepParser extends DepParserBase {
 	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
 		super(sFeatureDBPath, bTrain);
 		
-		m_Agenda = new AgendaBeam(MacrosDag.AGENDA_SIZE, new StateItem(null));
+		m_Agenda = new AgendaBeam(MacrosDag.AGENDA_SIZE, new StateItem());
 		m_Beam = new AgendaSimple(MacrosDag.AGENDA_SIZE);
 		
-		m_lCache = new ArrayList<TaggedWord>();
+		m_lCache = new ArrayList<POSCCGTaggedWord>();
 		
 		m_weights = new Weight(sFeatureDBPath, bTrain);
 		m_nTrainingRound = 0;
 		m_nTotalErrors = 0;
 		m_nScoreIndex = bTrain ? Score.eNonAverage : Score.eAverage;
 		
-		itemForState = new StateItem(null);
-		itemForStates = new StateItem(m_lCache);
-		pCandidate = new StateItem(m_lCache);
-		correctState = new StateItem(m_lCache);
+		itemForState = new StateItem();
+		itemForStates = new StateItem();
+		pCandidate = new StateItem();
+		correctState = new StateItem();
 		
 		packed_scores = new PackedScoreType(MacrosDag.ACTION_MAX);
 		
-		trainSentence = new TwoStringsVector();
+		trainSentence = new ThreeStringsVector();
 		
-		st_word_tag_n0_word_tag = new TwoTaggedWords();
+		st_word_tag_n0_word_tag = new TwoPOSTaggedWords();
 		st_word_n0_word = new TwoWords();
 		
 		word_int = new WordInt();
-		tag_int = new TagInt();
-		word_tag_tag = new WordTagTag();
-		word_word_tag = new WordWordTag();
+		tag_int = new POSTagInt();
+		word_tag_tag = new WordPOSTagPOSTag();
+		word_word_tag = new WordWordPOSTag();
 		word_word_int = new WordWordInt();
-		tag_tag_int = new TagTagInt();
+		tag_tag_int = new POSTagPOSTagInt();
 		word_tagset = new WordSetOfLabels();
-		tag_tagset = new TagSetOfLabels();
-		set_of_2_tags = new TagSet2();
-		set_of_3_tags = new TagSet3();
+		tag_tagset = new POSTagSetOfLabels();
+		set_of_2_tags = new POSTagSet2();
+		set_of_3_tags = new POSTagSet3();
 		
 		scoredaction = new ScoredAction();
 	}
@@ -141,18 +145,18 @@ public final class DepParser extends DepParserBase {
 		final int n1_index = ((n0_index + 1 < m_lCache.size()) ? n0_index + 1 : -1);
 		final int n2_index = ((n0_index + 2 < m_lCache.size()) ? n0_index + 2 : -1);
 		
-		final TaggedWord st_word_tag = st_index == -1 ? empty_taggedword : m_lCache.get(st_index);
-		final TaggedWord sth_word_tag = sth_index == -1 ? empty_taggedword : m_lCache.get(sth_index);
-		final TaggedWord sthh_word_tag = sthh_index == -1 ? empty_taggedword : m_lCache.get(sthh_index);
-		final TaggedWord stld_word_tag = stld_index == -1 ? empty_taggedword : m_lCache.get(stld_index);
-		final TaggedWord strd_word_tag = strd_index == -1 ? empty_taggedword : m_lCache.get(strd_index);
-		final TaggedWord stl2d_word_tag = stl2d_index == -1 ? empty_taggedword : m_lCache.get(stl2d_index);
-		final TaggedWord str2d_word_tag = str2d_index == -1 ? empty_taggedword : m_lCache.get(str2d_index);
-		final TaggedWord n0_word_tag = n0_index == -1 ? empty_taggedword : m_lCache.get(n0_index);
-		final TaggedWord n0ld_word_tag = n0ld_index == -1 ? empty_taggedword : m_lCache.get(n0ld_index);
-		final TaggedWord n0l2d_word_tag = n0l2d_index == -1 ? empty_taggedword : m_lCache.get(n0l2d_index);
-		final TaggedWord n1_word_tag = n1_index == -1 ? empty_taggedword : m_lCache.get(n1_index);
-		final TaggedWord n2_word_tag = n2_index == -1 ? empty_taggedword : m_lCache.get(n2_index);
+		final POSCCGTaggedWord st_word_tag = st_index == -1 ? empty_posccgtaggedword : m_lCache.get(st_index);
+		final POSCCGTaggedWord sth_word_tag = sth_index == -1 ? empty_posccgtaggedword : m_lCache.get(sth_index);
+		final POSCCGTaggedWord sthh_word_tag = sthh_index == -1 ? empty_posccgtaggedword : m_lCache.get(sthh_index);
+		final POSCCGTaggedWord stld_word_tag = stld_index == -1 ? empty_posccgtaggedword : m_lCache.get(stld_index);
+		final POSCCGTaggedWord strd_word_tag = strd_index == -1 ? empty_posccgtaggedword : m_lCache.get(strd_index);
+		final POSCCGTaggedWord stl2d_word_tag = stl2d_index == -1 ? empty_posccgtaggedword : m_lCache.get(stl2d_index);
+		final POSCCGTaggedWord str2d_word_tag = str2d_index == -1 ? empty_posccgtaggedword : m_lCache.get(str2d_index);
+		final POSCCGTaggedWord n0_word_tag = n0_index == -1 ? empty_posccgtaggedword : m_lCache.get(n0_index);
+		final POSCCGTaggedWord n0ld_word_tag = n0ld_index == -1 ? empty_posccgtaggedword : m_lCache.get(n0ld_index);
+		final POSCCGTaggedWord n0l2d_word_tag = n0l2d_index == -1 ? empty_posccgtaggedword : m_lCache.get(n0l2d_index);
+		final POSCCGTaggedWord n1_word_tag = n1_index == -1 ? empty_posccgtaggedword : m_lCache.get(n1_index);
+		final POSCCGTaggedWord n2_word_tag = n2_index == -1 ? empty_posccgtaggedword : m_lCache.get(n2_index);
 		
 		final Word st_word = st_word_tag.word;
 		final Word sth_word = sth_word_tag.word;
@@ -167,18 +171,57 @@ public final class DepParser extends DepParserBase {
 		final Word n1_word = n1_word_tag.word;
 		final Word n2_word = n2_word_tag.word;
 		
-		final POSTag st_tag = st_word_tag.tag;
-		final POSTag sth_tag = sth_word_tag.tag;
-		final POSTag sthh_tag = sthh_word_tag.tag;
-		final POSTag stld_tag = stld_word_tag.tag;
-		final POSTag strd_tag = strd_word_tag.tag;
-		final POSTag stl2d_tag = stl2d_word_tag.tag;
-		final POSTag str2d_tag = str2d_word_tag.tag;
-		final POSTag n0_tag = n0_word_tag.tag;
-		final POSTag n0ld_tag = n0ld_word_tag.tag;
-		final POSTag n0l2d_tag = n0l2d_word_tag.tag;
-		final POSTag n1_tag = n1_word_tag.tag;
-		final POSTag n2_tag = n2_word_tag.tag;
+		final POSTag st_postag = st_word_tag.postag;
+		final POSTag sth_postag = sth_word_tag.postag;
+		final POSTag sthh_postag = sthh_word_tag.postag;
+		final POSTag stld_postag = stld_word_tag.postag;
+		final POSTag strd_postag = strd_word_tag.postag;
+		final POSTag stl2d_postag = stl2d_word_tag.postag;
+		final POSTag str2d_postag = str2d_word_tag.postag;
+		final POSTag n0_postag = n0_word_tag.postag;
+		final POSTag n0ld_postag = n0ld_word_tag.postag;
+		final POSTag n0l2d_postag = n0l2d_word_tag.postag;
+		final POSTag n1_postag = n1_word_tag.postag;
+		final POSTag n2_postag = n2_word_tag.postag;
+		
+		final CCGTag st_ccgtag = st_word_tag.ccgtag;
+		final CCGTag sth_ccgtag = sth_word_tag.ccgtag;
+		final CCGTag sthh_ccgtag = sthh_word_tag.ccgtag;
+		final CCGTag stld_ccgtag = stld_word_tag.ccgtag;
+		final CCGTag strd_ccgtag = strd_word_tag.ccgtag;
+		final CCGTag stl2d_ccgtag = stl2d_word_tag.ccgtag;
+		final CCGTag str2d_ccgtag = str2d_word_tag.ccgtag;
+		final CCGTag n0_ccgtag = n0_word_tag.ccgtag;
+		final CCGTag n0ld_ccgtag = n0ld_word_tag.ccgtag;
+		final CCGTag n0l2d_ccgtag = n0l2d_word_tag.ccgtag;
+		final CCGTag n1_ccgtag = n1_word_tag.ccgtag;
+		final CCGTag n2_ccgtag = n2_word_tag.ccgtag;
+		
+		final POSTaggedWord st_word_postag = new POSTaggedWord(st_word_tag.word, st_word_tag.postag);
+		final POSTaggedWord sth_word_postag = new POSTaggedWord(sth_word_tag.word, sth_word_tag.postag);
+		final POSTaggedWord sthh_word_postag = new POSTaggedWord(sthh_word_tag.word, sthh_word_tag.postag);
+		final POSTaggedWord stld_word_postag = new POSTaggedWord(stld_word_tag.word, stld_word_tag.postag);
+		final POSTaggedWord strd_word_postag = new POSTaggedWord(strd_word_tag.word, strd_word_tag.postag);
+		final POSTaggedWord stl2d_word_postag = new POSTaggedWord(stl2d_word_tag.word, stl2d_word_tag.postag);
+		final POSTaggedWord str2d_word_postag = new POSTaggedWord(str2d_word_tag.word, str2d_word_tag.postag);
+		final POSTaggedWord n0_word_postag = new POSTaggedWord(n0_word_tag.word, n0_word_tag.postag);
+		final POSTaggedWord n0ld_word_postag = new POSTaggedWord(n0ld_word_tag.word, n0ld_word_tag.postag);
+		final POSTaggedWord n0l2d_word_postag = new POSTaggedWord(n0l2d_word_tag.word, n0l2d_word_tag.postag);
+		final POSTaggedWord n1_word_postag = new POSTaggedWord(n1_word_tag.word, n1_word_tag.postag);
+		final POSTaggedWord n2_word_postag = new POSTaggedWord(n2_word_tag.word, n2_word_tag.postag);
+		
+		final CCGTaggedWord st_word_ccgtag = new CCGTaggedWord(st_word_tag.word, st_word_tag.ccgtag);
+		final CCGTaggedWord sth_word_ccgtag = new CCGTaggedWord(sth_word_tag.word, sth_word_tag.ccgtag);
+		final CCGTaggedWord sthh_word_ccgtag = new CCGTaggedWord(sthh_word_tag.word, sthh_word_tag.ccgtag);
+		final CCGTaggedWord stld_word_ccgtag = new CCGTaggedWord(stld_word_tag.word, stld_word_tag.ccgtag);
+		final CCGTaggedWord strd_word_ccgtag = new CCGTaggedWord(strd_word_tag.word, strd_word_tag.ccgtag);
+		final CCGTaggedWord stl2d_word_ccgtag = new CCGTaggedWord(stl2d_word_tag.word, stl2d_word_tag.ccgtag);
+		final CCGTaggedWord str2d_word_ccgtag = new CCGTaggedWord(str2d_word_tag.word, str2d_word_tag.ccgtag);
+		final CCGTaggedWord n0_word_ccgtag = new CCGTaggedWord(n0_word_tag.word, n0_word_tag.ccgtag);
+		final CCGTaggedWord n0ld_word_ccgtag = new CCGTaggedWord(n0ld_word_tag.word, n0ld_word_tag.ccgtag);
+		final CCGTaggedWord n0l2d_word_ccgtag = new CCGTaggedWord(n0l2d_word_tag.word, n0l2d_word_tag.ccgtag);
+		final CCGTaggedWord n1_word_ccgtag = new CCGTaggedWord(n1_word_tag.word, n1_word_tag.ccgtag);
+		final CCGTaggedWord n2_word_ccgtag = new CCGTaggedWord(n2_word_tag.word, n2_word_tag.ccgtag);
 		
 		final int st_label = st_index == -1 ? MacrosDag.DEP_NONE : item.label(st_index);
 		final int sth_label = sth_index == -1 ? MacrosDag.DEP_NONE : item.label(sth_index);
@@ -203,8 +246,9 @@ public final class DepParser extends DepParserBase {
 		
 		if (st_index != -1) {
 			weight.m_mapSTw.getOrUpdateScore(retval, st_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTt.getOrUpdateScore(retval, st_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTwt.getOrUpdateScore(retval, st_word_tag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTpt.getOrUpdateScore(retval, st_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTwpt.getOrUpdateScore(retval, st_word_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTwct.getOrUpdateScore(retval, st_word_ccgtag, action, m_nScoreIndex, amount, round);
 		}
 
 		if (n0_index != -1) {
@@ -228,51 +272,51 @@ public final class DepParser extends DepParserBase {
 		if (sth_index != -1) {
 			weight.m_mapSTHw.getOrUpdateScore(retval, sth_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTHt.getOrUpdateScore(retval, sth_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTi.getOrUpdateScore(retval, Integer.valueOf(st_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTi.getOrUpdateScore(retval, MacrosBase.integer_cache[st_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (sthh_index != -1) {
 			weight.m_mapSTHHw.getOrUpdateScore(retval, sthh_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTHHt.getOrUpdateScore(retval, sthh_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHi.getOrUpdateScore(retval, Integer.valueOf(sth_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTHi.getOrUpdateScore(retval, MacrosBase.integer_cache[sth_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (stld_index != -1) {
 			weight.m_mapSTLDw.getOrUpdateScore(retval, stld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTLDt.getOrUpdateScore(retval, stld_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLDi.getOrUpdateScore(retval, Integer.valueOf(stld_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLDi.getOrUpdateScore(retval, MacrosBase.integer_cache[stld_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (strd_index != -1) {
 			weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDt.getOrUpdateScore(retval, strd_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDi.getOrUpdateScore(retval, Integer.valueOf(strd_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRDi.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (n0ld_index != -1) {
 			weight.m_mapN0LDw.getOrUpdateScore(retval, n0ld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0LDt.getOrUpdateScore(retval, n0ld_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LDi.getOrUpdateScore(retval, Integer.valueOf(n0ld_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapN0LDi.getOrUpdateScore(retval, MacrosBase.integer_cache[n0ld_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (stl2d_index != -1) {
 			weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTL2Dt.getOrUpdateScore(retval, stl2d_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Di.getOrUpdateScore(retval, Integer.valueOf(stl2d_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTL2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[stl2d_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (str2d_index != -1) {
 			weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTR2Dt.getOrUpdateScore(retval, str2d_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Di.getOrUpdateScore(retval, Integer.valueOf(str2d_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapSTR2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (n0l2d_index != -1) {
 			weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0L2Dt.getOrUpdateScore(retval, n0l2d_tag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Di.getOrUpdateScore(retval, Integer.valueOf(n0l2d_label), action, m_nScoreIndex, amount, round);
+			weight.m_mapN0L2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[n0l2d_label], action, m_nScoreIndex, amount, round);
 		}
-
+		
 		if (st_index != -1) {
 			st_word_tag_n0_word_tag.refer(st_word_tag, n0_word_tag);
 			weight.m_mapSTwtN0wt.getOrUpdateScore(retval, st_word_tag_n0_word_tag, action, m_nScoreIndex, amount, round);
@@ -379,7 +423,9 @@ public final class DepParser extends DepParserBase {
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
-			++((StateItem)output).m_lRightArcsSeek[itemForStates.m_lStack[itemForStates.stack_back]];
+			if (action >= MacrosDag.AL_FIRST) {
+				++((StateItem)output).m_lRightArcsSeek[itemForStates.m_lStack[itemForStates.stack_back]];
+			}
 			itemForState.Move(action);
 		}
 	}
@@ -439,15 +485,16 @@ public final class DepParser extends DepParserBase {
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
+	public void work(final int round, final boolean bTrain, final ThreeStringsVector sentence, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
 		final int length = sentence.size();
+		System.out.println("leng = " + length);
 		StateItem pGenerator;
-		
+
 		boolean bCorrect = false;
 		
 		m_lCache.clear();
 		for (int index = 0; index < length; ++index) {
-			m_lCache.add(new TaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
+			m_lCache.add(new POSCCGTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2, sentence.get(index).m_string3));
 		}
 		
 		m_Agenda.clear();
@@ -456,8 +503,8 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
-		for (int index = 0; index < (length << 1); ++index) {
-			
+		for (int index = 0; index < (length << 2); ++index) {
+//			System.out.println("index" + index);
 			if (bTrain) bCorrect = false;
 			
 			pGenerator = (StateItem)m_Agenda.generatorStart();
@@ -466,30 +513,33 @@ public final class DepParser extends DepParserBase {
 				m_Beam.clear();
 				packed_scores.reset();
 				getOrUpdateStackScore(pGenerator, packed_scores, MacrosDag.NO_ACTION);
-				if (!pGenerator.afterswap()) {
+				if (pGenerator.canswap()) {
+//					System.out.println("swap");
 					swap(pGenerator, packed_scores);
 				}
-				if (pGenerator.size() == length) {
-					reduce(pGenerator, packed_scores);
-				} else {
-					if (pGenerator.size() < length) {
-						shift(pGenerator, packed_scores);
-						if (!pGenerator.stackempty()) {
-							arcright(pGenerator, packed_scores);
-						}
-					}
-					if ((!pGenerator.stackempty())) {
-						reduce(pGenerator, packed_scores);
+				if (pGenerator.size() < length) {
+//					System.out.println("shift");
+					shift(pGenerator, packed_scores);
+					if (!pGenerator.stackempty()) {
+//						System.out.println("right");
+						arcright(pGenerator, packed_scores);
 						arcleft(pGenerator, packed_scores);
 					}
+				}
+				if ((!pGenerator.stackempty())) {
+//					System.out.println("reduce");
+					reduce(pGenerator, packed_scores);
+//					System.out.println("left");
 				}
 				
 				for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {
 					pCandidate.copy(pGenerator);
 					pCandidate.score = m_Beam.item(i).score;
 					pCandidate.Move(m_Beam.item(i).action);
+//					Action.print(m_Beam.item(i).action);
 					m_Agenda.pushCandidate(pCandidate);
 				}
+//				System.out.println("------");
 				if (bTrain && pGenerator.equals(correctState)) {
 					bCorrect = true;
 				}
@@ -498,10 +548,15 @@ public final class DepParser extends DepParserBase {
 			}
 			if (bTrain) {
 				if (!bCorrect) {
+//					System.out.println("EARLY START");
+//					System.out.println();
+//					((StateItem)m_Agenda.bestGenerator()).print();
+//					((StateItem)correctState).print();
 					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 					return;
 				}
 				correctState.StandardMoveStep(correct, null);
+//				correctState.print();
 			}
 			m_Agenda.nextRound();
 		}
@@ -513,16 +568,18 @@ public final class DepParser extends DepParserBase {
 			}
 		}
 		m_Agenda.sortGenerators();
-		for (int i = 0, retval_size = minVal(m_Agenda.generatorSize(), nBest); i < retval_size; ++i) {
-			pGenerator = (StateItem)m_Agenda.generator(i);
-			if (pGenerator != null) {
-				pGenerator.GenerateTree(sentence, retval[i]);
-				if (scores != null) scores[i] = pGenerator.score;
+		if (retval != null) {
+			for (int i = 0, retval_size = minVal(m_Agenda.generatorSize(), nBest); i < retval_size; ++i) {
+				pGenerator = (StateItem)m_Agenda.generator(i);
+				if (pGenerator != null) {
+					pGenerator.GenerateTree(sentence, retval[i]);
+					if (scores != null) scores[i] = pGenerator.score;
+				}
 			}
 		}
 	}
 
-	public void parse(final TwoStringsVector sentence, DependencyDag[] retval,
+	public void parse(final ThreeStringsVector sentence, DependencyDag[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
 			retval[i].length = 0;
@@ -536,7 +593,7 @@ public final class DepParser extends DepParserBase {
 		if (correct != null) {
 			for (int i = 0; i < correct.length; ++i) {
 				DependencyDagNode node = (DependencyDagNode)correct.nodes[i];
-				trainSentence.add(new TwoStrings(node.word, node.postag));
+				trainSentence.add(new ThreeStrings(node.word, node.postag, node.ccgtag));
 			}
 		}
 		m_nTrainingRound = round;

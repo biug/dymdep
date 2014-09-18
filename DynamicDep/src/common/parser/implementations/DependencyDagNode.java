@@ -6,6 +6,8 @@ import common.parser.DependencyNodeBase;
 
 public class DependencyDagNode extends DependencyNodeBase {
 	
+	public static final int DEPENDENCY_LINK_NO_HEAD = -1;
+	
 	public String ccgtag;
 	public int righttail;
 	public int rightseek, headsseek, childrenseek;
