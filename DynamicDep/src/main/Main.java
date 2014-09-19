@@ -3,7 +3,7 @@ package main;
 import java.io.IOException;
 
 import common.parser.implementations.MacrosDag;
-import common.parser.implementations.arceager.Parse;
+import common.parser.implementations.titov.Parse;
 import common.parser.implementations.titov.Train;
 
 /*

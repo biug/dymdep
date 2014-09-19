@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TreeSet;
 
+import common.dependency.label.DependencyLabel;
 import common.parser.DependencyGraphBase;
+import common.parser.MacrosBase;
 
 public class DependencyDag extends DependencyGraphBase {
 	
@@ -56,13 +60,63 @@ public class DependencyDag extends DependencyGraphBase {
 				++k;
 			}
 		}
-		System.out.println("length = " + length);
 		return line != null;
 	}
 
 	@Override
 	public void writeSentenceToOutputStream(BufferedWriter bw) throws IOException {
-		
+		TreeSet<Integer> heads = new TreeSet<Integer>();
+		for (int i = 0; i < length; ++i) {
+			DependencyDagNode node = (DependencyDagNode)nodes[i];
+			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
+				Arc arc = node.rightarcs.get(j);
+				int head = arc.direction == MacrosDag.RIGHT_DIRECTION ? i : arc.other;
+				heads.add(MacrosBase.integer_cache[head]);
+			}
+		}
+		int head_count = 0;
+		Iterator<Integer> itr = heads.iterator();
+		HashMap<Integer, Integer> heads_map = new HashMap<Integer, Integer>();
+		while (itr.hasNext()) {
+			heads_map.put(itr.next(), MacrosBase.integer_cache[head_count++]);
+		}
+		String[] line = new String[head_count];
+		for (int i = 0; i < head_count; ++i) {
+			line[i] = "_";
+		}
+		for (int i = 0; i < length; ++i) {
+			DependencyDagNode node = (DependencyDagNode)nodes[i];
+			bw.write(String.valueOf(i + 1));
+			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + " _ _ ");
+			bw.write(heads.contains(MacrosBase.integer_cache[i]) ? node.word : "_");
+			int index = 0;
+			Arc arc = null;
+			for (int j = 0; j < i; ++j) {
+				boolean find = false;
+				DependencyDagNode subnode = (DependencyDagNode)nodes[j];
+				for (int k = 0, n = subnode.rightarcs.size(); k < n; ++k) {
+					arc = subnode.rightarcs.get(k);
+					if (arc.other == i && arc.direction == MacrosDag.RIGHT_DIRECTION) {
+						find = true;
+						break;
+					}
+				}
+				if (find) {
+					line[index++] = DependencyLabel.str(arc.label);
+				}
+			}
+			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
+				arc = node.rightarcs.get(j);
+				if (arc.direction == MacrosDag.LEFT_DIRECTION) {
+					line[heads_map.get(MacrosBase.integer_cache[arc.other]).intValue()] = DependencyLabel.str(arc.label);
+				}
+			}
+			for (int j = 0; j < head_count; ++j) {
+				bw.write(" " + line[j]);
+			}
+			bw.newLine();
+		}
+		bw.newLine();
 	}
 	
 	public void print() {

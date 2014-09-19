@@ -45,6 +45,7 @@ public final class SentenceReader {
 				m_iReader.close();
 				return false;
 			}
+			line = line.trim();
 			String[] taggedwords = line.split(" ");
 			++m_nLine;
 			vReturn.clear();

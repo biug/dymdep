@@ -24,6 +24,17 @@ public class DependencyDagNode extends DependencyNodeBase {
 		rightarcs = new ArrayList<Arc>();
 	}
 	
+	public DependencyDagNode(final String w, final String p) {
+		word = w;
+		postag = p;
+		ccgtag = "";
+		righttail = -1;
+		rightseek = headsseek = childrenseek = 0;
+		heads = new ArrayList<Arc>();
+		children = new ArrayList<Arc>();
+		rightarcs = new ArrayList<Arc>();
+	}
+	
 	public DependencyDagNode(final String w, final String p, final String c) {
 		word = w;
 		postag = p;

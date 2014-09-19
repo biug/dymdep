@@ -1,7 +1,7 @@
 package common.parser.implementations.titov;
 
 import include.linguistics.SetOfLabels;
-import include.linguistics.ThreeStringsVector;
+import include.linguistics.TwoStringsVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +15,7 @@ import common.parser.implementations.Arc;
 import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
 import common.parser.implementations.MacrosDag;
+import common.pos.CCGTag;
 
 /*
  * @author ZhangXun
@@ -45,6 +46,7 @@ public class StateItem extends StateItemBase {
 	protected Arc[][] m_lRightArcs;	//right arcs
 	protected int[] m_lDepNumL;		//left children number
 	protected int[] m_lDepNumR;		//right children number
+	protected int[] m_lCCGLabels;
 	
 	protected SetOfLabels[] m_lDepTagL;
 	protected SetOfLabels[] m_lDepTagR;
@@ -73,6 +75,7 @@ public class StateItem extends StateItemBase {
 		
 		m_lDepNumL = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepNumR = new int[MacrosDag.MAX_SENTENCE_SIZE];
+		m_lCCGLabels = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagL = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagR = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		
@@ -178,6 +181,12 @@ public class StateItem extends StateItemBase {
 		return m_lActionList[action_back] != MacrosDag.SWAP && stack_back > 0;
 	}
 	
+	public final boolean canarc() {
+		int top = m_lStack[stack_back], back = m_lRightArcsBack[top];
+		if (back == -1) return true;
+		return m_lRightArcs[top][back].other != m_nNextWord;
+	}
+	
 	public final int head(final int index) {
 		return m_lHeads[index][m_lHeadsBack[index]];
 	}
@@ -241,36 +250,37 @@ public class StateItem extends StateItemBase {
 		ClearNext();
 	}
 	
-	public void ArcLeft(int lab) {
+	public void ArcLeft(int label) {
 		int left = m_lStack[stack_back];
 		//add new head for left and add label
 		m_lHeads[left][++m_lHeadsBack[left]] = m_nNextWord;
-		m_lLabels[left][m_lHeadsBack[left]] = lab;
-		m_lDepTagL[m_nNextWord].add(lab);
+		m_lLabels[left][m_lHeadsBack[left]] = label;
+		m_lDepTagL[m_nNextWord].add(label);
 		//sibling is the previous child of buffer seek
 		m_lSibling[left] = m_lDepsL[m_nNextWord][m_lDepsLBack[m_nNextWord]];
 		//add child for buffer seek
 		m_lDepsL[m_nNextWord][++m_lDepsLBack[m_nNextWord]] = left;
 		//add right arcs for stack seek
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, lab, MacrosDag.LEFT_DIRECTION);
+		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, MacrosDag.LEFT_DIRECTION);
 		++m_lDepNumL[m_nNextWord];
-		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_LEFT, lab);
+		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_LEFT, label);
 	}
 	
-	public void ArcRight(int lab) {
+	public void ArcRight(int label) {
 		int left = m_lStack[stack_back];
 		m_lHeads[m_nNextWord][++m_lHeadsBack[m_nNextWord]] = left;
-		m_lLabels[m_nNextWord][m_lHeadsBack[m_nNextWord]] = lab;
-		m_lDepTagR[left].add(lab);
+		m_lLabels[m_nNextWord][m_lHeadsBack[m_nNextWord]] = label;
+		m_lDepTagR[left].add(label);
 		m_lSibling[m_nNextWord] = m_lDepsR[left][m_lDepsRBack[left]];
 		m_lDepsR[left][++m_lDepsRBack[left]] = m_nNextWord;
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, lab, MacrosDag.RIGHT_DIRECTION);
+		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, MacrosDag.RIGHT_DIRECTION);
 		++m_lDepNumR[left];
-		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_RIGHT, lab);
+		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_RIGHT, label);
 	}
 
-	public void Shift() {
+	public void Shift(int label) {
 		m_lStack[++stack_back] = m_nNextWord;
+		m_lCCGLabels[m_nNextWord] = label;
 		m_sStack.add(MacrosBase.integer_cache[m_nNextWord++]);
 		m_lActionList[++action_back] = MacrosDag.SHIFT;
 		ClearNext();
@@ -308,7 +318,7 @@ public class StateItem extends StateItemBase {
 		case MacrosDag.NO_ACTION:
 			return;
 		case MacrosDag.SHIFT:
-			Shift();
+			Shift(Action.getLabel(action));
 			return;
 		case MacrosDag.REDUCE:
 			Reduce();
@@ -326,7 +336,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	@Override
-	public void StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
+	public boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
 		int top;
 		DependencyDag dag = (DependencyDag)graph;
 		if (stack_back >= 0) {
@@ -337,7 +347,7 @@ public class StateItem extends StateItemBase {
 			if (node.rightseek > node.righttail) {
 				Reduce();
 //				System.out.println("reduce");
-				return;
+				return true;
 			}
 			//get nearest right arc
 			Arc rightnode = node.NearestRight();
@@ -352,7 +362,7 @@ public class StateItem extends StateItemBase {
 //					System.out.println("right");
 					++node.childrenseek;
 				}
-				return;
+				return true;
 			} else if (stack_back >= 1) {
 				int top2nd = m_lStack[stack_back - 1];
 				Iterator<Arc> itrtop = node.rightarcs.iterator();
@@ -361,18 +371,23 @@ public class StateItem extends StateItemBase {
 					if (itrtop.next().more(itrtop2nd.next())) {
 //						System.out.println("swap");
 						Swap();
-						return;
+						return true;
 					}
 				}
 				if (itrtop.hasNext()) {
 //					System.out.println("swap");
 					Swap();
-					return;
+					return true;
 				}
 			}
 		}
 //		System.out.println("shift");
-		Shift();
+		if (m_nNextWord < dag.length) {
+			Shift(CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
@@ -386,10 +401,10 @@ public class StateItem extends StateItemBase {
 		return item.m_lActionList[action_back + 1];
 	}
 	
-	public void GenerateTree(final ThreeStringsVector input, DependencyGraphBase output) {
+	public void GenerateTree(final TwoStringsVector input, DependencyGraphBase output) {
 		output.length = 0;
 		for (int i = 0, input_size = this.size(); i < input_size; ++i) {
-			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, input.get(i).m_string3);
+			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, CCGTag.str(m_lCCGLabels[i]));
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 				node.rightarcs.add(new Arc(m_lRightArcs[i][j]));
 			}

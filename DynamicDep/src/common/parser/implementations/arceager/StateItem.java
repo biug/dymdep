@@ -289,16 +289,16 @@ public class StateItem extends StateItemBase {
 	}
 	
 	@Override
-	public void StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
+	public boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
 		int top;
 		DependencyTree tree = (DependencyTree)graph;
 		if (m_nNextWord == tree.length) {
 			if (stack_back > 0) {
 				Reduce();
-				return;
+				return true;
 			} else {
 				PopRoot();
-				return;
+				return true;
 			}
 		}
 		if (stack_back >= 0) {
@@ -309,23 +309,25 @@ public class StateItem extends StateItemBase {
 			if (((DependencyTreeNode)tree.nodes[top]).head == m_nNextWord) {
 				if (top == m_Stack[stack_back]) {
 					ArcLeft(m_lCacheLabel.get(top).hashCode());
-					return;
+					return true;
 				} else {
 					Reduce();
-					return;
+					return true;
 				}
 			}
 		}
 		if (((DependencyTreeNode)tree.nodes[m_nNextWord]).head == DependencyTreeNode.DEPENDENCY_LINK_NO_HEAD ||
 				((DependencyTreeNode)tree.nodes[m_nNextWord]).head > m_nNextWord) {
 			Shift();
-			return;
+			return true;
 		} else {
 			top = m_Stack[stack_back];
 			if (((DependencyTreeNode)tree.nodes[m_nNextWord]).head == top) {
 				ArcRight(m_lCacheLabel.get(m_nNextWord).hashCode());
+				return true;
 			} else {
 				Reduce();
+				return true;
 			}
 		}
 	}
