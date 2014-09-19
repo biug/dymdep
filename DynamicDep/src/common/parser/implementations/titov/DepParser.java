@@ -656,14 +656,13 @@ public final class DepParser extends DepParserBase {
 				}
 				// cannot move anymore
 				if (correctState.StandardMoveStep(correct, null) == false) {
-					System.out.println("CORRECT END" + round);
 					finish = true;
 				}
 //				correctState.print();
 			}
 			m_Agenda.nextRound();
 		}
-		System.out.println("FINISH" + round);
+//		System.out.println("FINISH" + round);
 		// search in finished state
 		m_Finish.nextRound();
 		if (bTrain) {
@@ -673,7 +672,7 @@ public final class DepParser extends DepParserBase {
 				return;
 			}
 		}
-		System.out.println("CORRECT");
+//		System.out.println("CORRECT");
 		m_Finish.sortGenerators();
 		if (retval != null) {
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
