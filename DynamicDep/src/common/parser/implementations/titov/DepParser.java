@@ -244,6 +244,15 @@ public final class DepParser extends DepParserBase {
 		final int n0ld_label = n0ld_index == -1 ? MacrosDag.DEP_NONE : item.label(n0ld_index);
 		final int n0l2d_label = n0l2d_index == -1 ? MacrosDag.DEP_NONE : item.label(n0l2d_index);
 		
+		final int st_ccg = st_index == -1 ? MacrosDag.DEP_NONE : item.ccg(st_index);
+		final int sth_ccg = sth_index == -1 ? MacrosDag.DEP_NONE : item.ccg(sth_index);
+		final int stld_ccg = stld_index == -1 ? MacrosDag.DEP_NONE : item.ccg(stld_index);
+		final int strd_ccg = strd_index == -1 ? MacrosDag.DEP_NONE : item.ccg(strd_index);
+		final int stl2d_ccg = stl2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(stl2d_index);
+		final int str2d_ccg = str2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(strd_index); //PROBLEM!
+		final int n0ld_ccg = n0ld_index == -1 ? MacrosDag.DEP_NONE : item.ccg(n0ld_index);
+		final int n0l2d_ccg = n0l2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(n0l2d_index);
+		
 		final int st_n0_dist = MacrosDag.encodeLinkDistance(st_index, n0_index);
 		
 		final int st_rarity = st_index == -1 ? 0 : item.rightarity(st_index);
@@ -288,61 +297,59 @@ public final class DepParser extends DepParserBase {
 //			weight.m_mapN2wct.getOrUpdateScore(retval, n2_word_ccgtag, action, m_nScoreIndex, amount, round);
 		}
 
-
-
 		if (sth_index != -1) {
 			weight.m_mapSTHw.getOrUpdateScore(retval, sth_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTHpt.getOrUpdateScore(retval, sth_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTHct.getOrUpdateScore(retval, sth_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTHct.getOrUpdateScore(retval, MacrosBase.integer_cache[st_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTi.getOrUpdateScore(retval, MacrosBase.integer_cache[st_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (sthh_index != -1) {
 			weight.m_mapSTHHw.getOrUpdateScore(retval, sthh_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTHHpt.getOrUpdateScore(retval, sthh_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTHHct.getOrUpdateScore(retval, sthh_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTHHct.getOrUpdateScore(retval, MacrosBase.integer_cache[sth_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTHi.getOrUpdateScore(retval, MacrosBase.integer_cache[sth_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (stld_index != -1) {
 			weight.m_mapSTLDw.getOrUpdateScore(retval, stld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTLDpt.getOrUpdateScore(retval, stld_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTLDct.getOrUpdateScore(retval, stld_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLDct.getOrUpdateScore(retval, MacrosBase.integer_cache[stld_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTLDi.getOrUpdateScore(retval, MacrosBase.integer_cache[stld_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (strd_index != -1) {
 			weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDpt.getOrUpdateScore(retval, strd_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTRDct.getOrUpdateScore(retval, strd_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRDct.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDi.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (n0ld_index != -1) {
 			weight.m_mapN0LDw.getOrUpdateScore(retval, n0ld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0LDpt.getOrUpdateScore(retval, n0ld_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapN0LDct.getOrUpdateScore(retval, n0ld_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapN0LDct.getOrUpdateScore(retval, MacrosBase.integer_cache[n0ld_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapN0LDi.getOrUpdateScore(retval, MacrosBase.integer_cache[n0ld_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (stl2d_index != -1) {
 			weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTL2Dct.getOrUpdateScore(retval, stl2d_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTL2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[stl2d_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTL2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[stl2d_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (str2d_index != -1) {
 			weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapSTR2Dct.getOrUpdateScore(retval, str2d_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTR2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTR2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_label], action, m_nScoreIndex, amount, round);
 		}
 
 		if (n0l2d_index != -1) {
 			weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
-//			weight.m_mapN0L2Dct.getOrUpdateScore(retval, n0l2d_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapN0L2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[n0l2d_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapN0L2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[n0l2d_label], action, m_nScoreIndex, amount, round);
 		}
 		

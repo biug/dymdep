@@ -227,6 +227,10 @@ public class StateItem extends StateItemBase {
 		return m_lLabels[index][m_lHeadsBack[index]];
 	}
 	
+	public final int ccg(final int index) {
+		return m_lCCGLabels[index];
+	}
+	
 	public final boolean rightarcempty(final int index) {
 		return m_lRightArcsBack[index] == -1;
 	}
