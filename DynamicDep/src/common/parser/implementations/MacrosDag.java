@@ -18,13 +18,14 @@ public final class MacrosDag extends MacrosBase {
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
 	
-	public final static int NO_ACTION = 0;
-	public final static int SHIFT = 1;
+	public final static int NO_ACTION = 0;;
+	public final static int SWAP = 1;
 	public final static int REDUCE = 2;
-	public final static int SWAP = 3;
+	public final static int SHIFT = 3;
 	public final static int ARC_LEFT = 4;
 	public final static int ARC_RIGHT = 5;
 	
+	public static int SH_FIRST;
 	public static int AL_FIRST;
 	public static int AR_FIRST;
 	public static int ACTION_MAX;
@@ -70,10 +71,16 @@ public final class MacrosDag extends MacrosBase {
 			++DEP_BITS_SIZE;
 		}
 		
-		AL_FIRST = ARC_RIGHT + 1;
-		AR_FIRST = AL_FIRST + DEP_COUNT - 1;
-		ACTION_MAX = AR_FIRST + DEP_COUNT - 1;
+		SH_FIRST = ARC_RIGHT + 1;
+		AL_FIRST = SH_FIRST + CCGTAG_COUNT;
+		AR_FIRST = AL_FIRST + DEP_COUNT;
+		ACTION_MAX = AR_FIRST + DEP_COUNT;
 		br.close();
+		
+		System.out.println("SH_FIRST = " + SH_FIRST);
+		System.out.println("AL_FIRST = " + AL_FIRST);
+		System.out.println("AR_FIRST = " + AR_FIRST);
+		System.out.println("CCG_BITS_SIZE = " + CCGTAG_BITS_SIZE);
 	}
 	
 	public static int encodeLinkDistance(final int head_index, final int dep_index) {

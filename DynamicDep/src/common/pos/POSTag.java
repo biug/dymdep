@@ -11,7 +11,7 @@ public final class POSTag {
 	protected int m_code;
 	
 	public POSTag() {
-		m_code = MacrosBase.POSTAG_NONE;
+		m_code = MacrosBase.POSTAG_FIRST;
 	}
 	
 	public POSTag(final int t) {
@@ -46,8 +46,7 @@ public final class POSTag {
 	}
 	
 	public void load(String s) {
-		Integer i = MacrosBase.POSTAG_MAP.get(s);
-		m_code = (i == null ? MacrosBase.POSTAG_NONE : i.intValue());	
+		m_code = MacrosBase.POSTAG_MAP.get(s).intValue();	
 	}
 	
 	public static String str(final int t) {
@@ -55,8 +54,7 @@ public final class POSTag {
 	}
 	
 	public static int code(final String s) {
-		Integer i = MacrosBase.POSTAG_MAP.get(s);
-		return (i == null ? MacrosBase.POSTAG_NONE : i.intValue());	
+		return MacrosBase.POSTAG_MAP.get(s).intValue();
 	}
 	
 }

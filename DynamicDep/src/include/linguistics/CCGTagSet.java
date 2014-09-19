@@ -11,7 +11,7 @@ public class CCGTagSet {
 	
 	private int size;
 	
-	protected int m_nHash;
+	protected long m_nHash;
 	
 	public CCGTagSet(final int s) {
 		size = s;
@@ -23,18 +23,18 @@ public class CCGTagSet {
 		m_nHash = tagset.m_nHash;
 	}
 	
-	public CCGTagSet(final int size, final int code) {
+	public CCGTagSet(final int size, final long code) {
 		this.size = size;
 		this.m_nHash = code;
 	}
 	
-	private final void attach(final int code) {
+	private final void attach(final long code) {
 		m_nHash = ((m_nHash << MacrosBase.CCGTAG_BITS_SIZE) | code);
 	}
 	
 	@Override
 	public final int hashCode() {
-		return m_nHash;
+		return (int)(m_nHash & 0xffffffff);
 	}
 	
 	@Override
@@ -45,12 +45,12 @@ public class CCGTagSet {
 	@Override
 	public String toString() {
 		String retval = "";
-		int hs = m_nHash;
+		long hs = m_nHash;
 		for (int i = 0; i < size; ++i) {
 			if (!retval.isEmpty()) {
 				retval = " " + retval;
 			}
-			retval = CCGTag.str(hs & ((1 << MacrosBase.CCGTAG_BITS_SIZE) - 1)) + retval;
+			retval = CCGTag.str((int)(hs & ((1 << MacrosBase.CCGTAG_BITS_SIZE) - 1))) + retval;
 			hs >>= MacrosBase.CCGTAG_BITS_SIZE;
 		}
 		return retval;
@@ -64,7 +64,7 @@ public class CCGTagSet {
 		}
 	}
 	
-	public final void load(final int code) {
+	public final void load(final long code) {
 		m_nHash = code;
 	}
 	

@@ -82,10 +82,9 @@ public abstract class PackedScoreMap<K> extends HashMap<K, PackedScore> {
 			return;
 		}
 		while (!(s = br.readLine()).isEmpty()) {
-			int val_start = s.indexOf("{");
-			K key = loadKeyFromString(s.split("\\s?:\\s?\\{")[0]);
+			K key = loadKeyFromString(s.split("\\s?@\\s?")[0]);
 			PackedScore ps = new PackedScore();
-			ps.loadPackedScoreFromString(s.substring(val_start));
+			ps.loadPackedScoreFromString(s.split("\\s?@\\s?")[1]);
 			super.put(key, ps);
 		}
 	}
@@ -102,7 +101,7 @@ public abstract class PackedScoreMap<K> extends HashMap<K, PackedScore> {
 			java.util.Map.Entry<K, PackedScore> entry = itr.next();
 			if (!entry.getValue().empty()) {
 				bw.write(generateStringFromKey(entry.getKey()));
-				bw.write("\t:\t");
+				bw.write("\t@\t");
 				entry.getValue().savePackedScoreToFile(bw);
 				bw.newLine();
 			}

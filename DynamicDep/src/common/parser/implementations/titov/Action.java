@@ -9,10 +9,12 @@ import common.parser.implementations.MacrosDag;
 public final class Action {
 	
 	public static int encodeAction(final int action, final int label) {
-		if (action == MacrosDag.ARC_LEFT) {
-			return label == 0 ? MacrosDag.ARC_LEFT : MacrosDag.AL_FIRST + label - 1;
+		if (action == MacrosDag.SHIFT){
+			return MacrosDag.SH_FIRST + label;
+		} else if (action == MacrosDag.ARC_LEFT) {
+			return MacrosDag.AL_FIRST + label;
 		} else if (action == MacrosDag.ARC_RIGHT) {
-			return label == 0 ? MacrosDag.ARC_RIGHT : MacrosDag.AR_FIRST + label - 1;
+			return MacrosDag.AR_FIRST + label;
 		} else {
 			return action;
 		}
@@ -23,8 +25,10 @@ public final class Action {
 	}
 	
 	public static int getUnlabeledAction(final int action) {
-		if (action < MacrosDag.AL_FIRST) {
+		if (action < MacrosDag.SH_FIRST) {
 			return action;
+		} else if (action < MacrosDag.AL_FIRST) {
+			return MacrosDag.SHIFT;
 		} else if (action < MacrosDag.AR_FIRST) {
 			return MacrosDag.ARC_LEFT;
 		} else {
@@ -33,12 +37,14 @@ public final class Action {
 	}
 	
 	public static int getLabel(final int action) {
-		if (action < MacrosDag.AL_FIRST) {
+		if (action < MacrosDag.SH_FIRST) {
 			return 0;
+		} else if (action < MacrosDag.AL_FIRST) {
+			return action - MacrosDag.SH_FIRST;
 		} else if (action < MacrosDag.AR_FIRST) {
-			return action - MacrosDag.AL_FIRST + 1;
+			return action - MacrosDag.AL_FIRST;
 		} else {
-			return action - MacrosDag.AR_FIRST + 1;
+			return action - MacrosDag.AR_FIRST;
 		}
 	}
 	

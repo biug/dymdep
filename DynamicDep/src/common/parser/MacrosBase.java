@@ -11,14 +11,12 @@ public class MacrosBase {
 
 	public static String[] POSTAG_STRINGS;
 	public static HashMap<String, Integer> POSTAG_MAP;
-	public final static int POSTAG_NONE = -1;
 	public final static int POSTAG_FIRST = 0;
 	public static int POSTAG_COUNT;
 	public static int POSTAG_BITS_SIZE;
 	
 	public static String[] CCGTAG_STRINGS;
 	public static HashMap<String, Integer> CCGTAG_MAP;
-	public static final int CCGTAG_NONE = -1;
 	public static final int CCGTAG_FIRST = 0;
 	public static int CCGTAG_COUNT;
 	public static int CCGTAG_BITS_SIZE;

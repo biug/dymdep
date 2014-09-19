@@ -9,7 +9,7 @@ import common.pos.POSTag;
 
 public final class POSTaggedWord {
 	
-	private static final POSTag empty_tag = new POSTag(MacrosBase.POSTAG_NONE);
+	private static final POSTag empty_tag = new POSTag(MacrosBase.POSTAG_FIRST);
 	
 	public Word word;
 	public POSTag tag;

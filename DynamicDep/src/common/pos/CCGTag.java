@@ -11,7 +11,7 @@ public final class CCGTag {
 	protected int m_code;
 	
 	public CCGTag() {
-		m_code = MacrosBase.CCGTAG_NONE;
+		m_code = MacrosBase.CCGTAG_FIRST;
 	}
 	
 	public CCGTag(final int t) {
@@ -46,8 +46,7 @@ public final class CCGTag {
 	}
 	
 	public void load(String s) {
-		Integer i = MacrosBase.CCGTAG_MAP.get(s);
-		m_code = (i == null ? MacrosBase.CCGTAG_NONE : i.intValue());	
+		m_code = MacrosBase.CCGTAG_MAP.get(s).intValue();
 	}
 	
 	public static String str(final int t) {
@@ -55,8 +54,7 @@ public final class CCGTag {
 	}
 	
 	public static int code(final String s) {
-		Integer i = MacrosBase.CCGTAG_MAP.get(s);
-		return (i == null ? MacrosBase.CCGTAG_NONE : i.intValue());	
+		return MacrosBase.CCGTAG_MAP.get(s).intValue();	
 	}
 	
 }

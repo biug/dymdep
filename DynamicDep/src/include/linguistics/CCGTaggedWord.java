@@ -9,7 +9,7 @@ import common.pos.CCGTag;
 
 public final class CCGTaggedWord {
 	
-	private static final CCGTag empty_tag = new CCGTag(MacrosBase.CCGTAG_NONE);
+	private static final CCGTag empty_tag = new CCGTag(MacrosBase.CCGTAG_FIRST);
 	
 	public Word word;
 	public CCGTag tag;
