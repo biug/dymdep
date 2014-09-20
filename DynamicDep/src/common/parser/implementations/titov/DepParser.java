@@ -594,14 +594,14 @@ public final class DepParser extends DepParserBase {
 		for (int index = 0; index < length; ++index) {
 			m_lCache.add(new POSTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
 		}
-		
+		System.out.println("round " + round);
 		m_Agenda.clear();
 		m_Finish.clear();
 		pCandidate.clear();
 		m_Agenda.pushCandidate(pCandidate);
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
-		
+		int cindex = 0;
 		while (!finish) {
 			finish = true;
 			if (bTrain) bCorrect = false;
@@ -653,14 +653,15 @@ public final class DepParser extends DepParserBase {
 				pGenerator = (StateItem)m_Agenda.generatorNext();
 			}
 			if (bTrain) {
-				if (!bCorrect) {
-//					System.out.println("EARLY START");
-//					System.out.println();
+//				if (!bCorrect) {
+////					System.out.println("EARLY START");
+////					System.out.println();
+////					((StateItem)m_Agenda.bestGenerator()).print();
+////					((StateItem)correctState).print();
+//					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 //					((StateItem)m_Agenda.bestGenerator()).print();
-//					((StateItem)correctState).print();
-					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
-					return;
-				}
+//					return;
+//				}
 				// cannot move anymore
 				if (correctState.StandardMoveStep(correct, null) == false) {
 					finish = true;
@@ -668,10 +669,12 @@ public final class DepParser extends DepParserBase {
 //				correctState.print();
 			}
 			m_Agenda.nextRound();
+//			System.out.println("iter " + (cindex++));
 		}
 //		System.out.println("FINISH" + round);
 		// search in finished state
 		m_Finish.nextRound();
+//		((StateItem)m_Finish.bestGenerator()).print();
 		if (bTrain) {
 			correctState.StandardFinish();
 			if (!m_Finish.bestGenerator().equals(correctState)) {
