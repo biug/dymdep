@@ -600,12 +600,8 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.pushCandidate(pCandidate);
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
-		System.out.println("start");
-		int index = 0;
-//		System.out.println("Round = " + round);
+
 		while (!finish) {
-			
-			++index;
 			
 			finish = true;
 			if (bTrain) bCorrect = false;
@@ -689,7 +685,6 @@ public final class DepParser extends DepParserBase {
 //		System.out.println("CORRECT");
 		m_Finish.sortGenerators();
 		if (retval != null) {
-			System.out.println(m_Finish.generatorSize());
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);
 //				pGenerator.print();
