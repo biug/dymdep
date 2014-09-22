@@ -594,7 +594,7 @@ public final class DepParser extends DepParserBase {
 		for (int index = 0; index < length; ++index) {
 			m_lCache.add(new POSTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
 		}
-		
+		System.out.println("round " + round);
 		m_Agenda.clear();
 		m_Finish.clear();
 		pCandidate.clear();
@@ -604,7 +604,6 @@ public final class DepParser extends DepParserBase {
 		
 		int index = 0;
 		System.out.println("Round = " + round);
-		
 		while (!finish) {
 			
 			++index;
@@ -673,10 +672,12 @@ public final class DepParser extends DepParserBase {
 //				correctState.print();
 			}
 			m_Agenda.nextRound();
+//			System.out.println("iter " + (cindex++));
 		}
 //		System.out.println("FINISH" + round);
 		// search in finished state
 		m_Finish.nextRound();
+//		((StateItem)m_Finish.bestGenerator()).print();
 		if (bTrain) {
 			correctState.StandardFinish();
 			if (!m_Finish.bestGenerator().equals(correctState)) {
