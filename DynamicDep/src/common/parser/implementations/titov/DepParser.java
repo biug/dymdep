@@ -602,7 +602,13 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
+		int index = 0;
+		System.out.println("Round = " + round);
+		
 		while (!finish) {
+			
+			++index;
+			
 			finish = true;
 			if (bTrain) bCorrect = false;
 			
@@ -654,10 +660,9 @@ public final class DepParser extends DepParserBase {
 			}
 			if (bTrain) {
 				if (!bCorrect) {
-//					System.out.println("EARLY START");
-//					System.out.println();
-//					((StateItem)m_Agenda.bestGenerator()).print();
-//					((StateItem)correctState).print();
+//					System.out.println("length is " + length);
+//					System.out.println("EARLY START @ " + index);
+//					System.out.printlntState).print();
 					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 					return;
 				}

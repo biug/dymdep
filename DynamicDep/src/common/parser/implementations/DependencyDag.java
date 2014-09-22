@@ -126,7 +126,6 @@ public class DependencyDag extends DependencyGraphBase {
 			Iterator<Arc> itr = node.rightarcs.iterator();
 			while (itr.hasNext()) {
 				Arc arc = itr.next();
-				System.out.print(i);
 				arc.print(i);
 			}
 			System.out.println();
