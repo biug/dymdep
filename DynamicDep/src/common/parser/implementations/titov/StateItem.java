@@ -417,6 +417,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void print() {
+		System.out.println("in");
 		System.out.println("next word is " + m_nNextWord);
 		for (int i = 0; i < m_nNextWord; ++i) {
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {

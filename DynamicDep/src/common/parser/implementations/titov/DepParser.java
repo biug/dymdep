@@ -573,7 +573,7 @@ public final class DepParser extends DepParserBase {
 		for (int label = MacrosDag.CCGTAG_FIRST; label < MacrosDag.CCGTAG_COUNT; ++label) {
 			scoredaction.action = Action.encodeAction(MacrosDag.SHIFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
-			m_Beam.insertItem(scoredaction);	
+			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
@@ -594,16 +594,15 @@ public final class DepParser extends DepParserBase {
 		for (int index = 0; index < length; ++index) {
 			m_lCache.add(new POSTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
 		}
-		System.out.println("round " + round);
 		m_Agenda.clear();
 		m_Finish.clear();
 		pCandidate.clear();
 		m_Agenda.pushCandidate(pCandidate);
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
-		
+		System.out.println("start");
 		int index = 0;
-		System.out.println("Round = " + round);
+//		System.out.println("Round = " + round);
 		while (!finish) {
 			
 			++index;
@@ -672,26 +671,31 @@ public final class DepParser extends DepParserBase {
 //				correctState.print();
 			}
 			m_Agenda.nextRound();
+//			System.out.println("best score = " + m_Agenda.bestGenerator().score);
+//			System.out.println(m_Agenda.generatorSize());
 //			System.out.println("iter " + (cindex++));
 		}
 //		System.out.println("FINISH" + round);
 		// search in finished state
-		m_Finish.nextRound();
 //		((StateItem)m_Finish.bestGenerator()).print();
+		m_Finish.nextRound();
 		if (bTrain) {
 			correctState.StandardFinish();
 			if (!m_Finish.bestGenerator().equals(correctState)) {
-				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
+				updateScoreForStates(m_Finish.bestGenerator(), correctState, 1, -1, length);
 				return;
 			}
 		}
 //		System.out.println("CORRECT");
 		m_Finish.sortGenerators();
 		if (retval != null) {
+			System.out.println(m_Finish.generatorSize());
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);
+//				pGenerator.print();
 				if (pGenerator != null) {
 					pGenerator.GenerateTree(sentence, retval[i]);
+//					retval[i].print();
 					if (scores != null) scores[i] = pGenerator.score;
 				}
 			}

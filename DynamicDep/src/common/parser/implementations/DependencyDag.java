@@ -81,10 +81,10 @@ public class DependencyDag extends DependencyGraphBase {
 			heads_map.put(itr.next(), MacrosBase.integer_cache[head_count++]);
 		}
 		String[] line = new String[head_count];
-		for (int i = 0; i < head_count; ++i) {
-			line[i] = "_";
-		}
 		for (int i = 0; i < length; ++i) {
+			for (int j = 0; j < head_count; ++j) {
+				line[j] = "_";
+			}
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			bw.write(String.valueOf(i + 1));
 			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + " _ _ ");
@@ -102,12 +102,14 @@ public class DependencyDag extends DependencyGraphBase {
 					}
 				}
 				if (find) {
+//					arc.print(j);
 					line[index++] = DependencyLabel.str(arc.label);
 				}
 			}
 			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
 				arc = node.rightarcs.get(j);
 				if (arc.direction == MacrosDag.LEFT_DIRECTION) {
+//					arc.print(i);
 					line[heads_map.get(MacrosBase.integer_cache[arc.other]).intValue()] = DependencyLabel.str(arc.label);
 				}
 			}
