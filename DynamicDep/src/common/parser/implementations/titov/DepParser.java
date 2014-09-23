@@ -614,6 +614,12 @@ public final class DepParser extends DepParserBase {
 //		System.out.println(round);
 //		correct.print();
 		
+		/*
+		 * finish means
+		 * 		"no more action for correct state" or
+		 * 		"no more action for candidates" or
+		 * 		"state correct"
+		 */
 		while (!finish) {
 			
 			finish = true;
@@ -625,21 +631,31 @@ public final class DepParser extends DepParserBase {
 				m_Beam.clear();
 				packed_scores.reset();
 				getOrUpdateStackScore(pGenerator, packed_scores, MacrosDag.NO_ACTION);
+				/*
+				 * if can swap, try swap
+				 */
 				if (pGenerator.canswap()) {
-//					System.out.println("swap");
 					swap(pGenerator, packed_scores);
 				}
+				/*
+				 * if buffer not empty
+				 * try shift
+				 */
 				if (pGenerator.size() < length) {
-//					System.out.println("shift");
 					shift(pGenerator, packed_scores);
-					if (!pGenerator.stackempty() && pGenerator.canarc()) {
-//						System.out.println("right");
+					/*
+					 * if can arc, try arc
+					 */
+					if (pGenerator.canarc()) {
 						arcright(pGenerator, packed_scores);
 						arcleft(pGenerator, packed_scores);
 					}
 				}
+				/*
+				 * if stack not empty
+				 * try reduce
+				 */
 				if ((!pGenerator.stackempty())) {
-//					System.out.println("reduce");
 					reduce(pGenerator, packed_scores);
 				}
 				
@@ -647,7 +663,6 @@ public final class DepParser extends DepParserBase {
 					pCandidate.copy(pGenerator);
 					pCandidate.score = m_Beam.item(i).score;
 					pCandidate.Move(m_Beam.item(i).action);
-//					Action.print(m_Beam.item(i).action);
 					m_Agenda.pushCandidate(pCandidate);
 				}
 				// no action means dag complete

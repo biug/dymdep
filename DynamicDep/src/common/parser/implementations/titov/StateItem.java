@@ -23,10 +23,6 @@ import common.pos.CCGTag;
 
 public class StateItem extends StateItemBase {
 	
-	public final int OFF_STACK = 0;
-	public final int ON_STACK_SHIFT = 1;
-	public final int ON_STACK_ARCRIGHT = 2;
-	
 	protected int stack_back;
 	protected int[] m_lHeadsBack;
 	protected int[] m_lDepsLBack;
@@ -182,6 +178,9 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean canarc() {
+		if (stack_back == -1) {
+			return false;
+		}
 		int top = m_lStack[stack_back], back = m_lRightArcsBack[top];
 		if (back == -1) return true;
 		return m_lRightArcs[top][back].other != m_nNextWord;
@@ -287,7 +286,6 @@ public class StateItem extends StateItemBase {
 		m_lCCGLabels[m_nNextWord] = label;
 		m_sStack.add(MacrosBase.integer_cache[m_nNextWord++]);
 		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.SHIFT, label);
-//		m_lActionList[++action_back] = MacrosDag.SHIFT;
 		ClearNext();
 	}
 	
