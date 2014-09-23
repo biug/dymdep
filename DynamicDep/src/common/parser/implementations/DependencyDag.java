@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -59,6 +60,9 @@ public class DependencyDag extends DependencyGraphBase {
 				}
 				++k;
 			}
+		}
+		for (int now = 0; now < length; ++now) {
+			Collections.sort(((DependencyDagNode)nodes[now]).rightarcs);
 		}
 		return line != null;
 	}

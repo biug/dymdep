@@ -514,13 +514,19 @@ public final class DepParser extends DepParserBase {
 		getOrUpdateStackScore(item, retval, action, 0, 0);
 	}
 	
-	public void updateScoreForState(final StateItemBase from, final StateItemBase output, final int amount, final int len) {
+	public void updateScoreForState(final StateItemBase from, final StateItemBase output, final int amount, final int len, final String str) {
 		itemForState.copy(from);
+//		((StateItem)output).print();
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
+//			System.out.print("action " + str + " = ");
+//			Action.print(action);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
 			if (action >= MacrosDag.AL_FIRST) {
-				++((StateItem)output).m_lRightArcsSeek[itemForStates.m_lStack[itemForStates.stack_back]];
+//				System.out.println("action = " + action);
+//				System.out.println("stack back seek = " + itemForStates.stack_back);
+//				System.out.println("stack back = " + itemForStates.m_lStack[itemForState.stack_back]);
+				++((StateItem)output).m_lRightArcsSeek[itemForState.m_lStack[itemForState.stack_back]];
 			}
 			itemForState.Move(action);
 		}
@@ -532,6 +538,8 @@ public final class DepParser extends DepParserBase {
 			int action = itemForStates.FollowMove(output);
 			int correct_action = itemForStates.FollowMove(correct);
 			if (action == correct_action) {
+//				System.out.print("action = ");
+//				Action.print(action);
 				if (action >= MacrosDag.AL_FIRST){
 					int back = itemForStates.m_lStack[itemForStates.stack_back];
 					++((StateItem)output).m_lRightArcsSeek[back];
@@ -542,8 +550,10 @@ public final class DepParser extends DepParserBase {
 				break;
 			}
 		}
-		updateScoreForState(itemForStates, correct, amount_add, len);
-		updateScoreForState(itemForStates, output, amount_subtract, len);
+//		((StateItem)correct).print();
+		updateScoreForState(itemForStates, correct, amount_add, len, "correct");
+//		((StateItem)output).print();
+		updateScoreForState(itemForStates, output, amount_subtract, len, "output");
 		++m_nTotalErrors;
 	}
 	
@@ -600,7 +610,10 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.pushCandidate(pCandidate);
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
-
+		
+//		System.out.println(round);
+//		correct.print();
+		
 		while (!finish) {
 			
 			finish = true;
@@ -628,7 +641,6 @@ public final class DepParser extends DepParserBase {
 				if ((!pGenerator.stackempty())) {
 //					System.out.println("reduce");
 					reduce(pGenerator, packed_scores);
-//					System.out.println("left");
 				}
 				
 				for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {
@@ -640,17 +652,24 @@ public final class DepParser extends DepParserBase {
 				}
 				// no action means dag complete
 				// push it into finish
-				if (m_Beam.size() == 0) {
-					m_Finish.pushCandidate(pGenerator);
-				} else {
+				if (m_Beam.size() != 0) {
 					finish = false;
+				} else if (!bTrain) {
+					m_Finish.pushCandidate(pGenerator);
 				}
-//				System.out.println("------");
 				if (bTrain && pGenerator.equals(correctState)) {
 					bCorrect = true;
 				}
 				
 				pGenerator = (StateItem)m_Agenda.generatorNext();
+			}
+			if (m_Agenda.candidateSize() == 0) {
+//				System.out.println("fuck " + round);
+				finish = true;
+				break;
+			}
+			if (m_Agenda.generatorSize() == 0) {
+//				System.out.println("shit " + round);
 			}
 			if (bTrain) {
 				if (!bCorrect) {
@@ -663,6 +682,7 @@ public final class DepParser extends DepParserBase {
 				// cannot move anymore
 				if (correctState.StandardMoveStep(correct, null) == false) {
 					finish = true;
+					break;
 				}
 //				correctState.print();
 			}
@@ -671,20 +691,25 @@ public final class DepParser extends DepParserBase {
 //			System.out.println(m_Agenda.generatorSize());
 //			System.out.println("iter " + (cindex++));
 		}
-//		System.out.println("FINISH" + round);
+//		System.out.println("FINISH " + round);
 		// search in finished state
 //		((StateItem)m_Finish.bestGenerator()).print();
-		m_Finish.nextRound();
+		if (m_Agenda.generatorSize() == 0) {
+//			System.out.println("holy " + round);
+		}
 		if (bTrain) {
 			correctState.StandardFinish();
-			if (!m_Finish.bestGenerator().equals(correctState)) {
-				updateScoreForStates(m_Finish.bestGenerator(), correctState, 1, -1, length);
+			if (!m_Agenda.bestGenerator().equals(correctState)) {
+				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 				return;
 			}
 		}
-//		System.out.println("CORRECT");
-		m_Finish.sortGenerators();
 		if (retval != null) {
+			m_Finish.nextRound();
+			if (m_Finish.generatorSize() == 0) System.out.println("FUCK " + round);
+			if (m_Finish.bestGenerator().equals(correctState)) System.out.println("CORRECT " + round);
+//			System.out.println(m_Agenda.generatorSize());
+			m_Finish.sortGenerators();
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);
 //				pGenerator.print();
@@ -697,13 +722,13 @@ public final class DepParser extends DepParserBase {
 		}
 	}
 
-	public void parse(final TwoStringsVector sentence, DependencyDag[] retval,
+	public void parse(final int round, final TwoStringsVector sentence, DependencyDag[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
 			retval[i].length = 0;
 			if (scores != null) scores[i] = 0;
 		}
-		work(0, false, sentence, retval, null, nBest, scores);
+		work(round, false, sentence, retval, null, nBest, scores);
 	}
 
 	public void train(final DependencyDag correct, final int round) {

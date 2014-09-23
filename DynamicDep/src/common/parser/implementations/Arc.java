@@ -1,6 +1,7 @@
 package common.parser.implementations;
 
-public class Arc {
+
+public class Arc implements Comparable<Arc> {
 	
 	public int other;
 	public int label;
@@ -40,5 +41,10 @@ public class Arc {
 		} else {
 			System.out.println(now + " -> " + other + " : " + label);
 		}
+	}
+
+	@Override
+	public int compareTo(Arc o) {
+		return other - o.other;
 	}
 }

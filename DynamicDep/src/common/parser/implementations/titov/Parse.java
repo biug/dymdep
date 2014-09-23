@@ -20,6 +20,7 @@ public class Parse {
 		
 		DepParser parser = new DepParser(sFeatureFile, false);
 		SentenceReader input_reader = new SentenceReader(sInputFile);
+		int count = 0;
 		try {
 			BufferedWriter os = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(sOutputFile)), "UTF-8"));
 			BufferedWriter os_scores = null;
@@ -46,7 +47,7 @@ public class Parse {
 						}
 					}
 				} else {
-					parser.parse(input_sent, output_sent, nBest, scores);
+					parser.parse(++count, input_sent, output_sent, nBest, scores);
 				}
 				for (int index = 0; index < nBest; ++index) {
 					output_sent[index].writeSentenceToOutputStream(os);

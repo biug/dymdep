@@ -286,7 +286,8 @@ public class StateItem extends StateItemBase {
 		m_lStack[++stack_back] = m_nNextWord;
 		m_lCCGLabels[m_nNextWord] = label;
 		m_sStack.add(MacrosBase.integer_cache[m_nNextWord++]);
-		m_lActionList[++action_back] = MacrosDag.SHIFT;
+		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.SHIFT, label);
+//		m_lActionList[++action_back] = MacrosDag.SHIFT;
 		ClearNext();
 	}
 	
@@ -348,6 +349,7 @@ public class StateItem extends StateItemBase {
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
 			//no right arcs for stack top node
 			//should be reduce
+//			System.out.println("top = " + top + " seek = " + node.rightseek + " tail = " + node.righttail);
 			if (node.rightseek > node.righttail) {
 				Reduce();
 //				System.out.println("reduce");
@@ -359,11 +361,11 @@ public class StateItem extends StateItemBase {
 				++node.rightseek;
 				if (rightnode.direction == MacrosDag.LEFT_DIRECTION) {
 					ArcLeft(rightnode.label);
-//					System.out.println("left");
+//					System.out.println("left" + rightnode.label);
 					++node.headsseek;
 				} else {
 					ArcRight(rightnode.label);
-//					System.out.println("right");
+//					System.out.println("right" + rightnode.label);
 					++node.childrenseek;
 				}
 				return true;
@@ -385,8 +387,8 @@ public class StateItem extends StateItemBase {
 				}
 			}
 		}
-//		System.out.println("shift");
 		if (m_nNextWord < dag.length) {
+//			System.out.println("shift" + CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
 			Shift(CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
 			return true;
 		} else {

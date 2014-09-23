@@ -1,6 +1,7 @@
 package common.parser.implementations;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import common.parser.DependencyNodeBase;
 
@@ -11,7 +12,7 @@ public class DependencyDagNode extends DependencyNodeBase {
 	public String ccgtag;
 	public int righttail;
 	public int rightseek, headsseek, childrenseek;
-	public ArrayList<Arc> heads, children, rightarcs;
+	public List<Arc> heads, children, rightarcs;
 	
 	public DependencyDagNode() {
 		word = "";
