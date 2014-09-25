@@ -5,7 +5,6 @@ import include.linguistics.TwoStringsVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.DependencyGraphBase;
@@ -115,6 +114,7 @@ public class StateItem extends StateItemBase {
 			System.arraycopy(item.m_lHeadsBack, 0, m_lHeadsBack, 0, length);
 			System.arraycopy(item.m_lDepsLBack, 0, m_lDepsLBack, 0, length);
 			System.arraycopy(item.m_lDepsRBack, 0, m_lDepsRBack, 0, length);
+			System.arraycopy(item.m_lCCGLabels, 0, m_lCCGLabels, 0, length);
 			System.arraycopy(item.m_lRightArcsBack, 0, m_lRightArcsBack, 0, length);
 			System.arraycopy(item.m_lRightArcsSeek, 0, m_lRightArcsSeek, 0, length);
 			for (int i = 0; i < length; ++i) {
@@ -345,9 +345,12 @@ public class StateItem extends StateItemBase {
 		if (stack_back >= 0) {
 			top = m_lStack[stack_back];
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
-			//no right arcs for stack top node
-			//should be reduce
 //			System.out.println("top = " + top + " seek = " + node.rightseek + " tail = " + node.righttail);
+			// skip no possible rightarcs
+			while (node.rightseek <= node.righttail && node.NearestRight().other < m_nNextWord) {
+				++node.rightseek;
+			}
+			//if no rightarcs, reduce
 			if (node.rightseek > node.righttail) {
 				Reduce();
 //				System.out.println("reduce");
@@ -368,18 +371,17 @@ public class StateItem extends StateItemBase {
 				}
 				return true;
 			} else if (stack_back >= 1) {
-				int top2nd = m_lStack[stack_back - 1];
-				Iterator<Arc> itrtop = node.rightarcs.iterator();
-				Iterator<Arc> itrtop2nd = ((DependencyDagNode)dag.nodes[top2nd]).rightarcs.iterator();
-				while (itrtop.hasNext() && itrtop2nd.hasNext()) {
-					if (itrtop.next().more(itrtop2nd.next())) {
-//						System.out.println("swap");
+				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lStack[stack_back - 1]];
+				int topseek = node.rightseek, toptail = node.righttail;
+				int top2ndseek = node2nd.rightseek, top2ndtail = node2nd.righttail;
+				if (topseek <= toptail && top2ndseek <= top2ndtail) {
+					if (node.rightarcs.get(topseek).compareTo(node2nd.rightarcs.get(top2ndseek)) > 0) {
+//						System.out.println("swap1");
 						Swap();
 						return true;
 					}
-				}
-				if (itrtop.hasNext()) {
-//					System.out.println("swap");
+				} else if (topseek <= toptail) {
+//					System.out.println("swap2");
 					Swap();
 					return true;
 				}
@@ -417,18 +419,14 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void print() {
-		System.out.println("in");
 		System.out.println("next word is " + m_nNextWord);
 		for (int i = 0; i < m_nNextWord; ++i) {
+			System.out.println("node" + i);
+			System.out.println("ccg tag is " + m_lCCGLabels[i]);
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 				m_lRightArcs[i][j].print(i);
 			}
 		}
-		System.out.println("stack back is " + stack_back);
-		for (int i = 0; i <= stack_back; ++i) {
-			System.out.print(m_lStack[i] + " ");
-		}
-		System.out.println();
 		for (int i = 1; i <= action_back; ++i) {
 			System.out.print("action " + i + " is ");
 			Action.print(m_lActionList[i]);

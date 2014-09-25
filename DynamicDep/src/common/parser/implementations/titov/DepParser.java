@@ -611,7 +611,6 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
-//		System.out.println(round);
 //		correct.print();
 		
 		/*
@@ -621,8 +620,6 @@ public final class DepParser extends DepParserBase {
 		 * 		"state correct"
 		 */
 		while (!finish) {
-			
-			finish = true;
 			if (bTrain) bCorrect = false;
 			
 			pGenerator = (StateItem)m_Agenda.generatorStart();
@@ -672,7 +669,7 @@ public final class DepParser extends DepParserBase {
 				} else if (!bTrain) {
 					m_Finish.pushCandidate(pGenerator);
 				}
-				if (bTrain && pGenerator.equals(correctState)) {
+				if (bTrain && correctState.equals(pGenerator)) {
 					bCorrect = true;
 				}
 				
@@ -696,41 +693,39 @@ public final class DepParser extends DepParserBase {
 				}
 				// cannot move anymore
 				if (correctState.StandardMoveStep(correct, null) == false) {
-					finish = true;
-					break;
+//					System.out.println("round = " + round);
+//					finish = true;
+//					break;
 				}
-//				correctState.print();
 			}
 			m_Agenda.nextRound();
-//			System.out.println("best score = " + m_Agenda.bestGenerator().score);
-//			System.out.println(m_Agenda.generatorSize());
-//			System.out.println("iter " + (cindex++));
 		}
+		 //search in finished state
 //		System.out.println("FINISH " + round);
-		// search in finished state
 //		((StateItem)m_Finish.bestGenerator()).print();
-		if (m_Agenda.generatorSize() == 0) {
-//			System.out.println("holy " + round);
-		}
+		
 		if (bTrain) {
 			correctState.StandardFinish();
-			if (!m_Agenda.bestGenerator().equals(correctState)) {
+			if (!correctState.equals(m_Agenda.bestGenerator())) {
 				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 				return;
 			}
 		}
+		
+		// correct check
+		System.out.println("round" + round);
+		correctState.print();
+		((StateItem)m_Agenda.bestGenerator()).print();
+//		
 		if (retval != null) {
 			m_Finish.nextRound();
-			if (m_Finish.generatorSize() == 0) System.out.println("FUCK " + round);
-			if (m_Finish.bestGenerator().equals(correctState)) System.out.println("CORRECT " + round);
-//			System.out.println(m_Agenda.generatorSize());
+//			if (m_Finish.generatorSize() == 0) System.out.println("FUCK " + round);
+//			if (m_Finish.bestGenerator().equals(correctState)) System.out.println("CORRECT " + round);
 			m_Finish.sortGenerators();
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);
-//				pGenerator.print();
 				if (pGenerator != null) {
 					pGenerator.GenerateTree(sentence, retval[i]);
-//					retval[i].print();
 					if (scores != null) scores[i] = pGenerator.score;
 				}
 			}
