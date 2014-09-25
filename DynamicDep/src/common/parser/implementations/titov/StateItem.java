@@ -4,11 +4,9 @@ import include.linguistics.SetOfLabels;
 import include.linguistics.TwoStringsVector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.DependencyGraphBase;
-import common.parser.MacrosBase;
 import common.parser.StateItemBase;
 import common.parser.implementations.Arc;
 import common.parser.implementations.DependencyDag;
@@ -30,8 +28,6 @@ public class StateItem extends StateItemBase {
 	protected int[] m_lRightArcsSeek;
 	
 	protected int m_nNextWord;
-	
-	protected HashSet<Integer> m_sStack;
 	
 	protected int[] m_lStack;		//stack
 	protected int[][] m_lHeads;		//heads for every node
@@ -58,8 +54,6 @@ public class StateItem extends StateItemBase {
 		m_lDepsRBack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lRightArcsBack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lRightArcsSeek = new int[MacrosDag.MAX_SENTENCE_SIZE];
-		
-		m_sStack = new HashSet<Integer>();
 		
 		m_lStack = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lHeads = new int[MacrosDag.MAX_SENTENCE_SIZE][];
@@ -248,8 +242,6 @@ public class StateItem extends StateItemBase {
 		//reset action
 		action_back = 0;
 		m_lActionList[action_back] = MacrosDag.NO_ACTION;
-		//reset information of buffer seek
-		m_sStack.clear();
 		ClearNext();
 	}
 	
@@ -283,14 +275,13 @@ public class StateItem extends StateItemBase {
 
 	public void Shift(int label) {
 		m_lStack[++stack_back] = m_nNextWord;
-		m_lCCGLabels[m_nNextWord] = label;
-		m_sStack.add(MacrosBase.integer_cache[m_nNextWord++]);
+		m_lCCGLabels[m_nNextWord++] = label;
 		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.SHIFT, label);
 		ClearNext();
 	}
 	
 	public void Reduce() {
-		m_sStack.remove(MacrosBase.integer_cache[m_lStack[stack_back--]]);
+		--stack_back;
 		m_lActionList[++action_back] = MacrosDag.REDUCE;
 	}
 	
@@ -303,7 +294,7 @@ public class StateItem extends StateItemBase {
 	
 	public void ClearNext() {
 		m_lRightArcsBack[m_nNextWord] = -1;
-		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] = 0;
+		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] = m_lRightArcsSeek[m_nNextWord] = 0;
 		m_lHeads[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
 		m_lLabels[m_nNextWord][0] = MacrosDag.DEP_NONE;
 		m_lDepsL[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
