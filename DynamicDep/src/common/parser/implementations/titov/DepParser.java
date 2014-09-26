@@ -607,8 +607,8 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
-		System.out.println("round" + round);
-		correct.print();
+//		System.out.println("round" + round);
+//		correct.print();
 		
 		/*
 		 * finish means
@@ -682,15 +682,17 @@ public final class DepParser extends DepParserBase {
 			}
 			if (bTrain) {
 				if (!bCorrect) {
+					
 //					System.out.println("length is " + length);
-					System.out.println("EARLY START @ " + round);
-					correctState.print();
-					((StateItem)m_Agenda.bestGenerator()).print();
-					Action.print(correctState.m_lActionList[correctState.action_back]);
-					for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
-						Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
-						System.out.println(((StateItem)m_Agenda.generator(i)).score);					
-					}
+//					System.out.println("EARLY START @ " + round);
+//					correctState.print();
+//					((StateItem)m_Agenda.bestGenerator()).print();
+//					Action.print(correctState.m_lActionList[correctState.action_back]);
+//					for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
+//						Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
+//						System.out.println(((StateItem)m_Agenda.generator(i)).score);					
+//					}
+					
 					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 					return;
 				}
@@ -711,14 +713,14 @@ public final class DepParser extends DepParserBase {
 			correctState.StandardFinish();
 			if (!correctState.equals(m_Agenda.bestGenerator())) {
 				
-				System.out.println("ERROR START @ " + round);
-				correctState.print();
-				((StateItem)m_Agenda.bestGenerator()).print();
-				Action.print(correctState.m_lActionList[correctState.action_back]);
-				for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
-					Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
-					System.out.println(((StateItem)m_Agenda.generator(i)).score);
-				}
+//				System.out.println("ERROR START @ " + round);
+//				correctState.print();
+//				((StateItem)m_Agenda.bestGenerator()).print();
+//				Action.print(correctState.m_lActionList[correctState.action_back]);
+//				for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
+//					Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
+//					System.out.println(((StateItem)m_Agenda.generator(i)).score);
+//				}
 				
 				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 				return;
@@ -726,10 +728,10 @@ public final class DepParser extends DepParserBase {
 		}
 		
 		// correct check
-		System.out.println("CORRECT START @ " + round);
-		correctState.print();
-		((StateItem)m_Agenda.bestGenerator()).print();
-//		
+//		System.out.println("CORRECT START @ " + round);
+//		correctState.print();
+//		((StateItem)m_Agenda.bestGenerator()).print();
+		
 		if (retval != null) {
 			m_Finish.nextRound();
 //			if (m_Finish.generatorSize() == 0) System.out.println("FUCK " + round);
