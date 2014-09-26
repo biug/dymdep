@@ -35,8 +35,6 @@ public class StateItem extends StateItemBase {
 	protected int[][] m_lDepsL;		//left dependency children
 	protected int[][] m_lDepsR;		//right dependency children
 	protected Arc[][] m_lRightArcs;	//right arcs
-	protected int[] m_lDepNumL;		//left children number
-	protected int[] m_lDepNumR;		//right children number
 	protected int[] m_lCCGLabels;
 	
 	protected SetOfLabels[] m_lDepTagL;
@@ -62,8 +60,6 @@ public class StateItem extends StateItemBase {
 		m_lDepsR = new int[MacrosDag.MAX_SENTENCE_SIZE][];
 		m_lRightArcs = new Arc[MacrosDag.MAX_SENTENCE_SIZE][];
 		
-		m_lDepNumL = new int[MacrosDag.MAX_SENTENCE_SIZE];
-		m_lDepNumR = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lCCGLabels = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagL = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagR = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
@@ -122,8 +118,6 @@ public class StateItem extends StateItemBase {
 					m_lRightArcs[i][j].copy(item.m_lRightArcs[i][j]);
 				}
 			}
-			System.arraycopy(item.m_lDepNumL, 0, m_lDepNumL, 0, length);
-			System.arraycopy(item.m_lDepNumR, 0, m_lDepNumR, 0, length);
 			System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
 			for (int i = 0; i < length; ++i) {
 				m_lDepTagL[i].copy(item.m_lDepTagL[i]);
@@ -201,11 +195,11 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final int leftarity(final int index) {
-		return m_lDepNumL[index];
+		return m_lDepsLBack[index] + 1;
 	}
 	
 	public final int rightarity(final int index) {
-		return m_lDepNumR[index];
+		return m_lDepsRBack[index] + 1;
 	}
 	
 	public final SetOfLabels lefttagset(final int index) {
@@ -257,7 +251,6 @@ public class StateItem extends StateItemBase {
 		m_lDepsL[m_nNextWord][++m_lDepsLBack[m_nNextWord]] = left;
 		//add right arcs for stack seek
 		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, MacrosDag.LEFT_DIRECTION);
-		++m_lDepNumL[m_nNextWord];
 		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_LEFT, label);
 	}
 	
@@ -269,7 +262,6 @@ public class StateItem extends StateItemBase {
 		m_lSibling[m_nNextWord] = m_lDepsR[left][m_lDepsRBack[left]];
 		m_lDepsR[left][++m_lDepsRBack[left]] = m_nNextWord;
 		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, MacrosDag.RIGHT_DIRECTION);
-		++m_lDepNumR[left];
 		m_lActionList[++action_back] = Action.encodeAction(MacrosDag.ARC_RIGHT, label);
 	}
 
@@ -299,8 +291,6 @@ public class StateItem extends StateItemBase {
 		m_lLabels[m_nNextWord][0] = MacrosDag.DEP_NONE;
 		m_lDepsL[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
 		m_lDepsR[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
-		m_lDepNumL[m_nNextWord] = 0;
-		m_lDepNumR[m_nNextWord] = 0;
 		m_lDepTagL[m_nNextWord].clear();
 		m_lDepTagR[m_nNextWord].clear();
 		m_lSibling[m_nNextWord] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;

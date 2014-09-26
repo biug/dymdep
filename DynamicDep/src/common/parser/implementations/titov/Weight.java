@@ -79,7 +79,6 @@ public final class Weight extends WeightBase {
 
 	public WordMap m_mapSTRDw;
 	public POSTagMap m_mapSTRDpt;
-	public IntMap m_mapSTRDct;
 	public IntMap m_mapSTRDi;
 
 	public WordMap m_mapN0LDw;
@@ -94,7 +93,6 @@ public final class Weight extends WeightBase {
 
 	public WordMap m_mapSTR2Dw;
 	public POSTagMap m_mapSTR2Dpt;
-	public IntMap m_mapSTR2Dct;
 	public IntMap m_mapSTR2Di;
 
 	public WordMap m_mapN0L2Dw;
@@ -160,7 +158,6 @@ public final class Weight extends WeightBase {
 
 	public WordIntMap m_mapSTwra;
 	public POSTagIntMap m_mapSTptra;
-	public CCGTagIntMap m_mapSTctra;
 	public WordIntMap m_mapSTwla;
 	public POSTagIntMap m_mapSTptla;
 	public CCGTagIntMap m_mapSTctla;
@@ -227,7 +224,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTRDw = new WordMap("StackRDWord");
 		m_mapSTRDpt = new POSTagMap("StackRDPOSTag");
-		m_mapSTRDct = new IntMap("StackRDCCGTag");
 		m_mapSTRDi = new IntMap("StackRDLabel");
 
 		m_mapN0LDw = new WordMap("NextLDWord");
@@ -242,7 +238,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTR2Dw = new WordMap("StackR2DWord");
 		m_mapSTR2Dpt = new POSTagMap("StackR2DPOSTag");
-		m_mapSTR2Dct = new IntMap("StackR2DCCGTag");
 		m_mapSTR2Di = new IntMap("StackR2DLabel");
 
 		m_mapN0L2Dw = new WordMap("NextL2DWord");
@@ -308,7 +303,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTwra = new WordIntMap("StackWordRightArity");
 		m_mapSTptra = new POSTagIntMap("StackPOSTagRightArity");
-		m_mapSTctra = new CCGTagIntMap("StackCCGTagRightArity");
 		m_mapSTwla = new WordIntMap("StackWordLeftArity");
 		m_mapSTptla = new POSTagIntMap("StackPOSTagLeftArity");
 		m_mapSTctla = new CCGTagIntMap("StackCCGTagLeftArity");
@@ -392,7 +386,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTRDw.loadScoresFromFileStream(br);
 			m_mapSTRDpt.loadScoresFromFileStream(br);
-			m_mapSTRDct.loadScoresFromFileStream(br);
 			m_mapSTRDi.loadScoresFromFileStream(br);
 
 			m_mapN0LDw.loadScoresFromFileStream(br);
@@ -407,7 +400,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTR2Dw.loadScoresFromFileStream(br);
 			m_mapSTR2Dpt.loadScoresFromFileStream(br);
-			m_mapSTR2Dct.loadScoresFromFileStream(br);
 			m_mapSTR2Di.loadScoresFromFileStream(br);
 
 			m_mapN0L2Dw.loadScoresFromFileStream(br);
@@ -473,7 +465,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTwra.loadScoresFromFileStream(br);
 			m_mapSTptra.loadScoresFromFileStream(br);
-			m_mapSTctra.loadScoresFromFileStream(br);
 			m_mapSTwla.loadScoresFromFileStream(br);
 			m_mapSTptla.loadScoresFromFileStream(br);
 			m_mapSTctla.loadScoresFromFileStream(br);
@@ -560,7 +551,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTRDw.saveScoresToFileStream(bw);
 			m_mapSTRDpt.saveScoresToFileStream(bw);
-			m_mapSTRDct.saveScoresToFileStream(bw);
 			m_mapSTRDi.saveScoresToFileStream(bw);
 
 			m_mapN0LDw.saveScoresToFileStream(bw);
@@ -575,7 +565,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTR2Dw.saveScoresToFileStream(bw);
 			m_mapSTR2Dpt.saveScoresToFileStream(bw);
-			m_mapSTR2Dct.saveScoresToFileStream(bw);
 			m_mapSTR2Di.saveScoresToFileStream(bw);
 
 			m_mapN0L2Dw.saveScoresToFileStream(bw);
@@ -641,7 +630,6 @@ public final class Weight extends WeightBase {
 
 			m_mapSTwra.saveScoresToFileStream(bw);
 			m_mapSTptra.saveScoresToFileStream(bw);
-			m_mapSTctra.saveScoresToFileStream(bw);
 			m_mapSTwla.saveScoresToFileStream(bw);
 			m_mapSTptla.saveScoresToFileStream(bw);
 			m_mapSTctla.saveScoresToFileStream(bw);
@@ -719,7 +707,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTRDw.computeAverage(round);
 		m_mapSTRDpt.computeAverage(round);
-		m_mapSTRDct.computeAverage(round);
 		m_mapSTRDi.computeAverage(round);
 
 		m_mapN0LDw.computeAverage(round);
@@ -734,7 +721,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTR2Dw.computeAverage(round);
 		m_mapSTR2Dpt.computeAverage(round);
-		m_mapSTR2Dct.computeAverage(round);
 		m_mapSTR2Di.computeAverage(round);
 
 		m_mapN0L2Dw.computeAverage(round);
@@ -800,7 +786,6 @@ public final class Weight extends WeightBase {
 
 		m_mapSTwra.computeAverage(round);
 		m_mapSTptra.computeAverage(round);
-		m_mapSTctra.computeAverage(round);
 		m_mapSTwla.computeAverage(round);
 		m_mapSTptla.computeAverage(round);
 		m_mapSTctla.computeAverage(round);

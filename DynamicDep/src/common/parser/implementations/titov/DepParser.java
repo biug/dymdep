@@ -247,9 +247,7 @@ public final class DepParser extends DepParserBase {
 		final int st_ccg = st_index == -1 ? MacrosDag.DEP_NONE : item.ccg(st_index);
 		final int sth_ccg = sth_index == -1 ? MacrosDag.DEP_NONE : item.ccg(sth_index);
 		final int stld_ccg = stld_index == -1 ? MacrosDag.DEP_NONE : item.ccg(stld_index);
-		final int strd_ccg = strd_index == -1 ? MacrosDag.DEP_NONE : item.ccg(strd_index);
 		final int stl2d_ccg = stl2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(stl2d_index);
-		final int str2d_ccg = str2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(strd_index); //PROBLEM!
 		final int n0ld_ccg = n0ld_index == -1 ? MacrosDag.DEP_NONE : item.ccg(n0ld_index);
 		final int n0l2d_ccg = n0l2d_index == -1 ? MacrosDag.DEP_NONE : item.ccg(n0l2d_index);
 		
@@ -321,7 +319,6 @@ public final class DepParser extends DepParserBase {
 		if (strd_index != -1) {
 			weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDpt.getOrUpdateScore(retval, strd_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDct.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDi.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_label], action, m_nScoreIndex, amount, round);
 		}
 
@@ -342,7 +339,6 @@ public final class DepParser extends DepParserBase {
 		if (str2d_index != -1) {
 			weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_ccg], action, m_nScoreIndex, amount, round);
 			weight.m_mapSTR2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_label], action, m_nScoreIndex, amount, round);
 		}
 
