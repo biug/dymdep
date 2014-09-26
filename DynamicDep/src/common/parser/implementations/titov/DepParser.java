@@ -607,8 +607,8 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
-//		System.out.println("round" + round);
-//		correct.print();
+		System.out.println("round" + round);
+		correct.print();
 		
 		/*
 		 * finish means
@@ -728,9 +728,9 @@ public final class DepParser extends DepParserBase {
 		}
 		
 		// correct check
-//		System.out.println("CORRECT START @ " + round);
-//		correctState.print();
-//		((StateItem)m_Agenda.bestGenerator()).print();
+		System.out.println("CORRECT START @ " + round);
+		correctState.print();
+		((StateItem)m_Agenda.bestGenerator()).print();
 		
 		if (retval != null) {
 			m_Finish.nextRound();
