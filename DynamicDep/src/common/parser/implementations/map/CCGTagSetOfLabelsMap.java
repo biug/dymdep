@@ -1,7 +1,7 @@
 package common.parser.implementations.map;
 
 import include.learning.perceptron.PackedScoreMap;
-import include.linguistics.SetOfLabels;
+import include.linguistics.SetOfDepLabels;
 import include.linguistics.CCGTagSetOfLabels;
 
 import common.dependency.label.DependencyLabel;
@@ -22,7 +22,7 @@ public final class CCGTagSetOfLabelsMap extends PackedScoreMap<CCGTagSetOfLabels
 	@Override
 	public CCGTagSetOfLabels loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
-		SetOfLabels tagset = new SetOfLabels();
+		SetOfDepLabels tagset = new SetOfDepLabels();
 		String[] subargs = args[1].substring(2, args[1].length() - 1).split(" ");
 		if (!subargs[0].isEmpty()) {
 			for (String label : subargs) {
@@ -35,7 +35,7 @@ public final class CCGTagSetOfLabelsMap extends PackedScoreMap<CCGTagSetOfLabels
 	@Override
 	public String generateStringFromKey(final CCGTagSetOfLabels key) {
 		String retval = key.first().toString() + " , [ ";
-		SetOfLabels sot = key.second();
+		SetOfDepLabels sot = key.second();
 		for (int label = 0; label < MacrosBase.DEP_COUNT; ++label) {
 			if (sot.contains(label)) {
 				retval += (DependencyLabel.str(label) + " ");

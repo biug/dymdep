@@ -6,15 +6,15 @@ import common.dependency.label.DependencyLabel;
  * @author ZhangXun
  */
 
-public final class SetOfLabels {
+public final class SetOfDepLabels {
 	
 	private int m_code;
 	
-	public SetOfLabels() {
+	public SetOfDepLabels() {
 		m_code = 0;
 	}
 	
-	public SetOfLabels(final SetOfLabels tags) {
+	public SetOfDepLabels(final SetOfDepLabels tags) {
 		m_code = tags.m_code;
 	}
 	
@@ -53,10 +53,10 @@ public final class SetOfLabels {
 	
 	@Override
 	public boolean equals(final Object o) {
-		return m_code == ((SetOfLabels)o).m_code;
+		return m_code == ((SetOfDepLabels)o).m_code;
 	}
 	
-	public void copy(final SetOfLabels tagset) {
+	public void copy(final SetOfDepLabels tagset) {
 		m_code = tagset.m_code;
 	}
 	

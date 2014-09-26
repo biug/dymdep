@@ -1,6 +1,6 @@
 package common.parser.implementations.titov;
 
-import include.linguistics.SetOfLabels;
+import include.linguistics.SetOfDepLabels;
 import include.linguistics.TwoStringsVector;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class StateItem extends StateItemBase {
 	protected Arc[][] m_lRightArcs;	//right arcs
 	protected int[] m_lCCGLabels;
 	
-	protected SetOfLabels[] m_lDepTagL;
-	protected SetOfLabels[] m_lDepTagR;
+	protected SetOfDepLabels[] m_lDepTagL;
+	protected SetOfDepLabels[] m_lDepTagR;
 	protected int[] m_lSibling;
 	
 	protected int[] m_lActionList;
@@ -61,8 +61,8 @@ public class StateItem extends StateItemBase {
 		m_lRightArcs = new Arc[MacrosDag.MAX_SENTENCE_SIZE][];
 		
 		m_lCCGLabels = new int[MacrosDag.MAX_SENTENCE_SIZE];
-		m_lDepTagL = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
-		m_lDepTagR = new SetOfLabels[MacrosDag.MAX_SENTENCE_SIZE];
+		m_lDepTagL = new SetOfDepLabels[MacrosDag.MAX_SENTENCE_SIZE];
+		m_lDepTagR = new SetOfDepLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		
 		for (int i = 0; i < MacrosDag.MAX_SENTENCE_SIZE; ++i) {
 			m_lHeadsBack[i] = m_lDepsLBack[i] = m_lDepsRBack[i] = m_lRightArcsBack[i] = -1;
@@ -73,8 +73,8 @@ public class StateItem extends StateItemBase {
 			m_lDepsL[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lDepsR[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lRightArcs[i] = new Arc[MacrosDag.MAX_SENTENCE_SIZE];
-			m_lDepTagL[i] = new SetOfLabels();
-			m_lDepTagR[i] = new SetOfLabels();
+			m_lDepTagL[i] = new SetOfDepLabels();
+			m_lDepTagR[i] = new SetOfDepLabels();
 			for (int j = 0; j < MacrosDag.MAX_SENTENCE_SIZE; ++j) {
 				m_lRightArcs[i][j] = new Arc();
 			}
@@ -202,11 +202,11 @@ public class StateItem extends StateItemBase {
 		return m_lDepsRBack[index] + 1;
 	}
 	
-	public final SetOfLabels lefttagset(final int index) {
+	public final SetOfDepLabels lefttagset(final int index) {
 		return m_lDepTagL[index];
 	}
 	
-	public final SetOfLabels righttagset(final int index) {
+	public final SetOfDepLabels righttagset(final int index) {
 		return m_lDepTagR[index];
 	}
 	

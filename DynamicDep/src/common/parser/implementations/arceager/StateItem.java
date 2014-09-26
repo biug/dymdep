@@ -1,6 +1,6 @@
 package common.parser.implementations.arceager;
 
-import include.linguistics.SetOfLabels;
+import include.linguistics.SetOfDepLabels;
 import include.linguistics.POSTaggedWord;
 import include.linguistics.TwoStringsVector;
 
@@ -38,8 +38,8 @@ public class StateItem extends StateItemBase {
 	protected int[] m_lDepNumL;
 	protected int[] m_lDepNumR;
 	
-	protected SetOfLabels m_lDepTagL[];
-	protected SetOfLabels m_lDepTagR[];
+	protected SetOfDepLabels m_lDepTagL[];
+	protected SetOfDepLabels m_lDepTagR[];
 	protected int m_lSibling[];
 	
 	protected int m_nLastAction;
@@ -57,11 +57,11 @@ public class StateItem extends StateItemBase {
 		m_lDepsR = new int[MacrosTree.MAX_SENTENCE_SIZE];
 		m_lDepNumL = new int[MacrosTree.MAX_SENTENCE_SIZE];
 		m_lDepNumR = new int[MacrosTree.MAX_SENTENCE_SIZE];
-		m_lDepTagL = new SetOfLabels[MacrosTree.MAX_SENTENCE_SIZE];
-		m_lDepTagR = new SetOfLabels[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepTagL = new SetOfDepLabels[MacrosTree.MAX_SENTENCE_SIZE];
+		m_lDepTagR = new SetOfDepLabels[MacrosTree.MAX_SENTENCE_SIZE];
 		for (int i = 0; i < MacrosTree.MAX_SENTENCE_SIZE; ++i) {
-			m_lDepTagL[i] = new SetOfLabels();
-			m_lDepTagR[i] = new SetOfLabels();
+			m_lDepTagL[i] = new SetOfDepLabels();
+			m_lDepTagR[i] = new SetOfDepLabels();
 		}
 		m_lSibling = new int[MacrosTree.MAX_SENTENCE_SIZE];
 		m_lCache = cache;
@@ -190,11 +190,11 @@ public class StateItem extends StateItemBase {
 		return m_lDepNumR[index];
 	}
 	
-	public final SetOfLabels lefttagset(final int index) {
+	public final SetOfDepLabels lefttagset(final int index) {
 		return m_lDepTagL[index];
 	}
 	
-	public final SetOfLabels righttagset(final int index) {
+	public final SetOfDepLabels righttagset(final int index) {
 		return m_lDepTagR[index];
 	}
 	

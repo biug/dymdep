@@ -4,7 +4,7 @@ import include.AgendaBeam;
 import include.AgendaSimple;
 import include.learning.perceptron.PackedScoreType;
 import include.learning.perceptron.Score;
-import include.linguistics.SetOfLabels;
+import include.linguistics.SetOfDepLabels;
 import include.linguistics.POSTagInt;
 import include.linguistics.POSTagSet2;
 import include.linguistics.POSTagSet3;
@@ -76,7 +76,7 @@ public final class DepParser extends DepParserBase {
 	private ScoredAction scoredaction;
 	
 	public static final POSTaggedWord empty_taggedword = new POSTaggedWord();
-	public static final SetOfLabels empty_setoftags = new SetOfLabels();
+	public static final SetOfDepLabels empty_setoftags = new SetOfDepLabels();
 	
 	private int encodeTags(final POSTag tag1, final POSTag tag2) {
 		return ((tag1.hashCode() << (MacrosTree.POSTAG_BITS_SIZE)) | (tag2.hashCode()));
@@ -199,9 +199,9 @@ public final class DepParser extends DepParserBase {
 		final int st_larity = st_index == -1 ? 0 : item.leftarity(st_index);
 		final int n0_larity = n0_index == -1 ? 0 : item.leftarity(n0_index);
 		
-		final SetOfLabels st_rtagset = st_index == -1 ? empty_setoftags : new SetOfLabels(item.righttagset(st_index));
-		final SetOfLabels st_ltagset = st_index == -1 ? empty_setoftags : new SetOfLabels(item.lefttagset(st_index));
-		final SetOfLabels n0_ltagset = n0_index == -1 ? empty_setoftags : new SetOfLabels(item.lefttagset(n0_index));
+		final SetOfDepLabels st_rtagset = st_index == -1 ? empty_setoftags : new SetOfDepLabels(item.righttagset(st_index));
+		final SetOfDepLabels st_ltagset = st_index == -1 ? empty_setoftags : new SetOfDepLabels(item.lefttagset(st_index));
+		final SetOfDepLabels n0_ltagset = n0_index == -1 ? empty_setoftags : new SetOfDepLabels(item.lefttagset(n0_index));
 		
 		Weight weight = (Weight)m_weights;
 		

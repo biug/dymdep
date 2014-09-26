@@ -8,7 +8,7 @@ import common.pos.CCGTag;
  * @author ZhangXun
  */
 
-public final class CCGTagSetOfLabels extends Tuple2<CCGTag, SetOfLabels> {
+public final class CCGTagSetOfLabels extends Tuple2<CCGTag, SetOfDepLabels> {
 	
 	public CCGTagSetOfLabels() {
 		super();
@@ -18,7 +18,7 @@ public final class CCGTagSetOfLabels extends Tuple2<CCGTag, SetOfLabels> {
 		super(tag_tagset);
 	}
 	
-	public CCGTagSetOfLabels(final CCGTag tag, final SetOfLabels tagset) {
+	public CCGTagSetOfLabels(final CCGTag tag, final SetOfDepLabels tagset) {
 		super(tag, tagset);
 	}
 
@@ -28,8 +28,8 @@ public final class CCGTagSetOfLabels extends Tuple2<CCGTag, SetOfLabels> {
 	}
 
 	@Override
-	public SetOfLabels create_object2(final SetOfLabels tagset) {
-		return new SetOfLabels(tagset);
+	public SetOfDepLabels create_object2(final SetOfDepLabels tagset) {
+		return new SetOfDepLabels(tagset);
 	}
 	
 }

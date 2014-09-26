@@ -6,7 +6,7 @@ import include.util.Tuple2;
  * @author ZhangXun
  */
 
-public final class WordSetOfLabels extends Tuple2<Word, SetOfLabels> {
+public final class WordSetOfLabels extends Tuple2<Word, SetOfDepLabels> {
 	
 	public WordSetOfLabels() {
 		super();
@@ -16,7 +16,7 @@ public final class WordSetOfLabels extends Tuple2<Word, SetOfLabels> {
 		super(word_tagset);
 	}
 	
-	public WordSetOfLabels(final Word word, final SetOfLabels tagset) {
+	public WordSetOfLabels(final Word word, final SetOfDepLabels tagset) {
 		super(word, tagset);
 	}
 
@@ -26,8 +26,8 @@ public final class WordSetOfLabels extends Tuple2<Word, SetOfLabels> {
 	}
 
 	@Override
-	public SetOfLabels create_object2(final SetOfLabels tagset) {
-		return new SetOfLabels(tagset);
+	public SetOfDepLabels create_object2(final SetOfDepLabels tagset) {
+		return new SetOfDepLabels(tagset);
 	}
 	
 }
