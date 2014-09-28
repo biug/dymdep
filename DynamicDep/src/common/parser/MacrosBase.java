@@ -17,6 +17,7 @@ public class MacrosBase {
 	
 	public static String[] CCGTAG_STRINGS;
 	public static HashMap<String, Integer> CCGTAG_MAP;
+	public final static int CCGTAG_NONE = -1;
 	public static final int CCGTAG_FIRST = 0;
 	public static int CCGTAG_COUNT;
 	public static int CCGTAG_BITS_SIZE;

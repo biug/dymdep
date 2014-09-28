@@ -2,25 +2,25 @@ package common.parser.implementations.map;
 
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.SetOfDepLabels;
-import include.linguistics.CCGTagSetOfLabels;
+import include.linguistics.Word;
+import include.linguistics.WordSetOfDepLabels;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.MacrosBase;
-import common.pos.CCGTag;
 
 /*
  * @author ZhangXun
  */
 
 @SuppressWarnings("serial")
-public final class CCGTagSetOfLabelsMap extends PackedScoreMap<CCGTagSetOfLabels> {
+public final class WordSetOfDepLabelsMap extends PackedScoreMap<WordSetOfDepLabels> {
 
-	public CCGTagSetOfLabelsMap(final String input_name) {
+	public WordSetOfDepLabelsMap(final String input_name) {
 		super(input_name);
 	}
 
 	@Override
-	public CCGTagSetOfLabels loadKeyFromString(final String str) {
+	public WordSetOfDepLabels loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
 		SetOfDepLabels tagset = new SetOfDepLabels();
 		String[] subargs = args[1].substring(2, args[1].length() - 1).split(" ");
@@ -29,12 +29,12 @@ public final class CCGTagSetOfLabelsMap extends PackedScoreMap<CCGTagSetOfLabels
 				tagset.add(DependencyLabel.code(label));				
 			}
 		}
-		return new CCGTagSetOfLabels(new CCGTag(args[0]), tagset);
+		return new WordSetOfDepLabels(new Word(args[0].substring(1, args[0].length() - 1)), tagset);
 	}
 
 	@Override
-	public String generateStringFromKey(final CCGTagSetOfLabels key) {
-		String retval = key.first().toString() + " , [ ";
+	public String generateStringFromKey(final WordSetOfDepLabels key) {
+		String retval = "[" + key.first().toString() + "] , [ ";
 		SetOfDepLabels sot = key.second();
 		for (int label = 0; label < MacrosBase.DEP_COUNT; ++label) {
 			if (sot.contains(label)) {
@@ -45,8 +45,8 @@ public final class CCGTagSetOfLabelsMap extends PackedScoreMap<CCGTagSetOfLabels
 	}
 
 	@Override
-	public CCGTagSetOfLabels allocate_key(final CCGTagSetOfLabels key) {
-		return new CCGTagSetOfLabels(key);
+	public WordSetOfDepLabels allocate_key(final WordSetOfDepLabels key) {
+		return new WordSetOfDepLabels(key);
 	}
 
 }

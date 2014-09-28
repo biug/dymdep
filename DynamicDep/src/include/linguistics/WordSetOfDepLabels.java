@@ -6,17 +6,17 @@ import include.util.Tuple2;
  * @author ZhangXun
  */
 
-public final class WordSetOfLabels extends Tuple2<Word, SetOfDepLabels> {
+public final class WordSetOfDepLabels extends Tuple2<Word, SetOfDepLabels> {
 	
-	public WordSetOfLabels() {
+	public WordSetOfDepLabels() {
 		super();
 	}
 	
-	public WordSetOfLabels(final WordSetOfLabels word_tagset) {
+	public WordSetOfDepLabels(final WordSetOfDepLabels word_tagset) {
 		super(word_tagset);
 	}
 	
-	public WordSetOfLabels(final Word word, final SetOfDepLabels tagset) {
+	public WordSetOfDepLabels(final Word word, final SetOfDepLabels tagset) {
 		super(word, tagset);
 	}
 

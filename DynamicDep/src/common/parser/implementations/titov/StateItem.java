@@ -1,5 +1,6 @@
 package common.parser.implementations.titov;
 
+import include.linguistics.SetOfCCGLabels;
 import include.linguistics.SetOfDepLabels;
 import include.linguistics.TwoStringsVector;
 
@@ -39,6 +40,7 @@ public class StateItem extends StateItemBase {
 	
 	protected SetOfDepLabels[] m_lDepTagL;
 	protected SetOfDepLabels[] m_lDepTagR;
+	protected SetOfCCGLabels[] m_lCCGTagL;
 	protected int[] m_lSibling;
 	
 	protected int[] m_lActionList;
@@ -63,11 +65,13 @@ public class StateItem extends StateItemBase {
 		m_lCCGLabels = new int[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagL = new SetOfDepLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		m_lDepTagR = new SetOfDepLabels[MacrosDag.MAX_SENTENCE_SIZE];
+		m_lCCGTagL = new SetOfCCGLabels[MacrosDag.MAX_SENTENCE_SIZE];
 		
 		for (int i = 0; i < MacrosDag.MAX_SENTENCE_SIZE; ++i) {
 			m_lHeadsBack[i] = m_lDepsLBack[i] = m_lDepsRBack[i] = m_lRightArcsBack[i] = -1;
 			m_lRightArcsSeek[i] = 0;
 			
+			m_lCCGLabels[i] = MacrosDag.CCGTAG_NONE;
 			m_lHeads[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lLabels[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lDepsL[i] = new int[MacrosDag.MAX_SENTENCE_SIZE];
@@ -75,6 +79,7 @@ public class StateItem extends StateItemBase {
 			m_lRightArcs[i] = new Arc[MacrosDag.MAX_SENTENCE_SIZE];
 			m_lDepTagL[i] = new SetOfDepLabels();
 			m_lDepTagR[i] = new SetOfDepLabels();
+			m_lCCGTagL[i] = new SetOfCCGLabels();
 			for (int j = 0; j < MacrosDag.MAX_SENTENCE_SIZE; ++j) {
 				m_lRightArcs[i][j] = new Arc();
 			}
@@ -122,6 +127,7 @@ public class StateItem extends StateItemBase {
 			for (int i = 0; i < length; ++i) {
 				m_lDepTagL[i].copy(item.m_lDepTagL[i]);
 				m_lDepTagR[i].copy(item.m_lDepTagR[i]);
+				m_lCCGTagL[i].copy(item.m_lCCGTagL[i]);
 			}
 		}
 	}
@@ -210,6 +216,10 @@ public class StateItem extends StateItemBase {
 		return m_lDepTagR[index];
 	}
 	
+	public final SetOfCCGLabels leftccgset(final int index) {
+		return m_lCCGTagL[index];
+	}
+	
 	public final int label(final int index) {
 		return m_lLabels[index][m_lHeadsBack[index]];
 	}
@@ -245,6 +255,7 @@ public class StateItem extends StateItemBase {
 		m_lHeads[left][++m_lHeadsBack[left]] = m_nNextWord;
 		m_lLabels[left][m_lHeadsBack[left]] = label;
 		m_lDepTagL[m_nNextWord].add(label);
+		m_lCCGTagL[m_nNextWord].add(m_lCCGLabels[left]);
 		//sibling is the previous child of buffer seek
 		m_lSibling[left] = m_lDepsL[m_nNextWord][m_lDepsLBack[m_nNextWord]];
 		//add child for buffer seek
@@ -285,6 +296,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void ClearNext() {
+		m_lCCGLabels[m_nNextWord] = MacrosDag.CCGTAG_NONE;
 		m_lRightArcsBack[m_nNextWord] = -1;
 		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] = m_lRightArcsSeek[m_nNextWord] = 0;
 		m_lHeads[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
@@ -293,6 +305,7 @@ public class StateItem extends StateItemBase {
 		m_lDepsR[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
 		m_lDepTagL[m_nNextWord].clear();
 		m_lDepTagR[m_nNextWord].clear();
+		m_lCCGTagL[m_nNextWord].clear();
 		m_lSibling[m_nNextWord] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
 	}
 	

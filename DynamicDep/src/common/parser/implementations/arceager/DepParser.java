@@ -8,7 +8,7 @@ import include.linguistics.SetOfDepLabels;
 import include.linguistics.POSTagInt;
 import include.linguistics.POSTagSet2;
 import include.linguistics.POSTagSet3;
-import include.linguistics.POSTagSetOfLabels;
+import include.linguistics.POSTagSetOfDepLabels;
 import include.linguistics.POSTagPOSTagInt;
 import include.linguistics.POSTaggedWord;
 import include.linguistics.TwoStrings;
@@ -17,7 +17,7 @@ import include.linguistics.TwoPOSTaggedWords;
 import include.linguistics.TwoWords;
 import include.linguistics.Word;
 import include.linguistics.WordInt;
-import include.linguistics.WordSetOfLabels;
+import include.linguistics.WordSetOfDepLabels;
 import include.linguistics.WordPOSTagPOSTag;
 import include.linguistics.WordWordInt;
 import include.linguistics.WordWordPOSTag;
@@ -68,8 +68,8 @@ public final class DepParser extends DepParserBase {
 	private WordWordPOSTag word_word_tag;
 	private WordWordInt word_word_int;
 	private POSTagPOSTagInt tag_tag_int;
-	private WordSetOfLabels word_tagset;
-	private POSTagSetOfLabels tag_tagset;
+	private WordSetOfDepLabels word_tagset;
+	private POSTagSetOfDepLabels tag_tagset;
 	private POSTagSet2 set_of_2_tags;
 	private POSTagSet3 set_of_3_tags;
 	
@@ -122,8 +122,8 @@ public final class DepParser extends DepParserBase {
 		word_word_tag = new WordWordPOSTag();
 		word_word_int = new WordWordInt();
 		tag_tag_int = new POSTagPOSTagInt();
-		word_tagset = new WordSetOfLabels();
-		tag_tagset = new POSTagSetOfLabels();
+		word_tagset = new WordSetOfDepLabels();
+		tag_tagset = new POSTagSetOfDepLabels();
 		set_of_2_tags = new POSTagSet2();
 		set_of_3_tags = new POSTagSet3();
 		

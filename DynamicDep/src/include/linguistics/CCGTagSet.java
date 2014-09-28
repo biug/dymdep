@@ -28,7 +28,7 @@ public class CCGTagSet {
 		this.m_nHash = code;
 	}
 	
-	private final void attach(final long code) {
+	public final void attach(final long code) {
 		m_nHash = ((m_nHash << MacrosBase.CCGTAG_BITS_SIZE) | code);
 	}
 	

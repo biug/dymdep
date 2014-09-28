@@ -2,25 +2,25 @@ package common.parser.implementations.map;
 
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.SetOfDepLabels;
-import include.linguistics.POSTagSetOfLabels;
+import include.linguistics.CCGTagSetOfDepLabels;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.MacrosBase;
-import common.pos.POSTag;
+import common.pos.CCGTag;
 
 /*
  * @author ZhangXun
  */
 
 @SuppressWarnings("serial")
-public final class POSTagSetOfLabelsMap extends PackedScoreMap<POSTagSetOfLabels> {
+public final class CCGTagSetOfDepLabelsMap extends PackedScoreMap<CCGTagSetOfDepLabels> {
 
-	public POSTagSetOfLabelsMap(final String input_name) {
+	public CCGTagSetOfDepLabelsMap(final String input_name) {
 		super(input_name);
 	}
 
 	@Override
-	public POSTagSetOfLabels loadKeyFromString(final String str) {
+	public CCGTagSetOfDepLabels loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
 		SetOfDepLabels tagset = new SetOfDepLabels();
 		String[] subargs = args[1].substring(2, args[1].length() - 1).split(" ");
@@ -29,11 +29,11 @@ public final class POSTagSetOfLabelsMap extends PackedScoreMap<POSTagSetOfLabels
 				tagset.add(DependencyLabel.code(label));				
 			}
 		}
-		return new POSTagSetOfLabels(new POSTag(args[0]), tagset);
+		return new CCGTagSetOfDepLabels(new CCGTag(args[0]), tagset);
 	}
 
 	@Override
-	public String generateStringFromKey(final POSTagSetOfLabels key) {
+	public String generateStringFromKey(final CCGTagSetOfDepLabels key) {
 		String retval = key.first().toString() + " , [ ";
 		SetOfDepLabels sot = key.second();
 		for (int label = 0; label < MacrosBase.DEP_COUNT; ++label) {
@@ -45,8 +45,8 @@ public final class POSTagSetOfLabelsMap extends PackedScoreMap<POSTagSetOfLabels
 	}
 
 	@Override
-	public POSTagSetOfLabels allocate_key(final POSTagSetOfLabels key) {
-		return new POSTagSetOfLabels(key);
+	public CCGTagSetOfDepLabels allocate_key(final CCGTagSetOfDepLabels key) {
+		return new CCGTagSetOfDepLabels(key);
 	}
 
 }

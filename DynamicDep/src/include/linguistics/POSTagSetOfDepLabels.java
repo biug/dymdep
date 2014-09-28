@@ -8,17 +8,17 @@ import common.pos.POSTag;
  * @author ZhangXun
  */
 
-public final class POSTagSetOfLabels extends Tuple2<POSTag, SetOfDepLabels> {
+public final class POSTagSetOfDepLabels extends Tuple2<POSTag, SetOfDepLabels> {
 	
-	public POSTagSetOfLabels() {
+	public POSTagSetOfDepLabels() {
 		super();
 	}
 	
-	public POSTagSetOfLabels(final POSTagSetOfLabels tag_tagset) {
+	public POSTagSetOfDepLabels(final POSTagSetOfDepLabels tag_tagset) {
 		super(tag_tagset);
 	}
 	
-	public POSTagSetOfLabels(final POSTag tag, final SetOfDepLabels tagset) {
+	public POSTagSetOfDepLabels(final POSTag tag, final SetOfDepLabels tagset) {
 		super(tag, tagset);
 	}
 

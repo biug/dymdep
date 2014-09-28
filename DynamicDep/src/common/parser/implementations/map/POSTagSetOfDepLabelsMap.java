@@ -2,25 +2,25 @@ package common.parser.implementations.map;
 
 import include.learning.perceptron.PackedScoreMap;
 import include.linguistics.SetOfDepLabels;
-import include.linguistics.Word;
-import include.linguistics.WordSetOfLabels;
+import include.linguistics.POSTagSetOfDepLabels;
 
 import common.dependency.label.DependencyLabel;
 import common.parser.MacrosBase;
+import common.pos.POSTag;
 
 /*
  * @author ZhangXun
  */
 
 @SuppressWarnings("serial")
-public final class WordSetOfLabelsMap extends PackedScoreMap<WordSetOfLabels> {
+public final class POSTagSetOfDepLabelsMap extends PackedScoreMap<POSTagSetOfDepLabels> {
 
-	public WordSetOfLabelsMap(final String input_name) {
+	public POSTagSetOfDepLabelsMap(final String input_name) {
 		super(input_name);
 	}
 
 	@Override
-	public WordSetOfLabels loadKeyFromString(final String str) {
+	public POSTagSetOfDepLabels loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
 		SetOfDepLabels tagset = new SetOfDepLabels();
 		String[] subargs = args[1].substring(2, args[1].length() - 1).split(" ");
@@ -29,12 +29,12 @@ public final class WordSetOfLabelsMap extends PackedScoreMap<WordSetOfLabels> {
 				tagset.add(DependencyLabel.code(label));				
 			}
 		}
-		return new WordSetOfLabels(new Word(args[0].substring(1, args[0].length() - 1)), tagset);
+		return new POSTagSetOfDepLabels(new POSTag(args[0]), tagset);
 	}
 
 	@Override
-	public String generateStringFromKey(final WordSetOfLabels key) {
-		String retval = "[" + key.first().toString() + "] , [ ";
+	public String generateStringFromKey(final POSTagSetOfDepLabels key) {
+		String retval = key.first().toString() + " , [ ";
 		SetOfDepLabels sot = key.second();
 		for (int label = 0; label < MacrosBase.DEP_COUNT; ++label) {
 			if (sot.contains(label)) {
@@ -45,8 +45,8 @@ public final class WordSetOfLabelsMap extends PackedScoreMap<WordSetOfLabels> {
 	}
 
 	@Override
-	public WordSetOfLabels allocate_key(final WordSetOfLabels key) {
-		return new WordSetOfLabels(key);
+	public POSTagSetOfDepLabels allocate_key(final POSTagSetOfDepLabels key) {
+		return new POSTagSetOfDepLabels(key);
 	}
 
 }

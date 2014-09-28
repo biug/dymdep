@@ -17,14 +17,14 @@ import common.parser.implementations.map.POSTagIntMap;
 import common.parser.implementations.map.POSTagMap;
 import common.parser.implementations.map.POSTagSet2Map;
 import common.parser.implementations.map.POSTagSet3Map;
-import common.parser.implementations.map.POSTagSetOfLabelsMap;
+import common.parser.implementations.map.POSTagSetOfDepLabelsMap;
 import common.parser.implementations.map.POSTagPOSTagIntMap;
 import common.parser.implementations.map.POSTaggedWordMap;
 import common.parser.implementations.map.TwoPOSTaggedWordsMap;
 import common.parser.implementations.map.TwoWordsMap;
 import common.parser.implementations.map.WordIntMap;
 import common.parser.implementations.map.WordMap;
-import common.parser.implementations.map.WordSetOfLabelsMap;
+import common.parser.implementations.map.WordSetOfDepLabelsMap;
 import common.parser.implementations.map.WordPOSTagPOSTagMap;
 import common.parser.implementations.map.WordWordIntMap;
 import common.parser.implementations.map.WordWordPOSTagMap;
@@ -122,12 +122,12 @@ public final class Weight extends WeightBase {
 	public WordIntMap m_mapN0wla;
 	public POSTagIntMap m_mapN0tla;
 
-	public WordSetOfLabelsMap m_mapSTwrp;
-	public POSTagSetOfLabelsMap m_mapSTtrp;
-	public WordSetOfLabelsMap m_mapSTwlp;
-	public POSTagSetOfLabelsMap m_mapSTtlp;
-	public WordSetOfLabelsMap m_mapN0wlp;
-	public POSTagSetOfLabelsMap m_mapN0tlp;
+	public WordSetOfDepLabelsMap m_mapSTwrp;
+	public POSTagSetOfDepLabelsMap m_mapSTtrp;
+	public WordSetOfDepLabelsMap m_mapSTwlp;
+	public POSTagSetOfDepLabelsMap m_mapSTtlp;
+	public WordSetOfDepLabelsMap m_mapN0wlp;
+	public POSTagSetOfDepLabelsMap m_mapN0tlp;
 
 	public LemmaMap m_mapSTl;
 
@@ -224,12 +224,12 @@ public final class Weight extends WeightBase {
 		m_mapN0wla = new WordIntMap("NextWordRightArity");
 		m_mapN0tla = new POSTagIntMap("NextTagRightArity");
 
-		m_mapSTwrp = new WordSetOfLabelsMap("StackWordRightSetoftags");
-		m_mapSTtrp = new POSTagSetOfLabelsMap("StackTagRightSetoftags");
-		m_mapSTwlp = new WordSetOfLabelsMap("StackWordLeftSetoftags");
-		m_mapSTtlp = new POSTagSetOfLabelsMap("StackTagLeftSetoftags");
-		m_mapN0wlp = new WordSetOfLabelsMap("Next0WordLeftSetoftags");
-		m_mapN0tlp = new POSTagSetOfLabelsMap("Next0TagLeftSetoftags");
+		m_mapSTwrp = new WordSetOfDepLabelsMap("StackWordRightSetoftags");
+		m_mapSTtrp = new POSTagSetOfDepLabelsMap("StackTagRightSetoftags");
+		m_mapSTwlp = new WordSetOfDepLabelsMap("StackWordLeftSetoftags");
+		m_mapSTtlp = new POSTagSetOfDepLabelsMap("StackTagLeftSetoftags");
+		m_mapN0wlp = new WordSetOfDepLabelsMap("Next0WordLeftSetoftags");
+		m_mapN0tlp = new POSTagSetOfDepLabelsMap("Next0TagLeftSetoftags");
 
 		m_mapSTl = new LemmaMap("StackLemma");
 

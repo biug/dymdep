@@ -8,17 +8,17 @@ import common.pos.CCGTag;
  * @author ZhangXun
  */
 
-public final class CCGTagSetOfLabels extends Tuple2<CCGTag, SetOfDepLabels> {
+public final class CCGTagSetOfDepLabels extends Tuple2<CCGTag, SetOfDepLabels> {
 	
-	public CCGTagSetOfLabels() {
+	public CCGTagSetOfDepLabels() {
 		super();
 	}
 	
-	public CCGTagSetOfLabels(final CCGTagSetOfLabels tag_tagset) {
+	public CCGTagSetOfDepLabels(final CCGTagSetOfDepLabels tag_tagset) {
 		super(tag_tagset);
 	}
 	
-	public CCGTagSetOfLabels(final CCGTag tag, final SetOfDepLabels tagset) {
+	public CCGTagSetOfDepLabels(final CCGTag tag, final SetOfDepLabels tagset) {
 		super(tag, tagset);
 	}
 
