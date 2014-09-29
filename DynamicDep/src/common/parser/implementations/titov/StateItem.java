@@ -413,7 +413,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void print() {
-		System.out.println("next word is " + m_nNextWord);
+		System.out.println("score is " + score);
 		for (int i = 0; i < m_nNextWord; ++i) {
 			System.out.println("node" + i);
 			System.out.println("ccg tag is " + m_lCCGLabels[i]);
@@ -421,10 +421,10 @@ public class StateItem extends StateItemBase {
 				m_lRightArcs[i][j].print(i);
 			}
 		}
-		for (int i = 1; i <= action_back; ++i) {
-			System.out.print("action " + i + " is ");
-			Action.print(m_lActionList[i]);
-		}
+//		for (int i = 1; i <= action_back; ++i) {
+//			System.out.print("action " + i + " is ");
+//			Action.print(m_lActionList[i]);
+//		}
 		System.out.println();
 	}
 	

@@ -662,75 +662,32 @@ public final class DepParser extends DepParserBase {
 				if (bTrain && correctState.equals(pGenerator)) {
 					bCorrect = true;
 				}
-				
 				pGenerator = (StateItem)m_Agenda.generatorNext();
 			}
 			if (m_Agenda.candidateSize() == 0) {
-//				System.out.println("fuck " + round);
 				finish = true;
 				break;
 			}
-			if (m_Agenda.generatorSize() == 0) {
-//				System.out.println("shit " + round);
-			}
 			if (bTrain) {
 				if (!bCorrect) {
-					
-//					System.out.println("length is " + length);
-//					System.out.println("EARLY START @ " + round);
-//					correctState.print();
-//					((StateItem)m_Agenda.bestGenerator()).print();
-//					Action.print(correctState.m_lActionList[correctState.action_back]);
-//					for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
-//						Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
-//						System.out.println(((StateItem)m_Agenda.generator(i)).score);					
-//					}
-					
 					updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 					return;
 				}
-				// cannot move anymore
-				if (correctState.StandardMoveStep(correct, null) == false) {
-//					System.out.println("round = " + round);
-//					finish = true;
-//					break;
-				}
+				correctState.StandardMoveStep(correct, null);
 			}
 			m_Agenda.nextRound();
 		}
-		 //search in finished state
-//		System.out.println("FINISH " + round);
-//		((StateItem)m_Finish.bestGenerator()).print();
 		
 		if (bTrain) {
 			correctState.StandardFinish();
-			if (!correctState.equals(m_Agenda.bestGenerator())) {
-				
-//				System.out.println("ERROR START @ " + round);
-//				correctState.print();
-//				((StateItem)m_Agenda.bestGenerator()).print();
-//				Action.print(correctState.m_lActionList[correctState.action_back]);
-//				for (int i = 0; i < m_Agenda.generatorSize(); ++i) {
-//					Action.print(((StateItem)m_Agenda.generator(i)).m_lActionList[((StateItem)m_Agenda.generator(i)).action_back]);
-//					System.out.println(((StateItem)m_Agenda.generator(i)).score);
-//				}
-				
+			if (!correctState.equals(m_Agenda.bestGenerator())) {				
 				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 				return;
 			}
 		}
 		
-		// correct check
-//		if (length > 10) {
-//			System.out.println("CORRECT START @ " + round);
-//			correct.print();
-//			((StateItem)m_Agenda.bestGenerator()).print();
-//		}
-		
 		if (retval != null) {
 			m_Finish.nextRound();
-//			if (m_Finish.generatorSize() == 0) System.out.println("FUCK " + round);
-//			if (m_Finish.bestGenerator().equals(correctState)) System.out.println("CORRECT " + round);
 			m_Finish.sortGenerators();
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);

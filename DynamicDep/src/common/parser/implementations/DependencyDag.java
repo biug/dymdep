@@ -45,7 +45,7 @@ public class DependencyDag extends DependencyGraphBase {
 			if (!lines.get(now)[DAG_HEAD_COL].equals(DAG_EMPTY_STRING)) {
 				for (int other = 0; other < length; ++other) {
 					if (!lines.get(other)[k].equals(DAG_EMPTY_STRING)) {
-						int label = Integer.parseInt(lines.get(other)[k]);
+						int label = DependencyLabel.code(lines.get(other)[k]);
 						int direction = now < other ? MacrosDag.RIGHT_DIRECTION : MacrosDag.LEFT_DIRECTION;
 						((DependencyDagNode)nodes[other]).heads.add(new Arc(now, label, direction));
 						((DependencyDagNode)nodes[now]).children.add(new Arc(other, label, direction));
@@ -74,7 +74,7 @@ public class DependencyDag extends DependencyGraphBase {
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
 				Arc arc = node.rightarcs.get(j);
-				int head = arc.direction == MacrosDag.RIGHT_DIRECTION ? i : arc.other;
+				int head = (arc.direction == MacrosDag.RIGHT_DIRECTION ? i : arc.other);
 				heads.add(MacrosBase.integer_cache[head]);
 			}
 		}
@@ -93,7 +93,6 @@ public class DependencyDag extends DependencyGraphBase {
 			bw.write(String.valueOf(i + 1));
 			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + " _ _ ");
 			bw.write(heads.contains(MacrosBase.integer_cache[i]) ? node.word : "_");
-			int index = 0;
 			Arc arc = null;
 			for (int j = 0; j < i; ++j) {
 				boolean find = false;
@@ -107,7 +106,7 @@ public class DependencyDag extends DependencyGraphBase {
 				}
 				if (find) {
 //					arc.print(j);
-					line[index++] = DependencyLabel.str(arc.label);
+					line[heads_map.get(MacrosBase.integer_cache[j]).intValue()] = DependencyLabel.str(arc.label);
 				}
 			}
 			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
