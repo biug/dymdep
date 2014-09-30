@@ -82,10 +82,13 @@ public abstract class PackedScoreMap<K> extends HashMap<K, PackedScore> {
 			return;
 		}
 		while (!(s = br.readLine()).isEmpty()) {
-			K key = loadKeyFromString(s.split("\\s?@\\s?")[0]);
-			PackedScore ps = new PackedScore();
-			ps.loadPackedScoreFromString(s.split("\\s?@\\s?")[1]);
-			super.put(key, ps);
+			int middle = s.lastIndexOf("@");
+			K key = loadKeyFromString(s.substring(0, middle).trim());
+			if (key != null) {
+				PackedScore ps = new PackedScore();
+				ps.loadPackedScoreFromString(s.substring(middle + 1).trim());
+				super.put(key, ps);
+			}
 		}
 	}
 	

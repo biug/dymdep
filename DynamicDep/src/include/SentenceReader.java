@@ -61,4 +61,19 @@ public final class SentenceReader {
 		}
 	}
 	
+	public boolean readCONLL08Sentence(TwoStringsVector vReturn) {
+		if (m_iReader == null) return false;
+		try {
+			vReturn.clear();
+			String line = m_iReader.readLine();
+			while (line != null && !line.isEmpty()) {
+				vReturn.add(new TwoStrings(line.trim().split(" ")[1], line.trim().split(" ")[3]));
+				line = m_iReader.readLine();
+			}
+			return line != null;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
 }

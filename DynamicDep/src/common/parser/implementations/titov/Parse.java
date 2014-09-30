@@ -38,7 +38,7 @@ public class Parse {
 				output_sent[index] = new DependencyDag();
 			}
 			
-			while (input_reader.readTaggedSentence(input_sent)) {
+			while (input_reader.readCONLL08Sentence(input_sent)) {
 				if (input_sent.size() > MacrosDag.MAX_SENTENCE_SIZE) {
 					for (int index = 0; index < nBest; ++index) {
 						output_sent[index].length = 0;
