@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import common.parser.implementations.MacrosDag;
+import common.parser.implementations.MacrosCCGDag;
 import common.pos.CCGTag;
 
 public class SetOfCCGLabels {
@@ -20,19 +20,19 @@ public class SetOfCCGLabels {
 	}
 	
 	public void add(final CCGTag tag) {
-		ccglabels.add(MacrosDag.integer_cache[tag.hashCode()]);
+		ccglabels.add(MacrosCCGDag.integer_cache[tag.hashCode()]);
 	}
 	
 	public void add(final int code) {
-		ccglabels.add(MacrosDag.integer_cache[code]);
+		ccglabels.add(MacrosCCGDag.integer_cache[code]);
 	}
 	
 	public void remove(final CCGTag tag) {
-		ccglabels.remove(MacrosDag.integer_cache[tag.hashCode()]);
+		ccglabels.remove(MacrosCCGDag.integer_cache[tag.hashCode()]);
 	}
 	
 	public void remove(final int code) {
-		ccglabels.remove(MacrosDag.integer_cache[code]);
+		ccglabels.remove(MacrosCCGDag.integer_cache[code]);
 	}
 	
 	public void clear() {
@@ -44,7 +44,7 @@ public class SetOfCCGLabels {
 	}
 	
 	public boolean contains(final int code) {
-		return ccglabels.contains(MacrosDag.integer_cache[code]);
+		return ccglabels.contains(MacrosCCGDag.integer_cache[code]);
 	}
 	
 	@Override
@@ -52,7 +52,7 @@ public class SetOfCCGLabels {
 		int code = 0;
 		Iterator<Integer> itr = ccglabels.iterator();
 		while (itr.hasNext()) {
-			code <<= MacrosDag.CCGTAG_BITS_SIZE;
+			code <<= MacrosCCGDag.CCGTAG_BITS_SIZE;
 			code |= itr.next().intValue();
 		}
 		return code;

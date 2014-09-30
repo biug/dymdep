@@ -1,4 +1,4 @@
-package common.parser.implementations.titov;
+package common.parser.implementations.twostack;
 
 import include.linguistics.SetOfCCGLabels;
 import include.linguistics.SetOfDepLabels;
@@ -14,21 +14,22 @@ import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
 import common.pos.CCGTag;
 
-/*
- * @author ZhangXun
- */
-
 public class StateItem extends StateItemBase {
 	
 	protected int m_nNextWord;
 	
-	protected int stack_back;
+	protected int primary_stack_back;
+	protected int secondary_stack_back;
+
+	protected int[] m_lPrimaryStack;
+	protected int[] m_lSecondaryStack;
 	
-	protected int[] m_lStack;		//stack
+	protected int[] m_lCCGLabels;
 	
 	protected int[] m_lHeadsBack;
 	protected int[] m_lDepsLBack;
 	protected int[] m_lDepsRBack;
+	protected int[] m_lSiblingBack;
 	protected int[] m_lRightArcsBack;
 	protected int[] m_lRightArcsSeek;
 	
@@ -36,9 +37,8 @@ public class StateItem extends StateItemBase {
 	protected int[][] m_lLabels;	//label for every node
 	protected int[][] m_lDepsL;		//left dependency children
 	protected int[][] m_lDepsR;		//right dependency children
+	protected int[][] m_lSibling;
 	protected Arc[][] m_lRightArcs;	//right arcs
-	protected int[] m_lSibling;
-	protected int[] m_lCCGLabels;
 	
 	protected SetOfDepLabels[] m_lDepTagL;
 	protected SetOfDepLabels[] m_lDepTagR;
@@ -48,7 +48,14 @@ public class StateItem extends StateItemBase {
 	protected int[] m_lActionList;
 	
 	public StateItem() {
-		stack_back = -1;
+		
+		primary_stack_back = -1;
+		secondary_stack_back = -1;
+		
+		m_lPrimaryStack = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lSecondaryStack = new int[Macros.MAX_SENTENCE_SIZE];
+		
+		m_lCCGLabels = new int[Macros.MAX_SENTENCE_SIZE];
 		
 		m_lHeadsBack = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepsLBack = new int[Macros.MAX_SENTENCE_SIZE];
@@ -56,19 +63,22 @@ public class StateItem extends StateItemBase {
 		m_lRightArcsBack = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lRightArcsSeek = new int[Macros.MAX_SENTENCE_SIZE];
 		
-		m_lStack = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeads = new int[Macros.MAX_SENTENCE_SIZE][];
 		m_lLabels = new int[Macros.MAX_SENTENCE_SIZE][];
 		m_lDepsL = new int[Macros.MAX_SENTENCE_SIZE][];
 		m_lDepsR = new int[Macros.MAX_SENTENCE_SIZE][];
+		m_lSibling = new int[Macros.MAX_SENTENCE_SIZE][];
 		m_lRightArcs = new Arc[Macros.MAX_SENTENCE_SIZE][];
 		
-		m_lCCGLabels = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepTagL = new SetOfDepLabels[Macros.MAX_SENTENCE_SIZE];
 		m_lDepTagR = new SetOfDepLabels[Macros.MAX_SENTENCE_SIZE];
 		m_lCCGTagL = new SetOfCCGLabels[Macros.MAX_SENTENCE_SIZE];
 		
+		action_back = 0;
+		m_lActionList = new int[Macros.MAX_SENTENCE_SIZE * Macros.MAX_SENTENCE_SIZE];
+		
 		for (int i = 0; i < Macros.MAX_SENTENCE_SIZE; ++i) {
+
 			m_lHeadsBack[i] = m_lDepsLBack[i] = m_lDepsRBack[i] = m_lRightArcsBack[i] = -1;
 			m_lRightArcsSeek[i] = 0;
 			
@@ -77,39 +87,55 @@ public class StateItem extends StateItemBase {
 			m_lLabels[i] = new int[Macros.MAX_SENTENCE_SIZE];
 			m_lDepsL[i] = new int[Macros.MAX_SENTENCE_SIZE];
 			m_lDepsR[i] = new int[Macros.MAX_SENTENCE_SIZE];
+			m_lSibling[i] = new int[Macros.MAX_SENTENCE_SIZE];
+			
 			m_lRightArcs[i] = new Arc[Macros.MAX_SENTENCE_SIZE];
-			m_lDepTagL[i] = new SetOfDepLabels();
-			m_lDepTagR[i] = new SetOfDepLabels();
-			m_lCCGTagL[i] = new SetOfCCGLabels();
 			for (int j = 0; j < Macros.MAX_SENTENCE_SIZE; ++j) {
 				m_lRightArcs[i][j] = new Arc();
 			}
+			
+			m_lDepTagL[i] = new SetOfDepLabels();
+			m_lDepTagR[i] = new SetOfDepLabels();
+			m_lCCGTagL[i] = new SetOfCCGLabels();
+			
 		}
-		m_lSibling = new int[Macros.MAX_SENTENCE_SIZE];
-		action_back = 0;
-		m_lActionList = new int[Macros.MAX_SENTENCE_SIZE * Macros.MAX_SENTENCE_SIZE];
+		
 		clear();
 	}
 	
 	@Override
-	public final boolean more(final StateItemBase itembase) {
+	public StateItemBase generateItem() {
+		return new StateItem();
+	}
+
+	@Override
+	public boolean more(StateItemBase itembase) {
 		return score > ((StateItem)itembase).score;
 	}
-	
+
 	@Override
-	public void copy(final StateItemBase itembase) {
+	public void copy(StateItemBase itembase) {
+		
 		StateItem item = (StateItem)itembase;
+
 		score = item.score;
-		stack_back = item.stack_back;
+		
 		m_nNextWord = item.m_nNextWord;
+		
+		primary_stack_back = item.primary_stack_back;
+		System.arraycopy(item.m_lPrimaryStack, 0, m_lPrimaryStack, 0, primary_stack_back + 1);
+		secondary_stack_back = item.secondary_stack_back;
+		System.arraycopy(item.m_lSecondaryStack, 0, m_lSecondaryStack, 0, secondary_stack_back + 1);
+		
 		action_back = item.action_back;
-		System.arraycopy(item.m_lStack, 0, m_lStack, 0, stack_back + 1);
 		System.arraycopy(item.m_lActionList, 0, m_lActionList, 0, action_back + 1);
+		
 		int length = m_nNextWord + 1;
 		if (length > 0) {
 			System.arraycopy(item.m_lHeadsBack, 0, m_lHeadsBack, 0, length);
 			System.arraycopy(item.m_lDepsLBack, 0, m_lDepsLBack, 0, length);
 			System.arraycopy(item.m_lDepsRBack, 0, m_lDepsRBack, 0, length);
+			System.arraycopy(item.m_lSiblingBack, 0, m_lSiblingBack, 0, length);
 			System.arraycopy(item.m_lCCGLabels, 0, m_lCCGLabels, 0, length);
 			System.arraycopy(item.m_lRightArcsBack, 0, m_lRightArcsBack, 0, length);
 			System.arraycopy(item.m_lRightArcsSeek, 0, m_lRightArcsSeek, 0, length);
@@ -120,22 +146,17 @@ public class StateItem extends StateItemBase {
 				}
 				if (m_lDepsLBack[i] >= 0) System.arraycopy(item.m_lDepsL[i], 0, m_lDepsL[i], 0, m_lDepsLBack[i] + 1);
 				if (m_lDepsRBack[i] >= 0) System.arraycopy(item.m_lDepsR[i], 0, m_lDepsR[i], 0, m_lDepsRBack[i] + 1);
+				if (m_lSiblingBack[i] >= 0) System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, m_lSiblingBack[i] + 1);
 				for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 					m_lRightArcs[i][j].copy(item.m_lRightArcs[i][j]);
 				}
 			}
-			System.arraycopy(item.m_lSibling, 0, m_lSibling, 0, length);
 			for (int i = 0; i < length; ++i) {
 				m_lDepTagL[i].copy(item.m_lDepTagL[i]);
 				m_lDepTagR[i].copy(item.m_lDepTagR[i]);
 				m_lCCGTagL[i].copy(item.m_lCCGTagL[i]);
 			}
 		}
-	}
-	
-	@Override
-	public StateItemBase generateItem() {
-		return new StateItem();
 	}
 	
 	@Override
@@ -151,32 +172,48 @@ public class StateItem extends StateItemBase {
 		}
 		return true;
 	}
-	
-	public final int stacksize() {
-		return stack_back + 1;
+
+	public final int size() {
+		return m_nNextWord;
 	}
 	
-	public final boolean stackempty() {
-		return stack_back == -1;
+	public final int pstacksize() {
+		return primary_stack_back + 1;
 	}
 	
-	public final int stacktop() {
-		return m_lStack[stack_back];
+	public final boolean pstackempty() {
+		return primary_stack_back == -1;
 	}
 	
-	public final int stackitem(final int index) {
-		return m_lStack[index];
+	public final int pstacktop() {
+		return m_lPrimaryStack[primary_stack_back];
 	}
 	
-	public final boolean canswap() {
-		return m_lActionList[action_back] != Macros.SWAP && stack_back > 0;
+	public final int pstackitem(final int index) {
+		return m_lPrimaryStack[index];
+	}
+
+	public final int sstacksize() {
+		return secondary_stack_back + 1;
+	}
+	
+	public final boolean sstackempty() {
+		return secondary_stack_back == -1;
+	}
+	
+	public final int sstacktop() {
+		return m_lSecondaryStack[secondary_stack_back];
+	}
+	
+	public final int sstackitem(final int index) {
+		return m_lSecondaryStack[index];
 	}
 	
 	public final boolean canarc() {
-		if (stack_back == -1) {
+		if (primary_stack_back == -1) {
 			return false;
 		}
-		int top = m_lStack[stack_back], back = m_lRightArcsBack[top];
+		int top = pstacktop(), back = m_lRightArcsBack[top];
 		if (back == -1) return true;
 		return m_lRightArcs[top][back].other != m_nNextWord;
 	}
@@ -194,11 +231,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final int sibling(final int index) {
-		return m_lSibling[index];
-	}
-	
-	public final int size() {
-		return m_nNextWord;
+		return m_lSibling[index][m_lSiblingBack[index]];
 	}
 	
 	public final int leftarity(final int index) {
@@ -241,24 +274,40 @@ public class StateItem extends StateItemBase {
 		//reset buffer seek
 		m_nNextWord = 0;
 		//reset stack seek
-		stack_back = -1;
+		primary_stack_back = -1;
+		secondary_stack_back = -1;
 		//reset score
-		score = 0;
+		score = 0L;
 		//reset action
 		action_back = 0;
-		m_lActionList[action_back] = Macros.NO_ACTION;
+		m_lActionList[0] = Macros.NO_ACTION;
 		ClearNext();
 	}
 	
+	public void ClearNext() {
+		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
+		m_lRightArcsBack[m_nNextWord] = -1;
+		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] =
+				m_lSiblingBack[m_nNextWord] = m_lRightArcsSeek[m_nNextWord] = 0;
+		m_lHeads[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+		m_lLabels[m_nNextWord][0] = Macros.DEP_NONE;
+		m_lDepsL[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+		m_lDepsR[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+		m_lSibling[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+		m_lDepTagL[m_nNextWord].clear();
+		m_lDepTagR[m_nNextWord].clear();
+		m_lCCGTagL[m_nNextWord].clear();
+	}
+	
 	public void ArcLeft(int label) {
-		int left = m_lStack[stack_back];
+		int left = m_lPrimaryStack[primary_stack_back];
 		//add new head for left and add label
 		m_lHeads[left][++m_lHeadsBack[left]] = m_nNextWord;
 		m_lLabels[left][m_lHeadsBack[left]] = label;
 		m_lDepTagL[m_nNextWord].add(label);
 		m_lCCGTagL[m_nNextWord].add(m_lCCGLabels[left]);
 		//sibling is the previous child of buffer seek
-		m_lSibling[left] = m_lDepsL[m_nNextWord][m_lDepsLBack[m_nNextWord]];
+		m_lSibling[left][++m_lSiblingBack[left]] = m_lDepsL[m_nNextWord][m_lDepsLBack[m_nNextWord]];
 		//add child for buffer seek
 		m_lDepsL[m_nNextWord][++m_lDepsLBack[m_nNextWord]] = left;
 		//add right arcs for stack seek
@@ -267,51 +316,41 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void ArcRight(int label) {
-		int left = m_lStack[stack_back];
+		int left = m_lPrimaryStack[primary_stack_back];
 		m_lHeads[m_nNextWord][++m_lHeadsBack[m_nNextWord]] = left;
 		m_lLabels[m_nNextWord][m_lHeadsBack[m_nNextWord]] = label;
 		m_lDepTagR[left].add(label);
-		m_lSibling[m_nNextWord] = m_lDepsR[left][m_lDepsRBack[left]];
+		m_lSibling[m_nNextWord][++m_lSiblingBack[m_nNextWord]] = m_lDepsR[left][m_lDepsRBack[left]];
 		m_lDepsR[left][++m_lDepsRBack[left]] = m_nNextWord;
 		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.RIGHT_DIRECTION);
 		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, label);
 	}
 
 	public void Shift(int label) {
-		m_lStack[++stack_back] = m_nNextWord;
+		m_lPrimaryStack[++primary_stack_back] = m_nNextWord;
 		m_lCCGLabels[m_nNextWord++] = label;
 		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, label);
 		ClearNext();
 	}
 	
 	public void Reduce() {
-		--stack_back;
+		--primary_stack_back;
 		m_lActionList[++action_back] = Macros.REDUCE;
 	}
 	
-	public void Swap() {
-		int tail = m_lStack[stack_back];
-		m_lStack[stack_back] = m_lStack[stack_back - 1];
-		m_lStack[stack_back - 1] = tail;
-		m_lActionList[++action_back] = Macros.SWAP;
+	public void Mem() {
+		m_lSecondaryStack[++secondary_stack_back] = m_lPrimaryStack[primary_stack_back--];
+		m_lActionList[++action_back] = Macros.MEM;
 	}
 	
-	public void ClearNext() {
-		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
-		m_lRightArcsBack[m_nNextWord] = -1;
-		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] = m_lRightArcsSeek[m_nNextWord] = 0;
-		m_lHeads[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
-		m_lLabels[m_nNextWord][0] = Macros.DEP_NONE;
-		m_lDepsL[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
-		m_lDepsR[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
-		m_lDepTagL[m_nNextWord].clear();
-		m_lDepTagR[m_nNextWord].clear();
-		m_lCCGTagL[m_nNextWord].clear();
-		m_lSibling[m_nNextWord] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
+	public void Recall() {
+		m_lPrimaryStack[++primary_stack_back] = m_lSecondaryStack[secondary_stack_back--];
+		m_lActionList[++action_back] = Macros.RECALL;
 	}
 	
+
 	@Override
-	public void Move(final int action) {
+	public void Move(int action) {
 		switch (Action.getUnlabeledAction(action)) {
 		case Macros.NO_ACTION:
 			return;
@@ -321,8 +360,11 @@ public class StateItem extends StateItemBase {
 		case Macros.REDUCE:
 			Reduce();
 			return;
-		case Macros.SWAP:
-			Swap();
+		case Macros.MEM:
+			Mem();
+			return;
+		case Macros.RECALL:
+			Recall();
 			return;
 		case Macros.ARC_LEFT:
 			ArcLeft(Action.getLabel(action));
@@ -332,18 +374,14 @@ public class StateItem extends StateItemBase {
 			return;
 		}
 	}
-	
+
 	@Override
-	public boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
+	public boolean StandardMoveStep(DependencyGraphBase graph, ArrayList<DependencyLabel> m_lCacheLabel) {
 		int top;
 		DependencyDag dag = (DependencyDag)graph;
-		if (stack_back >= 0) {
-			top = m_lStack[stack_back];
+		if (primary_stack_back >= 0) {
+			top = pstacktop();
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
-			// skip impossible rightarcs
-			while (node.rightseek <= node.righttail && node.NearestRight().other < m_nNextWord) {
-				++node.rightseek;
-			}
 			//if no rightarcs, reduce
 			if (node.rightseek > node.righttail) {
 				Reduce();
@@ -351,33 +389,39 @@ public class StateItem extends StateItemBase {
 				return true;
 			}
 			//get nearest right arc
-			Arc rightnode = node.NearestRight();
-			if (rightnode.other == m_nNextWord) {
+			Arc rightarc = node.NearestRight();
+			if (rightarc.other == m_nNextWord) {
 				++node.rightseek;
-				if (rightnode.direction == Macros.LEFT_DIRECTION) {
-					ArcLeft(rightnode.label);
+				if (rightarc.direction == Macros.LEFT_DIRECTION) {
+					ArcLeft(rightarc.label);
 //					System.out.println("left" + rightnode.label);
 					++node.headsseek;
 				} else {
-					ArcRight(rightnode.label);
+					ArcRight(rightarc.label);
 //					System.out.println("right" + rightnode.label);
 					++node.childrenseek;
 				}
 				return true;
-			} else if (stack_back >= 1) {
-				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lStack[stack_back - 1]];
-				int topseek = node.rightseek, toptail = node.righttail;
-				int top2ndseek = node2nd.rightseek, top2ndtail = node2nd.righttail;
-				if (topseek <= toptail && top2ndseek <= top2ndtail) {
-					if (node.rightarcs.get(topseek).compareTo(node2nd.rightarcs.get(top2ndseek)) > 0) {
-//						System.out.println("swap1");
-						Swap();
-						return true;
+			} else {
+				for (int i = primary_stack_back - 1; i >= 0; --i) {
+					node = (DependencyDagNode)dag.nodes[m_lPrimaryStack[i]];
+					for (int j = node.rightseek; j <= node.righttail; ++j) {
+						rightarc = node.rightarcs.get(j);
+						if (rightarc.other == m_nNextWord) {
+							Mem();
+							return true;
+						}
 					}
-				} else if (topseek <= toptail) {
-//					System.out.println("swap2");
-					Swap();
-					return true;
+				}
+				for (int i = secondary_stack_back; i >= 0; --i) {
+					node = (DependencyDagNode)dag.nodes[m_lSecondaryStack[i]];
+					for (int j = node.rightseek; j <= node.righttail; ++j) {
+						rightarc = node.rightarcs.get(j);
+						if (rightarc.other == m_nNextWord) {
+							Recall();
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -389,14 +433,14 @@ public class StateItem extends StateItemBase {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void StandardFinish() {
-		assert (stack_back == -1);
+		assert(primary_stack_back == -1);
 	}
-	
+
 	@Override
-	public int FollowMove(final StateItemBase itembase) {
+	public int FollowMove(StateItemBase itembase) {
 		StateItem item = (StateItem)itembase;
 		return item.m_lActionList[action_back + 1];
 	}
@@ -423,5 +467,5 @@ public class StateItem extends StateItemBase {
 		}
 		System.out.println();
 	}
-	
+
 }

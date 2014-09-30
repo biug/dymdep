@@ -13,19 +13,10 @@ import common.parser.MacrosBase;
  * @author ZhangXun
  */
 
-public final class MacrosTree extends MacrosBase {
+public class MacrosCCGDag extends MacrosBase {
 	
-	public final static int DEP_ROOT = 1;
-	
-	public final static int NO_ACTION = 0;
-	public final static int SHIFT = 1;
-	public final static int REDUCE = 2;
-	public final static int ARC_LEFT = 3;
-	public final static int ARC_RIGHT = 4;
-	public final static int POP_ROOT = 5;
-	public static int AL_FIRST;
-	public static int AR_FIRST;
-	public static int ACTION_MAX;
+	public final static int LEFT_DIRECTION = 0;
+	public final static int RIGHT_DIRECTION = 1;
 	
 	public static void loadMacros(String macrosFile) throws IOException {
 		
@@ -50,6 +41,17 @@ public final class MacrosTree extends MacrosBase {
 			++POSTAG_BITS_SIZE;
 		}
 		
+		CCGTAG_STRINGS = br.readLine().split(" ");
+		CCGTAG_MAP = new HashMap<String, Integer>();
+		for (int i = 0; i < CCGTAG_STRINGS.length; ++i) {
+			CCGTAG_MAP.put(CCGTAG_STRINGS[i], integer_cache[i]);
+		}
+		CCGTAG_COUNT = CCGTAG_STRINGS.length;
+		CCGTAG_BITS_SIZE = 0;
+		while ((1 << CCGTAG_BITS_SIZE) < CCGTAG_COUNT) {
+			++CCGTAG_BITS_SIZE;
+		}
+		
 		DEP_STRINGS = br.readLine().split(" ");
 		DEP_COUNT = DEP_STRINGS.length;
 		DEP_BITS_SIZE = 0;
@@ -57,9 +59,6 @@ public final class MacrosTree extends MacrosBase {
 			++DEP_BITS_SIZE;
 		}
 		
-		AL_FIRST = POP_ROOT + 1;
-		AR_FIRST = AL_FIRST + DEP_COUNT - 1;
-		ACTION_MAX = AR_FIRST + DEP_COUNT - 1;
 		br.close();
 	}
 	

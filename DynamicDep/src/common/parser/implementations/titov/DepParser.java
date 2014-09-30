@@ -40,7 +40,6 @@ import common.parser.ScoredAction;
 import common.parser.StateItemBase;
 import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
-import common.parser.implementations.MacrosDag;
 import common.pos.CCGTag;
 import common.pos.POSTag;
 
@@ -99,21 +98,21 @@ public final class DepParser extends DepParserBase {
 	public static final POSTaggedWord empty_postaggedword = new POSTaggedWord();
 	
 	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2) {
-		return ((tag1.hashCode() << (MacrosDag.POSTAG_BITS_SIZE)) | (tag2.hashCode()));
+		return ((tag1.hashCode() << (Macros.POSTAG_BITS_SIZE)) | (tag2.hashCode()));
 	}
 	
 	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2, final POSTag tag3) {
-		return ((tag1.hashCode() << (MacrosDag.POSTAG_BITS_SIZE << 1)) | (tag2.hashCode() << (MacrosDag.POSTAG_BITS_SIZE)) | (tag3.hashCode()));
+		return ((tag1.hashCode() << (Macros.POSTAG_BITS_SIZE << 1)) | (tag2.hashCode() << (Macros.POSTAG_BITS_SIZE)) | (tag3.hashCode()));
 	}
 	
 	public static final long encodeCCGTags(final CCGTag tag1, final CCGTag tag2) {
-		return ((tag1.hashCode() << (MacrosDag.CCGTAG_BITS_SIZE)) | (tag2.hashCode()));
+		return ((tag1.hashCode() << (Macros.CCGTAG_BITS_SIZE)) | (tag2.hashCode()));
 	}
 	
 	public static final long encodeCCGTags(final CCGTag tag1, final CCGTag tag2, final CCGTag tag3) {
 		long code = tag1.hashCode();
-		code <<= (MacrosDag.CCGTAG_BITS_SIZE << 1);
-		return code | (tag2.hashCode() << (MacrosDag.CCGTAG_BITS_SIZE)) | (tag3.hashCode());
+		code <<= (Macros.CCGTAG_BITS_SIZE << 1);
+		return code | (tag2.hashCode() << (Macros.CCGTAG_BITS_SIZE)) | (tag3.hashCode());
 	}
 	
 	private int minVal(final int n1, final int n2) {
@@ -123,9 +122,9 @@ public final class DepParser extends DepParserBase {
 	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
 		super(sFeatureDBPath, bTrain);
 		
-		m_Agenda = new AgendaBeam(MacrosDag.AGENDA_SIZE, new StateItem());
-		m_Finish = new AgendaBeam(MacrosDag.AGENDA_SIZE, new StateItem());
-		m_Beam = new AgendaSimple(MacrosDag.AGENDA_SIZE);
+		m_Agenda = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
+		m_Finish = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
+		m_Beam = new AgendaSimple(Macros.AGENDA_SIZE);
 		
 		m_lCache = new ArrayList<POSTaggedWord>();
 		
@@ -139,7 +138,7 @@ public final class DepParser extends DepParserBase {
 		pCandidate = new StateItem();
 		correctState = new StateItem();
 		
-		packed_scores = new PackedScoreType(MacrosDag.ACTION_MAX);
+		packed_scores = new PackedScoreType(Macros.ACTION_MAX);
 		
 		trainSentence = new TwoStringsVector();
 		
@@ -224,26 +223,26 @@ public final class DepParser extends DepParserBase {
 		final POSTag n1_postag = n1_word_postag.tag;
 		final POSTag n2_postag = n2_word_postag.tag;
 		
-		final int st_label = st_index == -1 ? MacrosDag.DEP_NONE : item.label(st_index);
-		final int sth_label = sth_index == -1 ? MacrosDag.DEP_NONE : item.label(sth_index);
-		final int stld_label = stld_index == -1 ? MacrosDag.DEP_NONE : item.label(stld_index);
-		final int strd_label = strd_index == -1 ? MacrosDag.DEP_NONE : item.label(strd_index);
-		final int stl2d_label = stl2d_index == -1 ? MacrosDag.DEP_NONE : item.label(stl2d_index);
-		final int str2d_label = str2d_index == -1 ? MacrosDag.DEP_NONE : item.label(str2d_index); //PROBLEM!
-		final int n0ld_label = n0ld_index == -1 ? MacrosDag.DEP_NONE : item.label(n0ld_index);
-		final int n0l2d_label = n0l2d_index == -1 ? MacrosDag.DEP_NONE : item.label(n0l2d_index);
+		final int st_label = st_index == -1 ? Macros.DEP_NONE : item.label(st_index);
+		final int sth_label = sth_index == -1 ? Macros.DEP_NONE : item.label(sth_index);
+		final int stld_label = stld_index == -1 ? Macros.DEP_NONE : item.label(stld_index);
+		final int strd_label = strd_index == -1 ? Macros.DEP_NONE : item.label(strd_index);
+		final int stl2d_label = stl2d_index == -1 ? Macros.DEP_NONE : item.label(stl2d_index);
+		final int str2d_label = str2d_index == -1 ? Macros.DEP_NONE : item.label(str2d_index); //PROBLEM!
+		final int n0ld_label = n0ld_index == -1 ? Macros.DEP_NONE : item.label(n0ld_index);
+		final int n0l2d_label = n0l2d_index == -1 ? Macros.DEP_NONE : item.label(n0l2d_index);
 		
-		final int st_ccg = st_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(st_index);
-		final int sth_ccg = sth_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(sth_index);
-		final int sthh_ccg = sthh_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(sthh_index);
-		final int stld_ccg = stld_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(stld_index);
-		final int strd_ccg = strd_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(strd_index);
-		final int stl2d_ccg = stl2d_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(stl2d_index);
-		final int str2d_ccg = str2d_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(str2d_index);
-		final int n0ld_ccg = n0ld_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(n0ld_index);
-		final int n0l2d_ccg = n0l2d_index == -1 ? MacrosDag.CCGTAG_NONE : item.ccg(n0l2d_index);
+		final int st_ccg = st_index == -1 ? Macros.CCGTAG_NONE : item.ccg(st_index);
+		final int sth_ccg = sth_index == -1 ? Macros.CCGTAG_NONE : item.ccg(sth_index);
+		final int sthh_ccg = sthh_index == -1 ? Macros.CCGTAG_NONE : item.ccg(sthh_index);
+		final int stld_ccg = stld_index == -1 ? Macros.CCGTAG_NONE : item.ccg(stld_index);
+		final int strd_ccg = strd_index == -1 ? Macros.CCGTAG_NONE : item.ccg(strd_index);
+		final int stl2d_ccg = stl2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(stl2d_index);
+		final int str2d_ccg = str2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(str2d_index);
+		final int n0ld_ccg = n0ld_index == -1 ? Macros.CCGTAG_NONE : item.ccg(n0ld_index);
+		final int n0l2d_ccg = n0l2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(n0l2d_index);
 		
-		final int st_n0_dist = MacrosDag.encodeLinkDistance(st_index, n0_index);
+		final int st_n0_dist = Macros.encodeLinkDistance(st_index, n0_index);
 		
 		final int st_rarity = st_index == -1 ? 0 : item.rightarity(st_index);
 		final int st_larity = st_index == -1 ? 0 : item.leftarity(st_index);
@@ -398,7 +397,7 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
 			
 			if (sth_index != -1 && sthh_index != -1 &&
-					item.ccg(sth_index) != MacrosDag.CCGTAG_NONE && item.ccg(sthh_index) != MacrosDag.CCGTAG_NONE) {
+					item.ccg(sth_index) != Macros.CCGTAG_NONE && item.ccg(sthh_index) != Macros.CCGTAG_NONE) {
 				set_of_3_ccgtags.clear();
 				set_of_3_ccgtags.attach(item.ccg(sthh_index));
 				set_of_3_ccgtags.attach(item.ccg(sth_index));
@@ -415,7 +414,7 @@ public final class DepParser extends DepParserBase {
 			}
 			
 			if (strd_index != -1 && str2d_index != -1 &&
-					item.ccg(strd_index) != MacrosDag.CCGTAG_NONE && item.ccg(str2d_index) != MacrosDag.CCGTAG_NONE) {
+					item.ccg(strd_index) != Macros.CCGTAG_NONE && item.ccg(str2d_index) != Macros.CCGTAG_NONE) {
 				set_of_3_ccgtags.clear();
 				set_of_3_ccgtags.attach(item.ccg(st_index));
 				set_of_3_ccgtags.attach(item.ccg(strd_index));
@@ -514,7 +513,7 @@ public final class DepParser extends DepParserBase {
 //			System.out.print("action " + str + " = ");
 //			Action.print(action);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
-			if (action >= MacrosDag.AL_FIRST) {
+			if (action >= Macros.AL_FIRST) {
 //				System.out.println("action = " + action);
 //				System.out.println("stack back seek = " + itemForStates.stack_back);
 //				System.out.println("stack back = " + itemForStates.m_lStack[itemForState.stack_back]);
@@ -532,7 +531,7 @@ public final class DepParser extends DepParserBase {
 			if (action == correct_action) {
 //				System.out.print("action = ");
 //				Action.print(action);
-				if (action >= MacrosDag.AL_FIRST){
+				if (action >= Macros.AL_FIRST){
 					int back = itemForStates.m_lStack[itemForStates.stack_back];
 					++((StateItem)output).m_lRightArcsSeek[back];
 					++((StateItem)correct).m_lRightArcsSeek[back];
@@ -550,37 +549,37 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void reduce(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = MacrosDag.REDUCE;
+		scoredaction.action = Macros.REDUCE;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
 	public void arcleft(final StateItem item, final PackedScoreType scores) {
-		for (int label = MacrosDag.DEP_FIRST; label < MacrosDag.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(MacrosDag.ARC_LEFT, label);
+		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.ARC_LEFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
 	public void arcright(final StateItem item, final PackedScoreType scores) {
-		for (int label = MacrosDag.DEP_FIRST; label < MacrosDag.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(MacrosDag.ARC_RIGHT, label);
+		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.ARC_RIGHT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label = MacrosDag.CCGTAG_FIRST; label < MacrosDag.CCGTAG_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(MacrosDag.SHIFT, label);
+		for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
 	public void swap(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = MacrosDag.SWAP;
+		scoredaction.action = Macros.SWAP;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
@@ -617,7 +616,7 @@ public final class DepParser extends DepParserBase {
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
 				m_Beam.clear();
 				packed_scores.reset();
-				getOrUpdateStackScore(pGenerator, packed_scores, MacrosDag.NO_ACTION);
+				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
 				/*
 				 * if can swap, try swap
 				 */

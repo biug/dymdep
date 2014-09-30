@@ -33,4 +33,19 @@ public class MacrosBase {
 	public final static int ARITY_DIRECTION_LEFT = 0;
 	public final static int ARITY_DIRECTION_RIGHT = 1;
 	
+
+	
+	public static final int encodeLinkDistance(final int head_index, final int dep_index) {
+		int diff;
+		diff = head_index - dep_index;
+		if (diff < 0) {
+			diff = -diff;
+		}
+		if (diff > 10) {
+			diff = 6;
+		} else if (diff > 5) {
+			diff = 5;
+		}
+		return diff;
+	}
 }

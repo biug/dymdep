@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import common.parser.implementations.DependencyDag;
-import common.parser.implementations.MacrosDag;
+import common.parser.implementations.MacrosCCGDag;
 
 public class Parse {
 	public void process(final String sInputFile, final String sOutputFile, final String sFeatureFile, final int nBest, final boolean bScores) {
@@ -39,7 +39,7 @@ public class Parse {
 			}
 			
 			while (input_reader.readCONLL08Sentence(input_sent)) {
-				if (input_sent.size() > MacrosDag.MAX_SENTENCE_SIZE) {
+				if (input_sent.size() > MacrosCCGDag.MAX_SENTENCE_SIZE) {
 					for (int index = 0; index < nBest; ++index) {
 						output_sent[index].length = 0;
 						if (bScores) {

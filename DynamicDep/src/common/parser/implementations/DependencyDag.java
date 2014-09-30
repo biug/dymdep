@@ -23,7 +23,7 @@ public class DependencyDag extends DependencyGraphBase {
 	
 	public DependencyDag() {
 		length = 0;
-		nodes = new DependencyDagNode[MacrosDag.MAX_SENTENCE_SIZE];
+		nodes = new DependencyDagNode[MacrosCCGDag.MAX_SENTENCE_SIZE];
 	}
 	
 	@Override
@@ -46,10 +46,10 @@ public class DependencyDag extends DependencyGraphBase {
 				for (int other = 0; other < length; ++other) {
 					if (!lines.get(other)[k].equals(DAG_EMPTY_STRING)) {
 						int label = DependencyLabel.code(lines.get(other)[k]);
-						int direction = now < other ? MacrosDag.RIGHT_DIRECTION : MacrosDag.LEFT_DIRECTION;
+						int direction = now < other ? MacrosCCGDag.RIGHT_DIRECTION : MacrosCCGDag.LEFT_DIRECTION;
 						((DependencyDagNode)nodes[other]).heads.add(new Arc(now, label, direction));
 						((DependencyDagNode)nodes[now]).children.add(new Arc(other, label, direction));
-						if (direction == MacrosDag.RIGHT_DIRECTION) {
+						if (direction == MacrosCCGDag.RIGHT_DIRECTION) {
 							((DependencyDagNode)nodes[now]).rightarcs.add(new Arc(other, label, direction));
 							++((DependencyDagNode)nodes[now]).righttail;
 						} else {
@@ -74,7 +74,7 @@ public class DependencyDag extends DependencyGraphBase {
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
 				Arc arc = node.rightarcs.get(j);
-				int head = (arc.direction == MacrosDag.RIGHT_DIRECTION ? i : arc.other);
+				int head = (arc.direction == MacrosCCGDag.RIGHT_DIRECTION ? i : arc.other);
 				heads.add(MacrosBase.integer_cache[head]);
 			}
 		}
@@ -99,7 +99,7 @@ public class DependencyDag extends DependencyGraphBase {
 				DependencyDagNode subnode = (DependencyDagNode)nodes[j];
 				for (int k = 0, n = subnode.rightarcs.size(); k < n; ++k) {
 					arc = subnode.rightarcs.get(k);
-					if (arc.other == i && arc.direction == MacrosDag.RIGHT_DIRECTION) {
+					if (arc.other == i && arc.direction == MacrosCCGDag.RIGHT_DIRECTION) {
 						find = true;
 						break;
 					}
@@ -111,7 +111,7 @@ public class DependencyDag extends DependencyGraphBase {
 			}
 			for (int j = 0, n = node.rightarcs.size(); j < n; ++j) {
 				arc = node.rightarcs.get(j);
-				if (arc.direction == MacrosDag.LEFT_DIRECTION) {
+				if (arc.direction == MacrosCCGDag.LEFT_DIRECTION) {
 //					arc.print(i);
 					line[heads_map.get(MacrosBase.integer_cache[arc.other]).intValue()] = DependencyLabel.str(arc.label);
 				}

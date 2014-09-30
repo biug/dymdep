@@ -1,5 +1,7 @@
 package common.parser.implementations;
 
+import common.parser.MacrosBase;
+
 
 public class Arc implements Comparable<Arc> {
 	
@@ -9,8 +11,8 @@ public class Arc implements Comparable<Arc> {
 	
 	public Arc() {
 		other = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
-		label = MacrosDag.DEP_NONE;
-		direction = MacrosDag.LEFT_DIRECTION;
+		label = MacrosBase.DEP_NONE;
+		direction = 0;
 	}
 	
 	public Arc(final int o, final int l, final int d) {
@@ -36,7 +38,7 @@ public class Arc implements Comparable<Arc> {
 	}
 	
 	public void print(int now) {
-		if (direction == MacrosDag.LEFT_DIRECTION) {
+		if (direction == MacrosCCGDag.LEFT_DIRECTION) {
 			System.out.println(now + " <- " + other + " : " + label);			
 		} else {
 			System.out.println(now + " -> " + other + " : " + label);

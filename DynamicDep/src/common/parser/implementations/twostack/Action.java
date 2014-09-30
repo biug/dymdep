@@ -1,12 +1,9 @@
-package common.parser.implementations.titov;
+package common.parser.implementations.twostack;
 
+import common.parser.implementations.twostack.Macros;
 
-/*
- * @author ZhangXun
- */
+public class Action {
 
-public final class Action {
-	
 	public static int encodeAction(final int action, final int label) {
 		if (action == Macros.SHIFT){
 			return Macros.SH_FIRST + label;
@@ -55,8 +52,11 @@ public final class Action {
 		case Macros.REDUCE:
 			System.out.println("reduce");
 			return;
-		case Macros.SWAP:
-			System.out.println("swap");
+		case Macros.MEM:
+			System.out.println("mem");
+			return;
+		case Macros.RECALL:
+			System.out.println("recall");
 			return;
 		case Macros.ARC_LEFT:
 			System.out.println("left");

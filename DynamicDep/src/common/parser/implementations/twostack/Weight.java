@@ -1,4 +1,4 @@
-package common.parser.implementations.titov;
+package common.parser.implementations.twostack;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,70 +36,162 @@ import common.parser.implementations.map.WordWordCCGTagMap;
 import common.parser.implementations.map.WordWordIntMap;
 import common.parser.implementations.map.WordWordPOSTagMap;
 
-/*
- * @author ZhangXun
- */
-
-public final class Weight extends WeightBase {
+public class Weight extends WeightBase {
 	
+	/*
+	 * stack top
+	 */
 	public WordMap m_mapSTw;
 	public POSTagMap m_mapSTpt;
 	public POSTaggedWordMap m_mapSTwpt;
 	public CCGTagMap m_mapSTct;
 	public CCGTaggedWordMap m_mapSTwct;
+	
+	/*
+	 * second stack top
+	 */
+	public WordMap m_mapSSTw;
+	public POSTagMap m_mapSSTpt;
+	public POSTaggedWordMap m_mapSSTwpt;
+	public CCGTagMap m_mapSSTct;
+	public CCGTaggedWordMap m_mapSSTwct;
 
+	/*
+	 * buffer head
+	 */
 	public WordMap m_mapN0w;
 	public POSTagMap m_mapN0pt;
 	public POSTaggedWordMap m_mapN0wpt;
 
+	/*
+	 * buffer head next
+	 */
 	public WordMap m_mapN1w;
 	public POSTagMap m_mapN1pt;
 	public POSTaggedWordMap m_mapN1wpt;
 
+	/*
+	 * buffer head next next
+	 */
 	public WordMap m_mapN2w;
 	public POSTagMap m_mapN2pt;
 	public POSTaggedWordMap m_mapN2wpt;
 
+	/*
+	 * stack top head
+	 */
 	public WordMap m_mapSTHw;
 	public POSTagMap m_mapSTHpt;
 	public IntMap m_mapSTHct;
 	public IntMap m_mapSTi;
+	
+	/*
+	 * second stack top head
+	 */
+	public WordMap m_mapSSTHw;
+	public POSTagMap m_mapSSTHpt;
+	public IntMap m_mapSSTHct;
+	public IntMap m_mapSSTi;
 
+	/*
+	 * stack top head head
+	 */
 	public WordMap m_mapSTHHw;
 	public POSTagMap m_mapSTHHpt;
 	public IntMap m_mapSTHHct;
 	public IntMap m_mapSTHi;
 
+	/*
+	 * second stack top head head
+	 */
+	public WordMap m_mapSSTHHw;
+	public POSTagMap m_mapSSTHHpt;
+	public IntMap m_mapSSTHHct;
+	public IntMap m_mapSSTHi;
+	
+	/*
+	 * stack top leftmost dependency
+	 */
 	public WordMap m_mapSTLDw;
 	public POSTagMap m_mapSTLDpt;
 	public IntMap m_mapSTLDct;
 	public IntMap m_mapSTLDi;
-
+	
+	/*
+	 * second stack top leftmost dependency
+	 */
+	public WordMap m_mapSSTLDw;
+	public POSTagMap m_mapSSTLDpt;
+	public IntMap m_mapSSTLDct;
+	public IntMap m_mapSSTLDi;
+	
+	/*
+	 * stack top rightmost dependency
+	 */
 	public WordMap m_mapSTRDw;
 	public POSTagMap m_mapSTRDpt;
 	public IntMap m_mapSTRDct;
 	public IntMap m_mapSTRDi;
 
+	/*
+	 * second stack top rightmost dependency
+	 */
+	public WordMap m_mapSSTRDw;
+	public POSTagMap m_mapSSTRDpt;
+	public IntMap m_mapSSTRDct;
+	public IntMap m_mapSSTRDi;
+
+	/*
+	 * buffer head leftmost dependency
+	 */
 	public WordMap m_mapN0LDw;
 	public POSTagMap m_mapN0LDpt;
 	public IntMap m_mapN0LDct;
 	public IntMap m_mapN0LDi;
 
+	/*
+	 * stack top 2ndleftmost dependency
+	 */
 	public WordMap m_mapSTL2Dw;
 	public POSTagMap m_mapSTL2Dpt;
 	public IntMap m_mapSTL2Dct;
 	public IntMap m_mapSTL2Di;
 
+	/*
+	 * second stack top 2ndleftmost dependency
+	 */
+	public WordMap m_mapSSTL2Dw;
+	public POSTagMap m_mapSSTL2Dpt;
+	public IntMap m_mapSSTL2Dct;
+	public IntMap m_mapSSTL2Di;
+
+	/*
+	 * stack top 2ndrightmost dependency
+	 */
 	public WordMap m_mapSTR2Dw;
 	public POSTagMap m_mapSTR2Dpt;
 	public IntMap m_mapSTR2Dct;
 	public IntMap m_mapSTR2Di;
 
+	/*
+	 * second stack top 2ndrightmost dependency
+	 */
+	public WordMap m_mapSSTR2Dw;
+	public POSTagMap m_mapSSTR2Dpt;
+	public IntMap m_mapSSTR2Dct;
+	public IntMap m_mapSSTR2Di;
+
+	/*
+	 * buffer head 2ndleftmost dependency
+	 */
 	public WordMap m_mapN0L2Dw;
 	public POSTagMap m_mapN0L2Dpt;
 	public IntMap m_mapN0L2Dct;
 	public IntMap m_mapN0L2Di;
 
+	/*
+	 * stack top and buffer head word and postag
+	 */
 	public TwoPOSTaggedWordsMap m_mapSTwptN0wpt;
 	public WordWordPOSTagMap m_mapSTwptN0w;
 	public WordWordPOSTagMap m_mapSTwN0wpt;
@@ -107,7 +199,21 @@ public final class Weight extends WeightBase {
 	public WordPOSTagPOSTagMap m_mapSTwptN0pt;
 	public WordWordCCGTagMap m_mapSTwctN0w;
 	public TwoWordsMap m_mapSTwN0w;
+
+	/*
+	 * second stack top and buffer head word and postag
+	 */
+	public TwoPOSTaggedWordsMap m_mapSSTwptN0wpt;
+	public WordWordPOSTagMap m_mapSSTwptN0w;
+	public WordWordPOSTagMap m_mapSSTwN0wpt;
+	public WordPOSTagPOSTagMap m_mapSSTptN0wpt;
+	public WordPOSTagPOSTagMap m_mapSSTwptN0pt;
+	public WordWordCCGTagMap m_mapSSTwctN0w;
+	public TwoWordsMap m_mapSSTwN0w;
 	
+	/*
+	 * stack top and buffer head postag
+	 */
 	public POSTagSet2Map m_mapSTptN0pt;
 	public POSTagSet2Map m_mapN0ptN1pt;
 	public POSTagSet3Map m_mapN0ptN1ptN2pt;
@@ -122,42 +228,154 @@ public final class Weight extends WeightBase {
 	public POSTagSet3Map m_mapSTptSTRDptN0pt;
 	public POSTagSet3Map m_mapSTptSTRDptSTR2Dpt;
 	
+	/*
+	 * second stack top and buffer head postag
+	 */
+	public POSTagSet2Map m_mapSSTptN0pt;
+	public POSTagSet3Map m_mapSSTptN0ptN1pt;
+	public POSTagSet3Map m_mapSSTptN0ptN0LDpt;
+	public POSTagSet3Map m_mapSSTHptSSTptN0pt;
+	public POSTagSet3Map m_mapSSTHHptSSTHptSSTpt;
+	public POSTagSet3Map m_mapSSTptSSTLDptN0pt;
+	public POSTagSet3Map m_mapSSTptSSTLDptSSTL2Dpt;
+	public POSTagSet3Map m_mapSSTptSSTRDptN0pt;
+	public POSTagSet3Map m_mapSSTptSSTRDptSSTR2Dpt;
+	
+	/*
+	 * stack top and second stack top and buffer head postag
+	 */
+	public POSTagSet3Map m_mapSTptSSTptSTHpt;
+	public POSTagSet3Map m_mapSTptSSTptSSTHpt;
+	public POSTagSet3Map m_mapSTptSSTptSTLDpt;
+	public POSTagSet3Map m_mapSTptSSTptSSTLDpt;
+	public POSTagSet3Map m_mapSTptSSTptSTRDpt;
+	public POSTagSet3Map m_mapSTptSSTptSSTRDpt;
+	
+	/*
+	 * stack top and buffer head ccgtag
+	 */
 	public CCGTagSet3Map m_mapSTHHctSTHctSTct;
 	public CCGTagSet3Map m_mapSTctSTLDctSTL2Dct;
 	public CCGTagSet3Map m_mapSTctSTRDctSTR2Dct;
 
+	/*
+	 * stack top and buffer head ccgtag
+	 */
+	public CCGTagSet3Map m_mapSSTHHctSSTHctSSTct;
+	public CCGTagSet3Map m_mapSSTctSSTLDctSSTL2Dct;
+	public CCGTagSet3Map m_mapSSTctSSTRDctSSTR2Dct;
+	
+	/*
+	 * stack top and second stack top and buffer head ccgtag
+	 */
+	public CCGTagSet3Map m_mapSTctSSTctSTHct;
+	public CCGTagSet3Map m_mapSTctSSTctSSTHct;
+	public CCGTagSet3Map m_mapSTctSSTctSTLDct;
+	public CCGTagSet3Map m_mapSTctSSTctSSTLDct;
+	
+	/*
+	 * stack top word_int
+	 */
 	public WordIntMap m_mapSTwd;
 	public POSTagIntMap m_mapSTptd;
 	public CCGTagIntMap m_mapSTctd;
 	
+	/*
+	 * second stack top word_int
+	 */
+	public WordIntMap m_mapSSTwd;
+	public POSTagIntMap m_mapSSTptd;
+	public CCGTagIntMap m_mapSSTctd;
+
+	/*
+	 * buffer head word_int
+	 */
 	public WordIntMap m_mapN0wd;
 	public POSTagIntMap m_mapN0ptd;
 
+	/*
+	 * stack top and buffer head word_int
+	 */
 	public WordWordIntMap m_mapSTwN0wd;
 	public POSTagPOSTagIntMap m_mapSTptN0ptd;
 
+	/*
+	 * second stack top and buffer head word_int
+	 */
+	public WordWordIntMap m_mapSSTwN0wd;
+	public POSTagPOSTagIntMap m_mapSSTptN0ptd;
+
+	/*
+	 * stack top word_int rarity
+	 */
 	public WordIntMap m_mapSTwra;
 	public POSTagIntMap m_mapSTptra;
 	public CCGTagIntMap m_mapSTctra;
+
+	/*
+	 * second stack top word_int rarity
+	 */
+	public WordIntMap m_mapSSTwra;
+	public POSTagIntMap m_mapSSTptra;
+	public CCGTagIntMap m_mapSSTctra;
 	
+	/*
+	 * stack top word_int larity
+	 */
 	public WordIntMap m_mapSTwla;
 	public POSTagIntMap m_mapSTptla;
 	public CCGTagIntMap m_mapSTctla;
 	
+	/*
+	 * second stack top word_int larity
+	 */
+	public WordIntMap m_mapSSTwla;
+	public POSTagIntMap m_mapSSTptla;
+	public CCGTagIntMap m_mapSSTctla;
+	
+	/*
+	 * buffer head word_int larity
+	 */
 	public WordIntMap m_mapN0wla;
 	public POSTagIntMap m_mapN0ptla;
 
+	/*
+	 * stack top deplabel set
+	 */
 	public WordSetOfDepLabelsMap m_mapSTwrp;
 	public POSTagSetOfDepLabelsMap m_mapSTptrp;
 	public CCGTagSetOfDepLabelsMap m_mapSTctrp;
+
+	/*
+	 * second stack top deplabel set
+	 */
+	public WordSetOfDepLabelsMap m_mapSSTwrp;
+	public POSTagSetOfDepLabelsMap m_mapSSTptrp;
+	public CCGTagSetOfDepLabelsMap m_mapSSTctrp;
 	
+	/*
+	 * stack top deplabel set
+	 */
 	public WordSetOfDepLabelsMap m_mapSTwlp;
 	public WordSetOfCCGLabelsMap m_mapSTwlc;
 	public POSTagSetOfDepLabelsMap m_mapSTptlp;
 	public POSTagSetOfCCGLabelsMap m_mapSTptlc;
 	public CCGTagSetOfDepLabelsMap m_mapSTctlp;
 	public CCGTagSetOfCCGLabelsMap m_mapSTctlc;
+
+	/*
+	 * stack top deplabel set
+	 */
+	public WordSetOfDepLabelsMap m_mapSSTwlp;
+	public WordSetOfCCGLabelsMap m_mapSSTwlc;
+	public POSTagSetOfDepLabelsMap m_mapSSTptlp;
+	public POSTagSetOfCCGLabelsMap m_mapSSTptlc;
+	public CCGTagSetOfDepLabelsMap m_mapSSTctlp;
+	public CCGTagSetOfCCGLabelsMap m_mapSSTctlc;
 	
+	/*
+	 * buffer head deplabel set
+	 */
 	public WordSetOfDepLabelsMap m_mapN0wlp;
 	public WordSetOfCCGLabelsMap m_mapN0wlc;
 	public POSTagSetOfDepLabelsMap m_mapN0ptlp;
