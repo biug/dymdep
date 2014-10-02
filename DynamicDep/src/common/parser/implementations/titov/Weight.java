@@ -115,7 +115,6 @@ public final class Weight extends WeightBase {
 	public POSTagSet3Map m_mapSTptN0ptN0LDpt;
 	public POSTagSet3Map m_mapN0ptN0LDptN0L2Dpt;
 	public POSTagSet3Map m_mapSTHptSTptN0pt;
-	public POSTagSet3Map m_mapHTptHT2ptN0pt;
 	public POSTagSet3Map m_mapSTHHptSTHptSTpt;
 	public POSTagSet3Map m_mapSTptSTLDptN0pt;
 	public POSTagSet3Map m_mapSTptSTLDptSTL2Dpt;
@@ -238,7 +237,6 @@ public final class Weight extends WeightBase {
 		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTag");
 		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTagNextPOSTagNextL2DPOSTag");
 		m_mapSTHptSTptN0pt = new POSTagSet3Map("StackHeadPOSTagStackPOSTagNextPOSTag");
-		m_mapHTptHT2ptN0pt = new POSTagSet3Map("HeadStackPOSTagHeadStack2POSTagNextPOSTag");
 		m_mapSTHHptSTHptSTpt = new POSTagSet3Map("StackHeadHeadPOSTagStackHeadPOSTagStackPOSTag");
 		m_mapSTptSTLDptN0pt = new POSTagSet3Map("StackPOSTagStackLDPOSTagNextPOSTag");
 		m_mapSTptSTLDptSTL2Dpt = new POSTagSet3Map("StackPOSTagStackLDPOSTagStackL2DPOSTag");
@@ -374,7 +372,6 @@ public final class Weight extends WeightBase {
 			m_mapSTptN0ptN0LDpt.loadScoresFromFileStream(br);
 			m_mapN0ptN0LDptN0L2Dpt.loadScoresFromFileStream(br);
 			m_mapSTHptSTptN0pt.loadScoresFromFileStream(br);
-			m_mapHTptHT2ptN0pt.loadScoresFromFileStream(br);
 			m_mapSTHHptSTHptSTpt.loadScoresFromFileStream(br);
 			m_mapSTptSTLDptN0pt.loadScoresFromFileStream(br);
 			m_mapSTptSTLDptSTL2Dpt.loadScoresFromFileStream(br);
@@ -513,7 +510,6 @@ public final class Weight extends WeightBase {
 			m_mapSTptN0ptN0LDpt.saveScoresToFileStream(bw);
 			m_mapN0ptN0LDptN0L2Dpt.saveScoresToFileStream(bw);
 			m_mapSTHptSTptN0pt.saveScoresToFileStream(bw);
-			m_mapHTptHT2ptN0pt.saveScoresToFileStream(bw);
 			m_mapSTHHptSTHptSTpt.saveScoresToFileStream(bw);
 			m_mapSTptSTLDptN0pt.saveScoresToFileStream(bw);
 			m_mapSTptSTLDptSTL2Dpt.saveScoresToFileStream(bw);
@@ -643,7 +639,6 @@ public final class Weight extends WeightBase {
 		m_mapSTptN0ptN0LDpt.computeAverage(round);
 		m_mapN0ptN0LDptN0L2Dpt.computeAverage(round);
 		m_mapSTHptSTptN0pt.computeAverage(round);
-		m_mapHTptHT2ptN0pt.computeAverage(round);
 		m_mapSTHHptSTHptSTpt.computeAverage(round);
 		m_mapSTptSTLDptN0pt.computeAverage(round);
 		m_mapSTptSTLDptSTL2Dpt.computeAverage(round);

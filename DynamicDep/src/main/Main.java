@@ -3,8 +3,9 @@ package main;
 import java.io.IOException;
 
 import common.parser.implementations.MacrosCCGDag;
-import common.parser.implementations.titov.Parse;
-import common.parser.implementations.titov.Train;
+import common.parser.implementations.twostack.Macros;
+import common.parser.implementations.twostack.Parse;
+import common.parser.implementations.twostack.Train;
 
 /*
  * @author ZhangXun
@@ -35,6 +36,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		MacrosCCGDag.loadMacros(args[0]);
+		Macros.calcConstant();
 		if (args[1].equals("train")) {
 			train(args[2], args[3], Integer.parseInt(args[4]));
 		} else if (args[1].equals("parse")) {

@@ -221,7 +221,6 @@ public class Weight extends WeightBase {
 	public POSTagSet3Map m_mapSTptN0ptN0LDpt;
 	public POSTagSet3Map m_mapN0ptN0LDptN0L2Dpt;
 	public POSTagSet3Map m_mapSTHptSTptN0pt;
-	public POSTagSet3Map m_mapHTptHT2ptN0pt;
 	public POSTagSet3Map m_mapSTHHptSTHptSTpt;
 	public POSTagSet3Map m_mapSTptSTLDptN0pt;
 	public POSTagSet3Map m_mapSTptSTLDptSTL2Dpt;
@@ -288,10 +287,16 @@ public class Weight extends WeightBase {
 	public CCGTagIntMap m_mapSSTctd;
 
 	/*
-	 * buffer head word_int
+	 * stack top and buffer head distance word_int
 	 */
 	public WordIntMap m_mapN0wd;
 	public POSTagIntMap m_mapN0ptd;
+	
+	/*
+	 * second stack top and buffer head distance word_int
+	 */
+	public WordIntMap m_mapSN0wd;
+	public POSTagIntMap m_mapSN0ptd;
 
 	/*
 	 * stack top and buffer head word_int
@@ -382,12 +387,20 @@ public class Weight extends WeightBase {
 	public POSTagSetOfCCGLabelsMap m_mapN0ptlc;
 	
 	public Weight(final String sPath, final boolean bTrain) {
+		
 		super(sPath, bTrain);
+		
 		m_mapSTw = new WordMap("StackWord");
 		m_mapSTpt = new POSTagMap("StackPOSTag");
 		m_mapSTwpt = new POSTaggedWordMap("StackWordPOSTag");
 		m_mapSTct = new CCGTagMap("StackCCGTag");
 		m_mapSTwct = new CCGTaggedWordMap("StackWordCCGTag");
+
+		m_mapSSTw = new WordMap("SecondStackWord");
+		m_mapSSTpt = new POSTagMap("SecondStackPOSTag");
+		m_mapSSTwpt = new POSTaggedWordMap("SecondStackWordPOSTag");
+		m_mapSSTct = new CCGTagMap("SecondStackCCGTag");
+		m_mapSSTwct = new CCGTaggedWordMap("SecondStackWordCCGTag");
 
 		m_mapN0w = new WordMap("NextWord");
 		m_mapN0pt = new POSTagMap("NextPOSTag");
@@ -406,20 +419,40 @@ public class Weight extends WeightBase {
 		m_mapSTHct = new IntMap("StackHeadCCGTag");
 		m_mapSTi = new IntMap("StackLabel");
 
+		m_mapSSTHw = new WordMap("SecondStackHeadWord");
+		m_mapSSTHpt = new POSTagMap("SecondStackHeadPOSTag");
+		m_mapSSTHct = new IntMap("SecondStackHeadCCGTag");
+		m_mapSSTi = new IntMap("SecondStackLabel");
+
 		m_mapSTHHw = new WordMap("StackHeadHeadWord");
 		m_mapSTHHpt = new POSTagMap("StackHeadHeadPOSTag");
 		m_mapSTHHct = new IntMap("StackHeadHeadCCGTag");
 		m_mapSTHi = new IntMap("StackHeadLabel");
+
+		m_mapSSTHHw = new WordMap("SecondStackHeadHeadWord");
+		m_mapSSTHHpt = new POSTagMap("SecondStackHeadHeadPOSTag");
+		m_mapSSTHHct = new IntMap("SecondStackHeadHeadCCGTag");
+		m_mapSSTHi = new IntMap("SecondStackHeadLabel");
 
 		m_mapSTLDw = new WordMap("StackLDWord");
 		m_mapSTLDpt = new POSTagMap("StackLDPOSTag");
 		m_mapSTLDct = new IntMap("StackLDCCGTag");
 		m_mapSTLDi = new IntMap("StackLDLabel");
 
+		m_mapSSTLDw = new WordMap("SecondStackLDWord");
+		m_mapSSTLDpt = new POSTagMap("SecondStackLDPOSTag");
+		m_mapSSTLDct = new IntMap("SecondStackLDCCGTag");
+		m_mapSSTLDi = new IntMap("SecondStackLDLabel");
+
 		m_mapSTRDw = new WordMap("StackRDWord");
 		m_mapSTRDpt = new POSTagMap("StackRDPOSTag");
 		m_mapSTRDct = new IntMap("StackRDCCGTag");
 		m_mapSTRDi = new IntMap("StackRDLabel");
+
+		m_mapSSTRDw = new WordMap("SecondStackRDWord");
+		m_mapSSTRDpt = new POSTagMap("SecondStackRDPOSTag");
+		m_mapSSTRDct = new IntMap("SecondStackRDCCGTag");
+		m_mapSSTRDi = new IntMap("SecondStackRDLabel");
 
 		m_mapN0LDw = new WordMap("NextLDWord");
 		m_mapN0LDpt = new POSTagMap("NextLDPOSTag");
@@ -431,10 +464,20 @@ public class Weight extends WeightBase {
 		m_mapSTL2Dct = new IntMap("StackL2DCCGTag");
 		m_mapSTL2Di = new IntMap("StackL2DLabel");
 
+		m_mapSSTL2Dw = new WordMap("SecondStackL2DWord");
+		m_mapSSTL2Dpt = new POSTagMap("SecondStackL2DPOSTag");
+		m_mapSSTL2Dct = new IntMap("SecondStackL2DCCGTag");
+		m_mapSSTL2Di = new IntMap("SecondStackL2DLabel");
+
 		m_mapSTR2Dw = new WordMap("StackR2DWord");
 		m_mapSTR2Dpt = new POSTagMap("StackR2DPOSTag");
 		m_mapSTR2Dct = new IntMap("StackR2DCCGTag");
 		m_mapSTR2Di = new IntMap("StackR2DLabel");
+
+		m_mapSSTR2Dw = new WordMap("SecondStackR2DWord");
+		m_mapSSTR2Dpt = new POSTagMap("SecondStackR2DPOSTag");
+		m_mapSSTR2Dct = new IntMap("SecondStackR2DCCGTag");
+		m_mapSSTR2Di = new IntMap("SecondStackR2DLabel");
 
 		m_mapN0L2Dw = new WordMap("NextL2DWord");
 		m_mapN0L2Dpt = new POSTagMap("NextL2DPOSTag");
@@ -449,6 +492,14 @@ public class Weight extends WeightBase {
 		m_mapSTwctN0w = new WordWordCCGTagMap("StackWordCCGTagNextWord");
 		m_mapSTwN0w = new TwoWordsMap("StackWordNextWord");
 
+		m_mapSSTwptN0wpt = new TwoPOSTaggedWordsMap("SecondStackWordPOSTagNextWordPOSTag");
+		m_mapSSTwptN0w = new WordWordPOSTagMap("SecondStackWordPOSTagNextWord");
+		m_mapSSTwN0wpt = new WordWordPOSTagMap("SecondStackWordNextWordPOSTag");
+		m_mapSSTptN0wpt = new WordPOSTagPOSTagMap("SecondStackPOSTagNextWordPOSTag");
+		m_mapSSTwptN0pt = new WordPOSTagPOSTagMap("SecondStackWordPOSTagNextPOSTag");
+		m_mapSSTwctN0w = new WordWordCCGTagMap("SecondStackWordCCGTagNextWord");
+		m_mapSSTwN0w = new TwoWordsMap("SecondStackWordNextWord");
+
 		m_mapSTptN0pt = new POSTagSet2Map("StackPOSTagNextPOSTag");
 		m_mapN0ptN1pt = new POSTagSet2Map("NextPOSTagNext+1POSTag");
 		m_mapN0ptN1ptN2pt = new POSTagSet3Map("NextPOSTagTrigram");
@@ -456,25 +507,58 @@ public class Weight extends WeightBase {
 		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTag");
 		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("StackPOSTagNextPOSTagNextLDPOSTagNextPOSTagNextL2DPOSTag");
 		m_mapSTHptSTptN0pt = new POSTagSet3Map("StackHeadPOSTagStackPOSTagNextPOSTag");
-		m_mapHTptHT2ptN0pt = new POSTagSet3Map("HeadStackPOSTagHeadStack2POSTagNextPOSTag");
 		m_mapSTHHptSTHptSTpt = new POSTagSet3Map("StackHeadHeadPOSTagStackHeadPOSTagStackPOSTag");
 		m_mapSTptSTLDptN0pt = new POSTagSet3Map("StackPOSTagStackLDPOSTagNextPOSTag");
 		m_mapSTptSTLDptSTL2Dpt = new POSTagSet3Map("StackPOSTagStackLDPOSTagStackL2DPOSTag");
 		m_mapSTptSTRDptN0pt = new POSTagSet3Map("StackPOSTagStackRDPOSTagNextPOSTag");
 		m_mapSTptSTRDptSTR2Dpt = new POSTagSet3Map("StackPOSTagStackRDPOSTagStackR2DPOSTag");
 
+		m_mapSSTptN0pt = new POSTagSet2Map("SecondStackPOSTagNextPOSTag");
+		m_mapSSTptN0ptN1pt = new POSTagSet3Map("SecondStackPOSTagNextPOSTagNext+1POSTag");
+		m_mapSSTptN0ptN0LDpt = new POSTagSet3Map("SecondStackPOSTagNextPOSTagNextLDPOSTag");
+		m_mapSSTHptSSTptN0pt = new POSTagSet3Map("SecondStackHeadPOSTagStackPOSTagNextPOSTag");
+		m_mapSSTHHptSSTHptSSTpt = new POSTagSet3Map("SecondStackHeadHeadPOSTagStackHeadPOSTagStackPOSTag");
+		m_mapSSTptSSTLDptN0pt = new POSTagSet3Map("SecondStackPOSTagStackLDPOSTagNextPOSTag");
+		m_mapSSTptSSTLDptSSTL2Dpt = new POSTagSet3Map("SecondStackPOSTagStackLDPOSTagStackL2DPOSTag");
+		m_mapSSTptSSTRDptN0pt = new POSTagSet3Map("SecondStackPOSTagStackRDPOSTagNextPOSTag");
+		m_mapSSTptSSTRDptSSTR2Dpt = new POSTagSet3Map("SecondStackPOSTagStackRDPOSTagStackR2DPOSTag");
+
+		m_mapSTptSSTptSTHpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagStackHeadPOSTag");
+		m_mapSTptSSTptSSTHpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagSecondStackHeadPOSTag");
+		m_mapSTptSSTptSTLDpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagStackLDPOSTag");
+		m_mapSTptSSTptSSTLDpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagSecondStackLDPOSTag");
+		m_mapSTptSSTptSTRDpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagStackRDPOSTag");
+		m_mapSTptSSTptSSTRDpt = new POSTagSet3Map("StackPOSTagSecondStackPOSTagSecondStackRDPOSTag");
+
 		m_mapSTHHctSTHctSTct = new CCGTagSet3Map("StackHeadHeadCCGTagStackHeadCCGTagStackCCGTag");
 		m_mapSTctSTLDctSTL2Dct = new CCGTagSet3Map("StackCCGTagStackLDCCGTagStackL2DCCGTag");
 		m_mapSTctSTRDctSTR2Dct = new CCGTagSet3Map("StackCCGTagStackRDCCGTagStackR2DCCGTag");
+
+		m_mapSSTHHctSSTHctSSTct = new CCGTagSet3Map("SecondStackHeadHeadCCGTagStackHeadCCGTagStackCCGTag");
+		m_mapSSTctSSTLDctSSTL2Dct = new CCGTagSet3Map("SecondStackCCGTagStackLDCCGTagStackL2DCCGTag");
+		m_mapSSTctSSTRDctSSTR2Dct = new CCGTagSet3Map("SecondStackCCGTagStackRDCCGTagStackR2DCCGTag");
+		
+		m_mapSTctSSTctSTHct = new CCGTagSet3Map("StackCCGTagSecondStackCCGTagStackHeadCCGTag");
+		m_mapSTctSSTctSSTHct = new CCGTagSet3Map("StackCCGTagSecondStackCCGTagSecondStackHeadCCGTag");
+		m_mapSTctSSTctSTLDct = new CCGTagSet3Map("StackCCGTagSecondStackCCGTagStackLDCCGTag");
+		m_mapSTctSSTctSSTLDct = new CCGTagSet3Map("StackCCGTagSecondStackCCGTagSecondStackLDCCGTag");
 
 		m_mapSTwd = new WordIntMap("StackWordDist");
 		m_mapSTptd = new POSTagIntMap("StackPOSTagDist");
 		m_mapSTctd = new CCGTagIntMap("StackCCGTagDist");
 		m_mapN0wd = new WordIntMap("NextWordDist");
 		m_mapN0ptd = new POSTagIntMap("NextPOSTagDist");
+		m_mapSN0wd = new WordIntMap("SecondNextWordDist");
+		m_mapSN0ptd = new POSTagIntMap("SecondPOSTagDist");
 		m_mapSTwN0wd = new WordWordIntMap("StackWordNextWordDist");
 		m_mapSTptN0ptd = new POSTagPOSTagIntMap("StackPOSTagNextPOSTagDist");
 
+		m_mapSSTwd = new WordIntMap("SecondStackWordDist");
+		m_mapSSTptd = new POSTagIntMap("SecondStackPOSTagDist");
+		m_mapSSTctd = new CCGTagIntMap("SecondStackCCGTagDist");
+		m_mapSSTwN0wd = new WordWordIntMap("SecondStackWordNextWordDist");
+		m_mapSSTptN0ptd = new POSTagPOSTagIntMap("SecondStackPOSTagNextPOSTagDist");
+		
 		m_mapSTwra = new WordIntMap("StackWordRightArity");
 		m_mapSTptra = new POSTagIntMap("StackPOSTagRightArity");
 		m_mapSTctra = new CCGTagIntMap("StackCCGTagRightArity");
@@ -484,9 +568,20 @@ public class Weight extends WeightBase {
 		m_mapN0wla = new WordIntMap("NextWordRightArity");
 		m_mapN0ptla = new POSTagIntMap("NextPOSTagRightArity");
 
+		m_mapSSTwra = new WordIntMap("SecondStackWordRightArity");
+		m_mapSSTptra = new POSTagIntMap("SecondStackPOSTagRightArity");
+		m_mapSSTctra = new CCGTagIntMap("SecondStackCCGTagRightArity");
+		m_mapSSTwla = new WordIntMap("SecondStackWordLeftArity");
+		m_mapSSTptla = new POSTagIntMap("SecondStackPOSTagLeftArity");
+		m_mapSSTctla = new CCGTagIntMap("SecondStackCCGTagLeftArity");
+		
 		m_mapSTwrp = new WordSetOfDepLabelsMap("StackWordRightSetoftags");
 		m_mapSTptrp = new POSTagSetOfDepLabelsMap("StackPOSTagRightSetoftags");
 		m_mapSTctrp = new CCGTagSetOfDepLabelsMap("StackCCGTagRightSetoftags");
+		
+		m_mapSSTwrp = new WordSetOfDepLabelsMap("SecondStackWordRightSetoftags");
+		m_mapSSTptrp = new POSTagSetOfDepLabelsMap("SecondStackPOSTagRightSetoftags");
+		m_mapSSTctrp = new CCGTagSetOfDepLabelsMap("SecondStackCCGTagRightSetoftags");
 		
 		m_mapSTwlp = new WordSetOfDepLabelsMap("StackWordLeftSetoftags");
 		m_mapSTwlc = new WordSetOfCCGLabelsMap("StackWordLeftSetOfccgs");
@@ -494,6 +589,13 @@ public class Weight extends WeightBase {
 		m_mapSTptlc = new POSTagSetOfCCGLabelsMap("StackPOSTagLeftSetofccgs");
 		m_mapSTctlp = new CCGTagSetOfDepLabelsMap("StackCCGTagLeftSetoftags");
 		m_mapSTctlc = new CCGTagSetOfCCGLabelsMap("StackCCGTagLeftSetofccgs");
+
+		m_mapSSTwlp = new WordSetOfDepLabelsMap("SecondStackWordLeftSetoftags");
+		m_mapSSTwlc = new WordSetOfCCGLabelsMap("SecondStackWordLeftSetOfccgs");
+		m_mapSSTptlp = new POSTagSetOfDepLabelsMap("SecondStackPOSTagLeftSetoftags");
+		m_mapSSTptlc = new POSTagSetOfCCGLabelsMap("SecondStackPOSTagLeftSetofccgs");
+		m_mapSSTctlp = new CCGTagSetOfDepLabelsMap("SecondStackCCGTagLeftSetoftags");
+		m_mapSSTctlc = new CCGTagSetOfCCGLabelsMap("SecondStackCCGTagLeftSetofccgs");
 		
 		m_mapN0wlp = new WordSetOfDepLabelsMap("Next0WordLeftSetoftags");
 		m_mapN0wlc = new WordSetOfCCGLabelsMap("Next0WordLeftSetofccgs");
@@ -525,6 +627,12 @@ public class Weight extends WeightBase {
 			m_mapSTct.loadScoresFromFileStream(br);
 			m_mapSTwct.loadScoresFromFileStream(br);
 
+			m_mapSSTw.loadScoresFromFileStream(br);
+			m_mapSSTpt.loadScoresFromFileStream(br);
+			m_mapSSTwpt.loadScoresFromFileStream(br);
+			m_mapSSTct.loadScoresFromFileStream(br);
+			m_mapSSTwct.loadScoresFromFileStream(br);
+
 			m_mapN0w.loadScoresFromFileStream(br);
 			m_mapN0pt.loadScoresFromFileStream(br);
 			m_mapN0wpt.loadScoresFromFileStream(br);
@@ -542,20 +650,40 @@ public class Weight extends WeightBase {
 			m_mapSTHct.loadScoresFromFileStream(br);
 			m_mapSTi.loadScoresFromFileStream(br);
 
+			m_mapSSTHw.loadScoresFromFileStream(br);
+			m_mapSSTHpt.loadScoresFromFileStream(br);
+			m_mapSSTHct.loadScoresFromFileStream(br);
+			m_mapSSTi.loadScoresFromFileStream(br);
+
 			m_mapSTHHw.loadScoresFromFileStream(br);
 			m_mapSTHHpt.loadScoresFromFileStream(br);
 			m_mapSTHHct.loadScoresFromFileStream(br);
 			m_mapSTHi.loadScoresFromFileStream(br);
+
+			m_mapSSTHHw.loadScoresFromFileStream(br);
+			m_mapSSTHHpt.loadScoresFromFileStream(br);
+			m_mapSSTHHct.loadScoresFromFileStream(br);
+			m_mapSSTHi.loadScoresFromFileStream(br);
 
 			m_mapSTLDw.loadScoresFromFileStream(br);
 			m_mapSTLDpt.loadScoresFromFileStream(br);
 			m_mapSTLDct.loadScoresFromFileStream(br);
 			m_mapSTLDi.loadScoresFromFileStream(br);
 
+			m_mapSSTLDw.loadScoresFromFileStream(br);
+			m_mapSSTLDpt.loadScoresFromFileStream(br);
+			m_mapSSTLDct.loadScoresFromFileStream(br);
+			m_mapSSTLDi.loadScoresFromFileStream(br);
+
 			m_mapSTRDw.loadScoresFromFileStream(br);
 			m_mapSTRDpt.loadScoresFromFileStream(br);
 			m_mapSTRDct.loadScoresFromFileStream(br);
 			m_mapSTRDi.loadScoresFromFileStream(br);
+
+			m_mapSSTRDw.loadScoresFromFileStream(br);
+			m_mapSSTRDpt.loadScoresFromFileStream(br);
+			m_mapSSTRDct.loadScoresFromFileStream(br);
+			m_mapSSTRDi.loadScoresFromFileStream(br);
 
 			m_mapN0LDw.loadScoresFromFileStream(br);
 			m_mapN0LDpt.loadScoresFromFileStream(br);
@@ -567,10 +695,20 @@ public class Weight extends WeightBase {
 			m_mapSTL2Dct.loadScoresFromFileStream(br);
 			m_mapSTL2Di.loadScoresFromFileStream(br);
 
+			m_mapSSTL2Dw.loadScoresFromFileStream(br);
+			m_mapSSTL2Dpt.loadScoresFromFileStream(br);
+			m_mapSSTL2Dct.loadScoresFromFileStream(br);
+			m_mapSSTL2Di.loadScoresFromFileStream(br);
+
 			m_mapSTR2Dw.loadScoresFromFileStream(br);
 			m_mapSTR2Dpt.loadScoresFromFileStream(br);
 			m_mapSTR2Dct.loadScoresFromFileStream(br);
 			m_mapSTR2Di.loadScoresFromFileStream(br);
+
+			m_mapSSTR2Dw.loadScoresFromFileStream(br);
+			m_mapSSTR2Dpt.loadScoresFromFileStream(br);
+			m_mapSSTR2Dct.loadScoresFromFileStream(br);
+			m_mapSSTR2Di.loadScoresFromFileStream(br);
 
 			m_mapN0L2Dw.loadScoresFromFileStream(br);
 			m_mapN0L2Dpt.loadScoresFromFileStream(br);
@@ -585,6 +723,14 @@ public class Weight extends WeightBase {
 			m_mapSTwctN0w.loadScoresFromFileStream(br);
 			m_mapSTwN0w.loadScoresFromFileStream(br);
 
+			m_mapSSTwptN0wpt.loadScoresFromFileStream(br);
+			m_mapSSTwptN0w.loadScoresFromFileStream(br);
+			m_mapSSTwN0wpt.loadScoresFromFileStream(br);
+			m_mapSSTptN0wpt.loadScoresFromFileStream(br);
+			m_mapSSTwptN0pt.loadScoresFromFileStream(br);
+			m_mapSSTwctN0w.loadScoresFromFileStream(br);
+			m_mapSSTwN0w.loadScoresFromFileStream(br);
+
 			m_mapSTptN0pt.loadScoresFromFileStream(br);
 			m_mapN0ptN1pt.loadScoresFromFileStream(br);
 			m_mapN0ptN1ptN2pt.loadScoresFromFileStream(br);
@@ -592,25 +738,58 @@ public class Weight extends WeightBase {
 			m_mapSTptN0ptN0LDpt.loadScoresFromFileStream(br);
 			m_mapN0ptN0LDptN0L2Dpt.loadScoresFromFileStream(br);
 			m_mapSTHptSTptN0pt.loadScoresFromFileStream(br);
-			m_mapHTptHT2ptN0pt.loadScoresFromFileStream(br);
 			m_mapSTHHptSTHptSTpt.loadScoresFromFileStream(br);
 			m_mapSTptSTLDptN0pt.loadScoresFromFileStream(br);
 			m_mapSTptSTLDptSTL2Dpt.loadScoresFromFileStream(br);
 			m_mapSTptSTRDptN0pt.loadScoresFromFileStream(br);
 			m_mapSTptSTRDptSTR2Dpt.loadScoresFromFileStream(br);
 
+			m_mapSSTptN0pt.loadScoresFromFileStream(br);
+			m_mapSSTptN0ptN1pt.loadScoresFromFileStream(br);
+			m_mapSSTptN0ptN0LDpt.loadScoresFromFileStream(br);
+			m_mapSSTHptSSTptN0pt.loadScoresFromFileStream(br);
+			m_mapSSTHHptSSTHptSSTpt.loadScoresFromFileStream(br);
+			m_mapSSTptSSTLDptN0pt.loadScoresFromFileStream(br);
+			m_mapSSTptSSTLDptSSTL2Dpt.loadScoresFromFileStream(br);
+			m_mapSSTptSSTRDptN0pt.loadScoresFromFileStream(br);
+			m_mapSSTptSSTRDptSSTR2Dpt.loadScoresFromFileStream(br);
+
+			m_mapSTptSSTptSTHpt.loadScoresFromFileStream(br);
+			m_mapSTptSSTptSSTHpt.loadScoresFromFileStream(br);
+			m_mapSTptSSTptSTLDpt.loadScoresFromFileStream(br);
+			m_mapSTptSSTptSSTLDpt.loadScoresFromFileStream(br);
+			m_mapSTptSSTptSTRDpt.loadScoresFromFileStream(br);
+			m_mapSTptSSTptSSTRDpt.loadScoresFromFileStream(br);
+
 			m_mapSTHHctSTHctSTct.loadScoresFromFileStream(br);
 			m_mapSTctSTLDctSTL2Dct.loadScoresFromFileStream(br);
 			m_mapSTctSTRDctSTR2Dct.loadScoresFromFileStream(br);
+
+			m_mapSSTHHctSSTHctSSTct.loadScoresFromFileStream(br);
+			m_mapSSTctSSTLDctSSTL2Dct.loadScoresFromFileStream(br);
+			m_mapSSTctSSTRDctSSTR2Dct.loadScoresFromFileStream(br);
+			
+			m_mapSTctSSTctSTHct.loadScoresFromFileStream(br);
+			m_mapSTctSSTctSSTHct.loadScoresFromFileStream(br);
+			m_mapSTctSSTctSTLDct.loadScoresFromFileStream(br);
+			m_mapSTctSSTctSSTLDct.loadScoresFromFileStream(br);
 
 			m_mapSTwd.loadScoresFromFileStream(br);
 			m_mapSTptd.loadScoresFromFileStream(br);
 			m_mapSTctd.loadScoresFromFileStream(br);
 			m_mapN0wd.loadScoresFromFileStream(br);
 			m_mapN0ptd.loadScoresFromFileStream(br);
+			m_mapSN0wd.loadScoresFromFileStream(br);
+			m_mapSN0ptd.loadScoresFromFileStream(br);
 			m_mapSTwN0wd.loadScoresFromFileStream(br);
 			m_mapSTptN0ptd.loadScoresFromFileStream(br);
 
+			m_mapSSTwd.loadScoresFromFileStream(br);
+			m_mapSSTptd.loadScoresFromFileStream(br);
+			m_mapSSTctd.loadScoresFromFileStream(br);
+			m_mapSSTwN0wd.loadScoresFromFileStream(br);
+			m_mapSSTptN0ptd.loadScoresFromFileStream(br);
+			
 			m_mapSTwra.loadScoresFromFileStream(br);
 			m_mapSTptra.loadScoresFromFileStream(br);
 			m_mapSTctra.loadScoresFromFileStream(br);
@@ -620,9 +799,20 @@ public class Weight extends WeightBase {
 			m_mapN0wla.loadScoresFromFileStream(br);
 			m_mapN0ptla.loadScoresFromFileStream(br);
 
+			m_mapSSTwra.loadScoresFromFileStream(br);
+			m_mapSSTptra.loadScoresFromFileStream(br);
+			m_mapSSTctra.loadScoresFromFileStream(br);
+			m_mapSSTwla.loadScoresFromFileStream(br);
+			m_mapSSTptla.loadScoresFromFileStream(br);
+			m_mapSSTctla.loadScoresFromFileStream(br);
+			
 			m_mapSTwrp.loadScoresFromFileStream(br);
 			m_mapSTptrp.loadScoresFromFileStream(br);
 			m_mapSTctrp.loadScoresFromFileStream(br);
+			
+			m_mapSSTwrp.loadScoresFromFileStream(br);
+			m_mapSSTptrp.loadScoresFromFileStream(br);
+			m_mapSSTctrp.loadScoresFromFileStream(br);
 			
 			m_mapSTwlp.loadScoresFromFileStream(br);
 			m_mapSTwlc.loadScoresFromFileStream(br);
@@ -630,6 +820,13 @@ public class Weight extends WeightBase {
 			m_mapSTptlc.loadScoresFromFileStream(br);
 			m_mapSTctlp.loadScoresFromFileStream(br);
 			m_mapSTctlc.loadScoresFromFileStream(br);
+
+			m_mapSSTwlp.loadScoresFromFileStream(br);
+			m_mapSSTwlc.loadScoresFromFileStream(br);
+			m_mapSSTptlp.loadScoresFromFileStream(br);
+			m_mapSSTptlc.loadScoresFromFileStream(br);
+			m_mapSSTctlp.loadScoresFromFileStream(br);
+			m_mapSSTctlc.loadScoresFromFileStream(br);
 			
 			m_mapN0wlp.loadScoresFromFileStream(br);
 			m_mapN0wlc.loadScoresFromFileStream(br);
@@ -664,6 +861,12 @@ public class Weight extends WeightBase {
 			m_mapSTct.saveScoresToFileStream(bw);
 			m_mapSTwct.saveScoresToFileStream(bw);
 
+			m_mapSSTw.saveScoresToFileStream(bw);
+			m_mapSSTpt.saveScoresToFileStream(bw);
+			m_mapSSTwpt.saveScoresToFileStream(bw);
+			m_mapSSTct.saveScoresToFileStream(bw);
+			m_mapSSTwct.saveScoresToFileStream(bw);
+
 			m_mapN0w.saveScoresToFileStream(bw);
 			m_mapN0pt.saveScoresToFileStream(bw);
 			m_mapN0wpt.saveScoresToFileStream(bw);
@@ -681,20 +884,40 @@ public class Weight extends WeightBase {
 			m_mapSTHct.saveScoresToFileStream(bw);
 			m_mapSTi.saveScoresToFileStream(bw);
 
+			m_mapSSTHw.saveScoresToFileStream(bw);
+			m_mapSSTHpt.saveScoresToFileStream(bw);
+			m_mapSSTHct.saveScoresToFileStream(bw);
+			m_mapSSTi.saveScoresToFileStream(bw);
+
 			m_mapSTHHw.saveScoresToFileStream(bw);
 			m_mapSTHHpt.saveScoresToFileStream(bw);
 			m_mapSTHHct.saveScoresToFileStream(bw);
 			m_mapSTHi.saveScoresToFileStream(bw);
+
+			m_mapSSTHHw.saveScoresToFileStream(bw);
+			m_mapSSTHHpt.saveScoresToFileStream(bw);
+			m_mapSSTHHct.saveScoresToFileStream(bw);
+			m_mapSSTHi.saveScoresToFileStream(bw);
 
 			m_mapSTLDw.saveScoresToFileStream(bw);
 			m_mapSTLDpt.saveScoresToFileStream(bw);
 			m_mapSTLDct.saveScoresToFileStream(bw);
 			m_mapSTLDi.saveScoresToFileStream(bw);
 
+			m_mapSSTLDw.saveScoresToFileStream(bw);
+			m_mapSSTLDpt.saveScoresToFileStream(bw);
+			m_mapSSTLDct.saveScoresToFileStream(bw);
+			m_mapSSTLDi.saveScoresToFileStream(bw);
+
 			m_mapSTRDw.saveScoresToFileStream(bw);
 			m_mapSTRDpt.saveScoresToFileStream(bw);
 			m_mapSTRDct.saveScoresToFileStream(bw);
 			m_mapSTRDi.saveScoresToFileStream(bw);
+
+			m_mapSSTRDw.saveScoresToFileStream(bw);
+			m_mapSSTRDpt.saveScoresToFileStream(bw);
+			m_mapSSTRDct.saveScoresToFileStream(bw);
+			m_mapSSTRDi.saveScoresToFileStream(bw);
 
 			m_mapN0LDw.saveScoresToFileStream(bw);
 			m_mapN0LDpt.saveScoresToFileStream(bw);
@@ -706,10 +929,20 @@ public class Weight extends WeightBase {
 			m_mapSTL2Dct.saveScoresToFileStream(bw);
 			m_mapSTL2Di.saveScoresToFileStream(bw);
 
+			m_mapSSTL2Dw.saveScoresToFileStream(bw);
+			m_mapSSTL2Dpt.saveScoresToFileStream(bw);
+			m_mapSSTL2Dct.saveScoresToFileStream(bw);
+			m_mapSSTL2Di.saveScoresToFileStream(bw);
+
 			m_mapSTR2Dw.saveScoresToFileStream(bw);
 			m_mapSTR2Dpt.saveScoresToFileStream(bw);
 			m_mapSTR2Dct.saveScoresToFileStream(bw);
 			m_mapSTR2Di.saveScoresToFileStream(bw);
+
+			m_mapSSTR2Dw.saveScoresToFileStream(bw);
+			m_mapSSTR2Dpt.saveScoresToFileStream(bw);
+			m_mapSSTR2Dct.saveScoresToFileStream(bw);
+			m_mapSSTR2Di.saveScoresToFileStream(bw);
 
 			m_mapN0L2Dw.saveScoresToFileStream(bw);
 			m_mapN0L2Dpt.saveScoresToFileStream(bw);
@@ -724,6 +957,14 @@ public class Weight extends WeightBase {
 			m_mapSTwctN0w.saveScoresToFileStream(bw);
 			m_mapSTwN0w.saveScoresToFileStream(bw);
 
+			m_mapSSTwptN0wpt.saveScoresToFileStream(bw);
+			m_mapSSTwptN0w.saveScoresToFileStream(bw);
+			m_mapSSTwN0wpt.saveScoresToFileStream(bw);
+			m_mapSSTptN0wpt.saveScoresToFileStream(bw);
+			m_mapSSTwptN0pt.saveScoresToFileStream(bw);
+			m_mapSSTwctN0w.saveScoresToFileStream(bw);
+			m_mapSSTwN0w.saveScoresToFileStream(bw);
+
 			m_mapSTptN0pt.saveScoresToFileStream(bw);
 			m_mapN0ptN1pt.saveScoresToFileStream(bw);
 			m_mapN0ptN1ptN2pt.saveScoresToFileStream(bw);
@@ -731,25 +972,58 @@ public class Weight extends WeightBase {
 			m_mapSTptN0ptN0LDpt.saveScoresToFileStream(bw);
 			m_mapN0ptN0LDptN0L2Dpt.saveScoresToFileStream(bw);
 			m_mapSTHptSTptN0pt.saveScoresToFileStream(bw);
-			m_mapHTptHT2ptN0pt.saveScoresToFileStream(bw);
 			m_mapSTHHptSTHptSTpt.saveScoresToFileStream(bw);
 			m_mapSTptSTLDptN0pt.saveScoresToFileStream(bw);
 			m_mapSTptSTLDptSTL2Dpt.saveScoresToFileStream(bw);
 			m_mapSTptSTRDptN0pt.saveScoresToFileStream(bw);
 			m_mapSTptSTRDptSTR2Dpt.saveScoresToFileStream(bw);
 
+			m_mapSSTptN0pt.saveScoresToFileStream(bw);
+			m_mapSSTptN0ptN1pt.saveScoresToFileStream(bw);
+			m_mapSSTptN0ptN0LDpt.saveScoresToFileStream(bw);
+			m_mapSSTHptSSTptN0pt.saveScoresToFileStream(bw);
+			m_mapSSTHHptSSTHptSSTpt.saveScoresToFileStream(bw);
+			m_mapSSTptSSTLDptN0pt.saveScoresToFileStream(bw);
+			m_mapSSTptSSTLDptSSTL2Dpt.saveScoresToFileStream(bw);
+			m_mapSSTptSSTRDptN0pt.saveScoresToFileStream(bw);
+			m_mapSSTptSSTRDptSSTR2Dpt.saveScoresToFileStream(bw);
+
+			m_mapSTptSSTptSTHpt.saveScoresToFileStream(bw);
+			m_mapSTptSSTptSSTHpt.saveScoresToFileStream(bw);
+			m_mapSTptSSTptSTLDpt.saveScoresToFileStream(bw);
+			m_mapSTptSSTptSSTLDpt.saveScoresToFileStream(bw);
+			m_mapSTptSSTptSTRDpt.saveScoresToFileStream(bw);
+			m_mapSTptSSTptSSTRDpt.saveScoresToFileStream(bw);
+
 			m_mapSTHHctSTHctSTct.saveScoresToFileStream(bw);
 			m_mapSTctSTLDctSTL2Dct.saveScoresToFileStream(bw);
 			m_mapSTctSTRDctSTR2Dct.saveScoresToFileStream(bw);
+
+			m_mapSSTHHctSSTHctSSTct.saveScoresToFileStream(bw);
+			m_mapSSTctSSTLDctSSTL2Dct.saveScoresToFileStream(bw);
+			m_mapSSTctSSTRDctSSTR2Dct.saveScoresToFileStream(bw);
+			
+			m_mapSTctSSTctSTHct.saveScoresToFileStream(bw);
+			m_mapSTctSSTctSSTHct.saveScoresToFileStream(bw);
+			m_mapSTctSSTctSTLDct.saveScoresToFileStream(bw);
+			m_mapSTctSSTctSSTLDct.saveScoresToFileStream(bw);
 
 			m_mapSTwd.saveScoresToFileStream(bw);
 			m_mapSTptd.saveScoresToFileStream(bw);
 			m_mapSTctd.saveScoresToFileStream(bw);
 			m_mapN0wd.saveScoresToFileStream(bw);
 			m_mapN0ptd.saveScoresToFileStream(bw);
+			m_mapSN0wd.saveScoresToFileStream(bw);
+			m_mapSN0ptd.saveScoresToFileStream(bw);
 			m_mapSTwN0wd.saveScoresToFileStream(bw);
 			m_mapSTptN0ptd.saveScoresToFileStream(bw);
 
+			m_mapSSTwd.saveScoresToFileStream(bw);
+			m_mapSSTptd.saveScoresToFileStream(bw);
+			m_mapSSTctd.saveScoresToFileStream(bw);
+			m_mapSSTwN0wd.saveScoresToFileStream(bw);
+			m_mapSSTptN0ptd.saveScoresToFileStream(bw);
+			
 			m_mapSTwra.saveScoresToFileStream(bw);
 			m_mapSTptra.saveScoresToFileStream(bw);
 			m_mapSTctra.saveScoresToFileStream(bw);
@@ -759,9 +1033,20 @@ public class Weight extends WeightBase {
 			m_mapN0wla.saveScoresToFileStream(bw);
 			m_mapN0ptla.saveScoresToFileStream(bw);
 
+			m_mapSSTwra.saveScoresToFileStream(bw);
+			m_mapSSTptra.saveScoresToFileStream(bw);
+			m_mapSSTctra.saveScoresToFileStream(bw);
+			m_mapSSTwla.saveScoresToFileStream(bw);
+			m_mapSSTptla.saveScoresToFileStream(bw);
+			m_mapSSTctla.saveScoresToFileStream(bw);
+			
 			m_mapSTwrp.saveScoresToFileStream(bw);
 			m_mapSTptrp.saveScoresToFileStream(bw);
 			m_mapSTctrp.saveScoresToFileStream(bw);
+			
+			m_mapSSTwrp.saveScoresToFileStream(bw);
+			m_mapSSTptrp.saveScoresToFileStream(bw);
+			m_mapSSTctrp.saveScoresToFileStream(bw);
 			
 			m_mapSTwlp.saveScoresToFileStream(bw);
 			m_mapSTwlc.saveScoresToFileStream(bw);
@@ -769,6 +1054,13 @@ public class Weight extends WeightBase {
 			m_mapSTptlc.saveScoresToFileStream(bw);
 			m_mapSTctlp.saveScoresToFileStream(bw);
 			m_mapSTctlc.saveScoresToFileStream(bw);
+
+			m_mapSSTwlp.saveScoresToFileStream(bw);
+			m_mapSSTwlc.saveScoresToFileStream(bw);
+			m_mapSSTptlp.saveScoresToFileStream(bw);
+			m_mapSSTptlc.saveScoresToFileStream(bw);
+			m_mapSSTctlp.saveScoresToFileStream(bw);
+			m_mapSSTctlc.saveScoresToFileStream(bw);
 			
 			m_mapN0wlp.saveScoresToFileStream(bw);
 			m_mapN0wlc.saveScoresToFileStream(bw);
@@ -794,6 +1086,12 @@ public class Weight extends WeightBase {
 		m_mapSTct.computeAverage(round);
 		m_mapSTwct.computeAverage(round);
 
+		m_mapSSTw.computeAverage(round);
+		m_mapSSTpt.computeAverage(round);
+		m_mapSSTwpt.computeAverage(round);
+		m_mapSSTct.computeAverage(round);
+		m_mapSSTwct.computeAverage(round);
+
 		m_mapN0w.computeAverage(round);
 		m_mapN0pt.computeAverage(round);
 		m_mapN0wpt.computeAverage(round);
@@ -811,20 +1109,40 @@ public class Weight extends WeightBase {
 		m_mapSTHct.computeAverage(round);
 		m_mapSTi.computeAverage(round);
 
+		m_mapSSTHw.computeAverage(round);
+		m_mapSSTHpt.computeAverage(round);
+		m_mapSSTHct.computeAverage(round);
+		m_mapSSTi.computeAverage(round);
+
 		m_mapSTHHw.computeAverage(round);
 		m_mapSTHHpt.computeAverage(round);
 		m_mapSTHHct.computeAverage(round);
 		m_mapSTHi.computeAverage(round);
+
+		m_mapSSTHHw.computeAverage(round);
+		m_mapSSTHHpt.computeAverage(round);
+		m_mapSSTHHct.computeAverage(round);
+		m_mapSSTHi.computeAverage(round);
 
 		m_mapSTLDw.computeAverage(round);
 		m_mapSTLDpt.computeAverage(round);
 		m_mapSTLDct.computeAverage(round);
 		m_mapSTLDi.computeAverage(round);
 
+		m_mapSSTLDw.computeAverage(round);
+		m_mapSSTLDpt.computeAverage(round);
+		m_mapSSTLDct.computeAverage(round);
+		m_mapSSTLDi.computeAverage(round);
+
 		m_mapSTRDw.computeAverage(round);
 		m_mapSTRDpt.computeAverage(round);
 		m_mapSTRDct.computeAverage(round);
 		m_mapSTRDi.computeAverage(round);
+
+		m_mapSSTRDw.computeAverage(round);
+		m_mapSSTRDpt.computeAverage(round);
+		m_mapSSTRDct.computeAverage(round);
+		m_mapSSTRDi.computeAverage(round);
 
 		m_mapN0LDw.computeAverage(round);
 		m_mapN0LDpt.computeAverage(round);
@@ -836,10 +1154,20 @@ public class Weight extends WeightBase {
 		m_mapSTL2Dct.computeAverage(round);
 		m_mapSTL2Di.computeAverage(round);
 
+		m_mapSSTL2Dw.computeAverage(round);
+		m_mapSSTL2Dpt.computeAverage(round);
+		m_mapSSTL2Dct.computeAverage(round);
+		m_mapSSTL2Di.computeAverage(round);
+
 		m_mapSTR2Dw.computeAverage(round);
 		m_mapSTR2Dpt.computeAverage(round);
 		m_mapSTR2Dct.computeAverage(round);
 		m_mapSTR2Di.computeAverage(round);
+
+		m_mapSSTR2Dw.computeAverage(round);
+		m_mapSSTR2Dpt.computeAverage(round);
+		m_mapSSTR2Dct.computeAverage(round);
+		m_mapSSTR2Di.computeAverage(round);
 
 		m_mapN0L2Dw.computeAverage(round);
 		m_mapN0L2Dpt.computeAverage(round);
@@ -854,6 +1182,14 @@ public class Weight extends WeightBase {
 		m_mapSTwctN0w.computeAverage(round);
 		m_mapSTwN0w.computeAverage(round);
 
+		m_mapSSTwptN0wpt.computeAverage(round);
+		m_mapSSTwptN0w.computeAverage(round);
+		m_mapSSTwN0wpt.computeAverage(round);
+		m_mapSSTptN0wpt.computeAverage(round);
+		m_mapSSTwptN0pt.computeAverage(round);
+		m_mapSSTwctN0w.computeAverage(round);
+		m_mapSSTwN0w.computeAverage(round);
+
 		m_mapSTptN0pt.computeAverage(round);
 		m_mapN0ptN1pt.computeAverage(round);
 		m_mapN0ptN1ptN2pt.computeAverage(round);
@@ -861,25 +1197,58 @@ public class Weight extends WeightBase {
 		m_mapSTptN0ptN0LDpt.computeAverage(round);
 		m_mapN0ptN0LDptN0L2Dpt.computeAverage(round);
 		m_mapSTHptSTptN0pt.computeAverage(round);
-		m_mapHTptHT2ptN0pt.computeAverage(round);
 		m_mapSTHHptSTHptSTpt.computeAverage(round);
 		m_mapSTptSTLDptN0pt.computeAverage(round);
 		m_mapSTptSTLDptSTL2Dpt.computeAverage(round);
 		m_mapSTptSTRDptN0pt.computeAverage(round);
 		m_mapSTptSTRDptSTR2Dpt.computeAverage(round);
 
+		m_mapSSTptN0pt.computeAverage(round);
+		m_mapSSTptN0ptN1pt.computeAverage(round);
+		m_mapSSTptN0ptN0LDpt.computeAverage(round);
+		m_mapSSTHptSSTptN0pt.computeAverage(round);
+		m_mapSSTHHptSSTHptSSTpt.computeAverage(round);
+		m_mapSSTptSSTLDptN0pt.computeAverage(round);
+		m_mapSSTptSSTLDptSSTL2Dpt.computeAverage(round);
+		m_mapSSTptSSTRDptN0pt.computeAverage(round);
+		m_mapSSTptSSTRDptSSTR2Dpt.computeAverage(round);
+
+		m_mapSTptSSTptSTHpt.computeAverage(round);
+		m_mapSTptSSTptSSTHpt.computeAverage(round);
+		m_mapSTptSSTptSTLDpt.computeAverage(round);
+		m_mapSTptSSTptSSTLDpt.computeAverage(round);
+		m_mapSTptSSTptSTRDpt.computeAverage(round);
+		m_mapSTptSSTptSSTRDpt.computeAverage(round);
+
 		m_mapSTHHctSTHctSTct.computeAverage(round);
 		m_mapSTctSTLDctSTL2Dct.computeAverage(round);
 		m_mapSTctSTRDctSTR2Dct.computeAverage(round);
+
+		m_mapSSTHHctSSTHctSSTct.computeAverage(round);
+		m_mapSSTctSSTLDctSSTL2Dct.computeAverage(round);
+		m_mapSSTctSSTRDctSSTR2Dct.computeAverage(round);
+		
+		m_mapSTctSSTctSTHct.computeAverage(round);
+		m_mapSTctSSTctSSTHct.computeAverage(round);
+		m_mapSTctSSTctSTLDct.computeAverage(round);
+		m_mapSTctSSTctSSTLDct.computeAverage(round);
 
 		m_mapSTwd.computeAverage(round);
 		m_mapSTptd.computeAverage(round);
 		m_mapSTctd.computeAverage(round);
 		m_mapN0wd.computeAverage(round);
 		m_mapN0ptd.computeAverage(round);
+		m_mapSN0wd.computeAverage(round);
+		m_mapSN0ptd.computeAverage(round);
 		m_mapSTwN0wd.computeAverage(round);
 		m_mapSTptN0ptd.computeAverage(round);
 
+		m_mapSSTwd.computeAverage(round);
+		m_mapSSTptd.computeAverage(round);
+		m_mapSSTctd.computeAverage(round);
+		m_mapSSTwN0wd.computeAverage(round);
+		m_mapSSTptN0ptd.computeAverage(round);
+		
 		m_mapSTwra.computeAverage(round);
 		m_mapSTptra.computeAverage(round);
 		m_mapSTctra.computeAverage(round);
@@ -889,9 +1258,20 @@ public class Weight extends WeightBase {
 		m_mapN0wla.computeAverage(round);
 		m_mapN0ptla.computeAverage(round);
 
+		m_mapSSTwra.computeAverage(round);
+		m_mapSSTptra.computeAverage(round);
+		m_mapSSTctra.computeAverage(round);
+		m_mapSSTwla.computeAverage(round);
+		m_mapSSTptla.computeAverage(round);
+		m_mapSSTctla.computeAverage(round);
+		
 		m_mapSTwrp.computeAverage(round);
 		m_mapSTptrp.computeAverage(round);
 		m_mapSTctrp.computeAverage(round);
+		
+		m_mapSSTwrp.computeAverage(round);
+		m_mapSSTptrp.computeAverage(round);
+		m_mapSSTctrp.computeAverage(round);
 		
 		m_mapSTwlp.computeAverage(round);
 		m_mapSTwlc.computeAverage(round);
@@ -899,6 +1279,13 @@ public class Weight extends WeightBase {
 		m_mapSTptlc.computeAverage(round);
 		m_mapSTctlp.computeAverage(round);
 		m_mapSTctlc.computeAverage(round);
+
+		m_mapSSTwlp.computeAverage(round);
+		m_mapSSTwlc.computeAverage(round);
+		m_mapSSTptlp.computeAverage(round);
+		m_mapSSTptlc.computeAverage(round);
+		m_mapSSTctlp.computeAverage(round);
+		m_mapSSTctlc.computeAverage(round);
 		
 		m_mapN0wlp.computeAverage(round);
 		m_mapN0wlc.computeAverage(round);

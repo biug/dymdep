@@ -1,4 +1,4 @@
-package common.parser.implementations.titov;
+package common.parser.implementations.twostack;
 
 import java.io.BufferedReader;
 import java.io.File;

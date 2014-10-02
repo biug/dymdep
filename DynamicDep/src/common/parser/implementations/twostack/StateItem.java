@@ -218,6 +218,14 @@ public class StateItem extends StateItemBase {
 		return m_lRightArcs[top][back].other != m_nNextWord;
 	}
 	
+	public final boolean canmem() {
+		return !pstackempty() && m_lActionList[action_back] != Macros.RECALL;
+	}
+	
+	public final boolean canrecall() {
+		return !sstackempty() && m_lActionList[action_back] != Macros.MEM;
+	}
+	
 	public final int head(final int index) {
 		return m_lHeads[index][m_lHeadsBack[index]];
 	}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public class MacrosBase {
 	
+	public static int MAX_INTEGER;
 	public static Integer[] integer_cache;
 
 	public static int AGENDA_SIZE;
@@ -17,7 +18,7 @@ public class MacrosBase {
 	
 	public static String[] CCGTAG_STRINGS;
 	public static HashMap<String, Integer> CCGTAG_MAP;
-	public final static int CCGTAG_NONE = -1;
+	public static int CCGTAG_NONE;
 	public static final int CCGTAG_FIRST = 0;
 	public static int CCGTAG_COUNT;
 	public static int CCGTAG_BITS_SIZE;
@@ -30,8 +31,6 @@ public class MacrosBase {
 	
 	public final static int MAX_SENTENCE_SIZE = 256;
 	public final static int MAX_SENTENCE_SIZE_BITS = 8;
-	public final static int ARITY_DIRECTION_LEFT = 0;
-	public final static int ARITY_DIRECTION_RIGHT = 1;
 	
 
 	
