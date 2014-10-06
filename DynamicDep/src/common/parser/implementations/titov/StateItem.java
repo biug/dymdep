@@ -72,7 +72,7 @@ public class StateItem extends StateItemBase {
 			m_lHeadsBack[i] = m_lDepsLBack[i] = m_lDepsRBack[i] = m_lRightArcsBack[i] = -1;
 			m_lRightArcsSeek[i] = 0;
 			
-			m_lCCGLabels[i] = Macros.CCGTAG_NONE;
+			m_lCCGLabels[i] = Macros.CCGTAG_COUNT;
 			m_lHeads[i] = new int[Macros.MAX_SENTENCE_SIZE];
 			m_lLabels[i] = new int[Macros.MAX_SENTENCE_SIZE];
 			m_lDepsL[i] = new int[Macros.MAX_SENTENCE_SIZE];
@@ -300,7 +300,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void ClearNext() {
-		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
+		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_COUNT;
 		m_lRightArcsBack[m_nNextWord] = -1;
 		m_lHeadsBack[m_nNextWord] = m_lDepsLBack[m_nNextWord] = m_lDepsRBack[m_nNextWord] = m_lRightArcsSeek[m_nNextWord] = 0;
 		m_lHeads[m_nNextWord][0] = DependencyDagNode.DEPENDENCY_LINK_NO_HEAD;
