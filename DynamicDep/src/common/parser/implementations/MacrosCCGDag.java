@@ -50,12 +50,9 @@ public class MacrosCCGDag extends MacrosBase {
 			++DEP_BITS_SIZE;
 		}
 		
-		MAX_INTEGER = POSTAG_COUNT;
-		if (MAX_INTEGER < CCGTAG_COUNT) {
-			MAX_INTEGER = CCGTAG_COUNT;
-		}
-		if (MAX_INTEGER < DEP_COUNT) {
-			MAX_INTEGER = DEP_COUNT;
+		MAX_INTEGER = 10 + CCGTAG_COUNT + DEP_COUNT + DEP_COUNT;
+		if (MAX_INTEGER < POSTAG_COUNT) {
+			MAX_INTEGER = POSTAG_COUNT;
 		}
 		
 		CCGTAG_NONE = CCGTAG_COUNT + 1;
@@ -65,7 +62,7 @@ public class MacrosCCGDag extends MacrosBase {
 		CCGTAG_STRINGS = temp_strings;
 		
 		integer_cache = new Integer[MAX_INTEGER + 1];
-		for (int i = 0; i < MAX_INTEGER; ++i) {
+		for (int i = 0; i <= MAX_INTEGER; ++i) {
 			integer_cache[i] = new Integer(i);
 		}
 		integer_cache[MAX_INTEGER] = new Integer(-1);
@@ -74,10 +71,11 @@ public class MacrosCCGDag extends MacrosBase {
 			POSTAG_MAP.put(POSTAG_STRINGS[i], integer_cache[i]);
 		}
 
-		for (int i = 0; i <= CCGTAG_STRINGS.length; ++i) {
+		for (int i = 0; i < CCGTAG_STRINGS.length; ++i) {
 			CCGTAG_MAP.put(CCGTAG_STRINGS[i], integer_cache[i]);
 		}
 		
+		System.out.println("integer count = " + integer_cache.length);
 		br.close();
 	}
 	

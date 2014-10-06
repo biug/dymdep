@@ -3,9 +3,9 @@ package main;
 import java.io.IOException;
 
 import common.parser.implementations.MacrosCCGDag;
-import common.parser.implementations.twostack.Macros;
-import common.parser.implementations.twostack.Parse;
-import common.parser.implementations.twostack.Train;
+import common.parser.implementations.titov.Macros;
+import common.parser.implementations.titov.Parse;
+import common.parser.implementations.titov.Train;
 
 /*
  * @author ZhangXun
