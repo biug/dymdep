@@ -227,7 +227,7 @@ public class StateItem extends StateItemBase {
 	
 	public final int ccg(final int index) {
 		if (index == -1) {
-			return Macros.CCGTAG_NONE;
+			return Macros.CCGTAG_COUNT;
 		}
 		return m_lCCGLabels[index];
 	}
