@@ -105,11 +105,11 @@ public final class DepParser extends DepParserBase {
 		return ((tag1.hashCode() << (Macros.POSTAG_BITS_SIZE << 1)) | (tag2.hashCode() << Macros.POSTAG_BITS_SIZE) | tag3.hashCode());
 	}
 	
-	public static final long encodeCCGTags(final int code1, final int code2) {
+	public static final long encodeCCGTags(final long code1, final long code2) {
 		return ((code1 << Macros.CCGTAG_BITS_SIZE) | code2);
 	}
 	
-	public static final long encodeCCGTags(final int code1, final int code2, final int code3) {
+	public static final long encodeCCGTags(final long code1, final long code2, final long code3) {
 		return ((code1 << (Macros.CCGTAG_BITS_SIZE << 1)) | (code2 << Macros.CCGTAG_BITS_SIZE) | code3);
 	}
 	

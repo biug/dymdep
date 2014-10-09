@@ -46,6 +46,7 @@ public class CCGTagSet {
 	public String toString() {
 		String retval = "";
 		long hs = m_nHash;
+//		System.out.println("ccgtagset hash = " + m_nHash);
 		for (int i = 0; i < size; ++i) {
 			if (!retval.isEmpty()) {
 				retval = " " + retval;
