@@ -18,7 +18,7 @@ public class Train {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(sOutputFile)), "UTF-8"));
 		while (ref_sent.readSentenceFromInputStream(br)) {
 			++nCount;
-			System.out.println(nCount);
+			if (nCount % 1000 == 0) System.out.println(nCount);
 			parser.train(ref_sent, nCount);
 		}
 		parser.finishtraning();
