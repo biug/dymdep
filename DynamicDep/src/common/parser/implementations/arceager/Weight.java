@@ -487,6 +487,7 @@ public final class Weight extends WeightBase {
 		System.out.println("done.");
 	}
 	
+	@Override
 	public void computeAverageFeatureWeights(final int round) {
 		System.out.println("Computing averaged (total) feature vector...");
 		System.out.flush();

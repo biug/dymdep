@@ -4,12 +4,7 @@ import include.AgendaBeam;
 import include.AgendaSimple;
 import include.learning.perceptron.PackedScoreType;
 import include.learning.perceptron.Score;
-import include.linguistics.CCGTagInt;
 import include.linguistics.CCGTagSet3;
-import include.linguistics.CCGTagSetOfCCGLabels;
-import include.linguistics.CCGTagSetOfDepLabels;
-import include.linguistics.CCGTaggedWord;
-import include.linguistics.POSCCGTaggedWord;
 import include.linguistics.POSTagInt;
 import include.linguistics.POSTagPOSTagInt;
 import include.linguistics.POSTagSet2;
@@ -18,29 +13,30 @@ import include.linguistics.POSTagSetOfCCGLabels;
 import include.linguistics.POSTagSetOfDepLabels;
 import include.linguistics.POSTaggedWord;
 import include.linguistics.SetOfCCGLabels;
+import include.linguistics.SetOfCCGLabelsInt;
 import include.linguistics.SetOfDepLabels;
+import include.linguistics.SetOfDepLabelsInt;
+import include.linguistics.TwoInts;
 import include.linguistics.TwoPOSTaggedWords;
 import include.linguistics.TwoStrings;
 import include.linguistics.TwoStringsVector;
 import include.linguistics.TwoWords;
 import include.linguistics.Word;
 import include.linguistics.WordInt;
+import include.linguistics.WordPOSTag;
 import include.linguistics.WordPOSTagPOSTag;
 import include.linguistics.WordSetOfCCGLabels;
 import include.linguistics.WordSetOfDepLabels;
-import include.linguistics.WordWordCCGTag;
 import include.linguistics.WordWordInt;
 import include.linguistics.WordWordPOSTag;
 
 import java.util.ArrayList;
 
 import common.parser.DepParserBase;
-import common.parser.MacrosBase;
 import common.parser.ScoredAction;
 import common.parser.StateItemBase;
 import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
-import common.pos.CCGTag;
 import common.pos.POSTag;
 
 /*
@@ -68,33 +64,30 @@ public final class DepParser extends DepParserBase {
 	
 	private TwoStringsVector trainSentence;
 	
-	private TwoPOSTaggedWords st_word_postag_n0_word_postag;
-	private TwoWords st_word_n0_word;
-	
-	private CCGTag ccgtag;
-	private CCGTaggedWord word_ccgtag;
-	
 	private WordInt word_int;
 	private POSTagInt postag_int;
-	private CCGTagInt ccgtag_int;
+	private TwoInts ccgtag_int;
+	private WordPOSTag word_postag;
+	private WordInt word_ccgtag;
+	private TwoWords word_word;
+	private TwoPOSTaggedWords two_postagged_word;
 	private WordPOSTagPOSTag word_postag_postag;
 	private WordWordPOSTag word_word_postag;
-	private WordWordCCGTag word_word_ccgtag;
+	private WordWordInt word_word_ccgtag;
 	private WordWordInt word_word_int;
 	private POSTagPOSTagInt postag_postag_int;
 	private WordSetOfDepLabels word_tagset;
 	private POSTagSetOfDepLabels postag_tagset;
-	private CCGTagSetOfDepLabels ccgtag_tagset;
+	private SetOfDepLabelsInt ccgtag_tagset;
 	private WordSetOfCCGLabels word_ccgset;
 	private POSTagSetOfCCGLabels postag_ccgset;
-	private CCGTagSetOfCCGLabels ccgtag_ccgset;
+	private SetOfCCGLabelsInt ccgtag_ccgset;
 	private POSTagSet2 set_of_2_postags;
 	private POSTagSet3 set_of_3_postags;
 	private CCGTagSet3 set_of_3_ccgtags;
 	
 	private ScoredAction scoredaction;
 	
-	public static final POSCCGTaggedWord empty_posccgtaggedword = new POSCCGTaggedWord();
 	public static final POSTaggedWord empty_postaggedword = new POSTaggedWord();
 	
 	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2) {
@@ -140,26 +133,24 @@ public final class DepParser extends DepParserBase {
 		
 		trainSentence = new TwoStringsVector();
 		
-		st_word_postag_n0_word_postag = new TwoPOSTaggedWords();
-		st_word_n0_word = new TwoWords();
-		
-		ccgtag = new CCGTag();
-		word_ccgtag = new CCGTaggedWord();
-		
 		word_int = new WordInt();
 		postag_int = new POSTagInt();
-		ccgtag_int = new CCGTagInt();
+		ccgtag_int = new TwoInts();
+		word_postag = new WordPOSTag();
+		word_ccgtag = new WordInt();
+		word_word = new TwoWords();
+		two_postagged_word = new TwoPOSTaggedWords();
 		word_postag_postag = new WordPOSTagPOSTag();
 		word_word_postag = new WordWordPOSTag();
-		word_word_ccgtag = new WordWordCCGTag();
+		word_word_ccgtag = new WordWordInt();
 		word_word_int = new WordWordInt();
 		postag_postag_int = new POSTagPOSTagInt();
 		word_tagset = new WordSetOfDepLabels();
 		postag_tagset = new POSTagSetOfDepLabels();
-		ccgtag_tagset = new CCGTagSetOfDepLabels();
+		ccgtag_tagset = new SetOfDepLabelsInt();
 		word_ccgset = new WordSetOfCCGLabels();
 		postag_ccgset = new POSTagSetOfCCGLabels();
-		ccgtag_ccgset = new CCGTagSetOfCCGLabels();
+		ccgtag_ccgset = new SetOfCCGLabelsInt();
 		set_of_2_postags = new POSTagSet2();
 		set_of_3_postags = new POSTagSet3();
 		set_of_3_ccgtags = new CCGTagSet3();
@@ -168,36 +159,65 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
-		
-		final int st_index = item.stackempty() ? -1 : item.stacktop();
-		final int sth_index = st_index == -1 ? -1 : item.head(st_index);
-		final int sthh_index = sth_index == -1 ? -1 : item.head(sth_index);
-		final int stld_index = st_index == -1 ? -1 : item.leftdep(st_index);
-		final int strd_index = st_index == -1 ? -1 : item.rightdep(st_index);
-		final int stl2d_index = stld_index == -1 ? -1 : item.sibling(stld_index);
-		final int str2d_index = strd_index == -1 ? -1 : item.sibling(strd_index);
-		final int n0_index = ((item.size() == m_lCache.size()) ? -1 : item.size());
-		final int n0ld_index = n0_index == -1 ? -1 : item.leftdep(n0_index);
-		final int n0l2d_index = n0ld_index == -1 ? -1 : item.sibling(n0ld_index);
-		final int n1_index = ((n0_index + 1 < m_lCache.size()) ? n0_index + 1 : -1);
-		final int n2_index = ((n0_index + 2 < m_lCache.size()) ? n0_index + 2 : -1);
-		
-		final POSTaggedWord st_word_postag = st_index == -1 ? empty_postaggedword : m_lCache.get(st_index);
-		final POSTaggedWord sth_word_postag = sth_index == -1 ? empty_postaggedword : m_lCache.get(sth_index);
-		final POSTaggedWord sthh_word_postag = sthh_index == -1 ? empty_postaggedword : m_lCache.get(sthh_index);
-		final POSTaggedWord stld_word_postag = stld_index == -1 ? empty_postaggedword : m_lCache.get(stld_index);
-		final POSTaggedWord strd_word_postag = strd_index == -1 ? empty_postaggedword : m_lCache.get(strd_index);
-		final POSTaggedWord stl2d_word_postag = stl2d_index == -1 ? empty_postaggedword : m_lCache.get(stl2d_index);
-		final POSTaggedWord str2d_word_postag = str2d_index == -1 ? empty_postaggedword : m_lCache.get(str2d_index);
-		final POSTaggedWord n0_word_postag = n0_index == -1 ? empty_postaggedword : m_lCache.get(n0_index);
-		final POSTaggedWord n0ld_word_postag = n0ld_index == -1 ? empty_postaggedword : m_lCache.get(n0ld_index);
-		final POSTaggedWord n0l2d_word_postag = n0l2d_index == -1 ? empty_postaggedword : m_lCache.get(n0l2d_index);
-		final POSTaggedWord n1_word_postag = n1_index == -1 ? empty_postaggedword : m_lCache.get(n1_index);
-		final POSTaggedWord n2_word_postag = n2_index == -1 ? empty_postaggedword : m_lCache.get(n2_index);
-		
+
+		final int st_index = item.stacktop();
+		final int stlh_index = item.lefthead(st_index);
+		final int stl2h_index = item.leftsubhead(st_index);
+		final int strh_index = item.righthead(st_index);
+		final int str2h_index = item.rightsubhead(st_index);
+		final int stlhlh_index = item.lefthead(stlh_index);
+		final int stlhrh_index = item.righthead(stlh_index);
+		final int strhlh_index = item.lefthead(strh_index);
+		final int strhrh_index = item.righthead(strh_index);
+		final int stld_index = item.leftdep(st_index);
+		final int strd_index = item.rightdep(st_index);
+		final int stl2d_index = item.leftsubdep(st_index);
+		final int str2d_index = item.rightsubdep(st_index);
+		final int n0_index = item.size();
+		final int n0ld_index = item.leftdep(n0_index);
+		final int n0l2d_index = item.leftsubdep(n0_index);
+		final int n0lh_index = item.lefthead(n0_index);
+		final int n0l2h_index = item.leftsubhead(n0_index);
+		final int n1_index = item.nextbufferhead();
+		final int n2_index = item.nextbuffernext();
+
+		final int st_lh_arity = item.leftheadarity(st_index);
+		final int st_rh_arity = item.rightheadarity(st_index);
+		final int st_ld_arity = item.leftdeparity(st_index);
+		final int st_rd_arity = item.rightdeparity(st_index);
+		final int n0_lh_arity = item.leftheadarity(n0_index);
+		final int n0_ld_arity = item.leftdeparity(n0_index);
+
+		final POSTaggedWord st_word_postag = st_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(st_index);
+		final POSTaggedWord stlh_word_postag = stlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlh_index);
+		final POSTaggedWord stl2h_word_postag = stl2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stl2h_index);
+		final POSTaggedWord strh_word_postag = strh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strh_index);
+		final POSTaggedWord str2h_word_postag = str2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(str2h_index);
+		final POSTaggedWord stlhlh_word_postag = stlhlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlhlh_index);
+		final POSTaggedWord stlhrh_word_postag = stlhrh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlhrh_index);
+		final POSTaggedWord strhlh_word_postag = strhlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strhlh_index);
+		final POSTaggedWord strhrh_word_postag = strhrh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strhrh_index);
+		final POSTaggedWord stld_word_postag = stld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stld_index);
+		final POSTaggedWord strd_word_postag = strd_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strd_index);
+		final POSTaggedWord stl2d_word_postag = stl2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stl2d_index);
+		final POSTaggedWord str2d_word_postag = str2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(str2d_index);
+		final POSTaggedWord n0_word_postag = n0_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0_index);
+		final POSTaggedWord n0ld_word_postag = n0ld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0ld_index);
+		final POSTaggedWord n0l2d_word_postag = n0l2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2d_index);
+		final POSTaggedWord n0lh_word_postag = n0lh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0lh_index);
+		final POSTaggedWord n0l2h_word_postag = n0l2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2h_index);
+		final POSTaggedWord n1_word_postag = n1_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n1_index);
+		final POSTaggedWord n2_word_postag = n2_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n2_index);
+
 		final Word st_word = st_word_postag.word;
-		final Word sth_word = sth_word_postag.word;
-		final Word sthh_word = sthh_word_postag.word;
+		final Word stlh_word = stlh_word_postag.word;
+		final Word stl2h_word = stl2h_word_postag.word;
+		final Word strh_word = strh_word_postag.word;
+		final Word str2h_word = str2h_word_postag.word;
+		final Word stlhlh_word = stlhlh_word_postag.word;
+		final Word stlhrh_word = stlhrh_word_postag.word;
+		final Word strhlh_word = strhlh_word_postag.word;
+		final Word strhrh_word = strhrh_word_postag.word;
 		final Word stld_word = stld_word_postag.word;
 		final Word strd_word = strd_word_postag.word;
 		final Word stl2d_word = stl2d_word_postag.word;
@@ -205,12 +225,20 @@ public final class DepParser extends DepParserBase {
 		final Word n0_word = n0_word_postag.word;
 		final Word n0ld_word = n0ld_word_postag.word;
 		final Word n0l2d_word = n0l2d_word_postag.word;
+		final Word n0lh_word = n0lh_word_postag.word;
+		final Word n0l2h_word = n0l2h_word_postag.word;
 		final Word n1_word = n1_word_postag.word;
 		final Word n2_word = n2_word_postag.word;
-		
+
 		final POSTag st_postag = st_word_postag.tag;
-		final POSTag sth_postag = sth_word_postag.tag;
-		final POSTag sthh_postag = sthh_word_postag.tag;
+		final POSTag stlh_postag = stlh_word_postag.tag;
+		final POSTag stl2h_postag = stl2h_word_postag.tag;
+		final POSTag strh_postag = strh_word_postag.tag;
+		final POSTag str2h_postag = str2h_word_postag.tag;
+		final POSTag stlhlh_postag = stlhlh_word_postag.tag;
+		final POSTag stlhrh_postag = stlhrh_word_postag.tag;
+		final POSTag strhlh_postag = strhlh_word_postag.tag;
+		final POSTag strhrh_postag = strhrh_word_postag.tag;
 		final POSTag stld_postag = stld_word_postag.tag;
 		final POSTag strd_postag = strd_word_postag.tag;
 		final POSTag stl2d_postag = stl2d_word_postag.tag;
@@ -218,276 +246,320 @@ public final class DepParser extends DepParserBase {
 		final POSTag n0_postag = n0_word_postag.tag;
 		final POSTag n0ld_postag = n0ld_word_postag.tag;
 		final POSTag n0l2d_postag = n0l2d_word_postag.tag;
+		final POSTag n0lh_postag = n0lh_word_postag.tag;
+		final POSTag n0l2h_postag = n0l2h_word_postag.tag;
 		final POSTag n1_postag = n1_word_postag.tag;
 		final POSTag n2_postag = n2_word_postag.tag;
-		
-		final int st_label = st_index == -1 ? Macros.DEP_NONE : item.label(st_index);
-		final int sth_label = sth_index == -1 ? Macros.DEP_NONE : item.label(sth_index);
-		final int stld_label = stld_index == -1 ? Macros.DEP_NONE : item.label(stld_index);
-		final int strd_label = strd_index == -1 ? Macros.DEP_NONE : item.label(strd_index);
-		final int stl2d_label = stl2d_index == -1 ? Macros.DEP_NONE : item.label(stl2d_index);
-		final int str2d_label = str2d_index == -1 ? Macros.DEP_NONE : item.label(str2d_index); //PROBLEM!
-		final int n0ld_label = n0ld_index == -1 ? Macros.DEP_NONE : item.label(n0ld_index);
-		final int n0l2d_label = n0l2d_index == -1 ? Macros.DEP_NONE : item.label(n0l2d_index);
-		
-		final int st_ccg = st_index == -1 ? Macros.CCGTAG_NONE : item.ccg(st_index);
-		final int sth_ccg = sth_index == -1 ? Macros.CCGTAG_NONE : item.ccg(sth_index);
-		final int sthh_ccg = sthh_index == -1 ? Macros.CCGTAG_NONE : item.ccg(sthh_index);
-		final int stld_ccg = stld_index == -1 ? Macros.CCGTAG_NONE : item.ccg(stld_index);
-		final int strd_ccg = strd_index == -1 ? Macros.CCGTAG_NONE : item.ccg(strd_index);
-		final int stl2d_ccg = stl2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(stl2d_index);
-		final int str2d_ccg = str2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(str2d_index);
-		final int n0ld_ccg = n0ld_index == -1 ? Macros.CCGTAG_NONE : item.ccg(n0ld_index);
-		final int n0l2d_ccg = n0l2d_index == -1 ? Macros.CCGTAG_NONE : item.ccg(n0l2d_index);
-		
-		final int st_n0_dist = Macros.encodeLinkDistance(st_index, n0_index);
-		
-		final int st_rarity = st_index == -1 ? 0 : item.rightarity(st_index);
-		final int st_larity = st_index == -1 ? 0 : item.leftarity(st_index);
-		final int n0_larity = n0_index == -1 ? 0 : item.leftarity(n0_index);
-		
+
+		final Integer st_lh_label = Macros.integer_cache[item.leftheadlabel(st_index)];
+		final Integer st_l2h_label = Macros.integer_cache[item.leftsubheadlabel(st_index)];
+		final Integer st_rh_label = Macros.integer_cache[item.rightheadlabel(st_index)];
+		final Integer st_r2h_label = Macros.integer_cache[item.rightsubheadlabel(st_index)];
+		final Integer st_ld_label = Macros.integer_cache[item.leftdeplabel(st_index)];
+		final Integer st_l2d_label = Macros.integer_cache[item.leftsubdeplabel(st_index)];
+		final Integer st_rd_label = Macros.integer_cache[item.rightdeplabel(st_index)];
+		final Integer st_r2d_label = Macros.integer_cache[item.rightsubdeplabel(st_index)];
+		final Integer stlh_lh_label = Macros.integer_cache[item.leftheadlabel(stlh_index)];
+		final Integer stlh_rh_label = Macros.integer_cache[item.rightheadlabel(stlh_index)];
+		final Integer strh_lh_label = Macros.integer_cache[item.leftheadlabel(strh_index)];
+		final Integer strh_rh_label = Macros.integer_cache[item.rightheadlabel(strh_index)];
+		final Integer n0_lh_label = Macros.integer_cache[item.leftheadlabel(n0_index)];
+		final Integer n0_ld_label = Macros.integer_cache[item.leftdeplabel(n0_index)];
+		final Integer n0_l2h_label = Macros.integer_cache[item.leftsubheadlabel(n0_index)];
+		final Integer n0_l2d_label = Macros.integer_cache[item.leftsubdeplabel(n0_index)];
+
+		final Integer st_ccgtag = Macros.integer_cache[item.ccg(st_index)];
+		final Integer stlh_ccgtag = Macros.integer_cache[item.ccg(stlh_index)];
+		final Integer stl2h_ccgtag = Macros.integer_cache[item.ccg(stl2h_index)];
+		final Integer strh_ccgtag = Macros.integer_cache[item.ccg(strh_index)];
+		final Integer str2h_ccgtag = Macros.integer_cache[item.ccg(str2h_index)];
+		final Integer stlhlh_ccgtag = Macros.integer_cache[item.ccg(stlhlh_index)];
+		final Integer stlhrh_ccgtag = Macros.integer_cache[item.ccg(stlhrh_index)];
+		final Integer strhlh_ccgtag = Macros.integer_cache[item.ccg(strhlh_index)];
+		final Integer strhrh_ccgtag = Macros.integer_cache[item.ccg(strhrh_index)];
+		final Integer stld_ccgtag = Macros.integer_cache[item.ccg(stld_index)];
+		final Integer strd_ccgtag = Macros.integer_cache[item.ccg(strd_index)];
+		final Integer stl2d_ccgtag = Macros.integer_cache[item.ccg(stl2d_index)];
+		final Integer str2d_ccgtag = Macros.integer_cache[item.ccg(str2d_index)];
+		final Integer n0ld_ccgtag = Macros.integer_cache[item.ccg(n0ld_index)];
+		final Integer n0l2d_ccgtag = Macros.integer_cache[item.ccg(n0l2d_index)];
+		final Integer n0lh_ccgtag = Macros.integer_cache[item.ccg(n0lh_index)];
+		final Integer n0l2h_ccgtag = Macros.integer_cache[item.ccg(n0l2h_index)];
+
+		final Integer st_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
+		final Integer n0_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
+
 		final SetOfDepLabels st_rtagset = st_index == -1 ? null : new SetOfDepLabels(item.righttagset(st_index));
 		final SetOfDepLabels st_ltagset = st_index == -1 ? null : new SetOfDepLabels(item.lefttagset(st_index));
 		final SetOfCCGLabels st_lccgset = st_index == -1 ? null : new SetOfCCGLabels(item.leftccgset(st_index));
 		final SetOfDepLabels n0_ltagset = n0_index == -1 ? null : new SetOfDepLabels(item.lefttagset(n0_index));
 		final SetOfCCGLabels n0_lccgset = n0_index == -1 ? null : new SetOfCCGLabels(item.leftccgset(n0_index));
-		
+
 		Weight weight = (Weight)m_weights;
-		
-		if (st_index != -1) {
-			weight.m_mapSTw.getOrUpdateScore(retval, st_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTpt.getOrUpdateScore(retval, st_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTwpt.getOrUpdateScore(retval, st_word_postag, action, m_nScoreIndex, amount, round);
-			ccgtag.load(st_ccg);
-			weight.m_mapSTct.getOrUpdateScore(retval, ccgtag, action, m_nScoreIndex, amount, round);
-			word_ccgtag.load(st_word, ccgtag);
-			weight.m_mapSTwct.getOrUpdateScore(retval, word_ccgtag, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapSTw.getOrUpdateScore(retval, st_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTpt.getOrUpdateScore(retval, st_postag, action, m_nScoreIndex, amount, round);
+		word_postag.refer(st_word, st_postag);
+		weight.m_mapSTwpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTct.getOrUpdateScore(retval, st_ccgtag, action, m_nScoreIndex, amount, round);
+		word_ccgtag.refer(st_word, st_ccgtag);
+		weight.m_mapSTwct.getOrUpdateScore(retval, word_ccgtag, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapN0w.getOrUpdateScore(retval, n0_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0pt.getOrUpdateScore(retval, n0_postag, action, m_nScoreIndex, amount, round);
+		word_postag.refer(n0_word, n0_postag);
+		weight.m_mapN0wpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapN1w.getOrUpdateScore(retval, n1_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN1pt.getOrUpdateScore(retval, n1_postag, action, m_nScoreIndex, amount, round);
+		word_postag.refer(n1_word, n1_postag);
+		weight.m_mapN1wpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapN2w.getOrUpdateScore(retval, n2_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN2pt.getOrUpdateScore(retval, n2_postag, action, m_nScoreIndex, amount, round);
+		word_postag.refer(n2_word, n2_postag);
+		weight.m_mapN2wpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapSTLHw.getOrUpdateScore(retval, stlh_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTLHpt.getOrUpdateScore(retval, stlh_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTLHct.getOrUpdateScore(retval, stlh_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTlhl.getOrUpdateScore(retval, st_lh_label, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapN0LHw.getOrUpdateScore(retval, n0lh_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0LHpt.getOrUpdateScore(retval, n0lh_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0LHct.getOrUpdateScore(retval, n0lh_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0lhl.getOrUpdateScore(retval, n0_lh_label, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapSTRHw.getOrUpdateScore(retval, strh_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTRHpt.getOrUpdateScore(retval, strh_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTRHct.getOrUpdateScore(retval, strh_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTrhl.getOrUpdateScore(retval, st_rh_label, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapSTL2Hw.getOrUpdateScore(retval, stl2h_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTL2Hpt.getOrUpdateScore(retval, stl2h_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTL2Hct.getOrUpdateScore(retval, stl2h_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTl2hl.getOrUpdateScore(retval, st_l2h_label, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapN0L2Hw.getOrUpdateScore(retval, n0l2h_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0L2Hpt.getOrUpdateScore(retval, n0l2h_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0L2Hct.getOrUpdateScore(retval, n0l2h_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0l2hl.getOrUpdateScore(retval, n0_l2h_label, action, m_nScoreIndex, amount, round);
+
+		weight.m_mapSTR2Hw.getOrUpdateScore(retval, str2h_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTR2Hpt.getOrUpdateScore(retval, str2h_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTR2Hct.getOrUpdateScore(retval, str2h_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTr2hl.getOrUpdateScore(retval, st_r2h_label, action, m_nScoreIndex, amount, round);
+
+		if (stlhlh_index != StateItem.out_index) {
+			weight.m_mapSTLHLHw.getOrUpdateScore(retval, stlhlh_word, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHLHpt.getOrUpdateScore(retval, stlhlh_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHLHct.getOrUpdateScore(retval, stlhlh_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHlhl.getOrUpdateScore(retval, stlh_lh_label, action, m_nScoreIndex, amount, round);
 		}
 
-		if (n0_index != -1) {
-			weight.m_mapN0w.getOrUpdateScore(retval, n0_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0pt.getOrUpdateScore(retval, n0_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0wpt.getOrUpdateScore(retval, n0_word_postag, action, m_nScoreIndex, amount, round);
+		if (stlhrh_index != StateItem.out_index) {
+			weight.m_mapSTLHRHw.getOrUpdateScore(retval, stlhrh_word, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHRHpt.getOrUpdateScore(retval, stlhrh_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHRHct.getOrUpdateScore(retval, stlhrh_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTLHrhl.getOrUpdateScore(retval, stlh_rh_label, action, m_nScoreIndex, amount, round);
 		}
 
-		if (n1_index != -1) {
-			weight.m_mapN1w.getOrUpdateScore(retval, n1_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN1pt.getOrUpdateScore(retval, n1_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN1wpt.getOrUpdateScore(retval, n1_word_postag, action, m_nScoreIndex, amount, round);
+		if (strhlh_index != StateItem.out_index) {
+			weight.m_mapSTRHLHw.getOrUpdateScore(retval, strhlh_word, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHLHpt.getOrUpdateScore(retval, strhlh_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHLHct.getOrUpdateScore(retval, strhlh_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHlhl.getOrUpdateScore(retval, strh_lh_label, action, m_nScoreIndex, amount, round);
 		}
 
-		if (n2_index != -1) {
-			weight.m_mapN2w.getOrUpdateScore(retval, n2_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN2pt.getOrUpdateScore(retval, n2_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN2wpt.getOrUpdateScore(retval, n2_word_postag, action, m_nScoreIndex, amount, round);
+		if (strhrh_index != StateItem.out_index) {
+			weight.m_mapSTRHRHw.getOrUpdateScore(retval, strhrh_word, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHRHpt.getOrUpdateScore(retval, strhrh_postag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHRHct.getOrUpdateScore(retval, strhrh_ccgtag, action, m_nScoreIndex, amount, round);
+			weight.m_mapSTRHrhl.getOrUpdateScore(retval, strh_rh_label, action, m_nScoreIndex, amount, round);
 		}
 
-		if (sth_index != -1) {
-			weight.m_mapSTHw.getOrUpdateScore(retval, sth_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHpt.getOrUpdateScore(retval, sth_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHct.getOrUpdateScore(retval, MacrosBase.integer_cache[sth_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTi.getOrUpdateScore(retval, MacrosBase.integer_cache[st_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapSTLDw.getOrUpdateScore(retval, stld_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTLDpt.getOrUpdateScore(retval, stld_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTLDct.getOrUpdateScore(retval, stld_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTldl.getOrUpdateScore(retval, st_ld_label, action, m_nScoreIndex, amount, round);
 
-		if (sthh_index != -1) {
-			weight.m_mapSTHHw.getOrUpdateScore(retval, sthh_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHHpt.getOrUpdateScore(retval, sthh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHHct.getOrUpdateScore(retval, MacrosBase.integer_cache[sthh_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTHi.getOrUpdateScore(retval, MacrosBase.integer_cache[sth_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTRDpt.getOrUpdateScore(retval, strd_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTRDct.getOrUpdateScore(retval, strd_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTrdl.getOrUpdateScore(retval, st_rd_label, action, m_nScoreIndex, amount, round);
 
-		if (stld_index != -1) {
-			weight.m_mapSTLDw.getOrUpdateScore(retval, stld_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLDpt.getOrUpdateScore(retval, stld_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLDct.getOrUpdateScore(retval, MacrosBase.integer_cache[stld_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLDi.getOrUpdateScore(retval, MacrosBase.integer_cache[stld_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapN0LDw.getOrUpdateScore(retval, n0ld_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0LDpt.getOrUpdateScore(retval, n0ld_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0LDct.getOrUpdateScore(retval, n0ld_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0ldl.getOrUpdateScore(retval, n0_ld_label, action, m_nScoreIndex, amount, round);
 
-		if (strd_index != -1) {
-			weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDpt.getOrUpdateScore(retval, strd_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDct.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDi.getOrUpdateScore(retval, MacrosBase.integer_cache[strd_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTL2Dct.getOrUpdateScore(retval, stl2d_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTl2dl.getOrUpdateScore(retval, st_l2d_label, action, m_nScoreIndex, amount, round);
 
-		if (n0ld_index != -1) {
-			weight.m_mapN0LDw.getOrUpdateScore(retval, n0ld_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LDpt.getOrUpdateScore(retval, n0ld_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LDct.getOrUpdateScore(retval, MacrosBase.integer_cache[n0ld_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LDi.getOrUpdateScore(retval, MacrosBase.integer_cache[n0ld_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTR2Dct.getOrUpdateScore(retval, str2d_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapSTr2dl.getOrUpdateScore(retval, st_r2d_label, action, m_nScoreIndex, amount, round);
 
-		if (stl2d_index != -1) {
-			weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[stl2d_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[stl2d_label], action, m_nScoreIndex, amount, round);
-		}
+		weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0L2Dct.getOrUpdateScore(retval, n0l2d_ccgtag, action, m_nScoreIndex, amount, round);
+		weight.m_mapN0l2dl.getOrUpdateScore(retval, n0_l2d_label, action, m_nScoreIndex, amount, round);
 
-		if (str2d_index != -1) {
-			weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDct.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[str2d_label], action, m_nScoreIndex, amount, round);
-		}
+		two_postagged_word.refer(st_word_postag, n0_word_postag);
+		weight.m_mapSTwptN0wpt.getOrUpdateScore(retval, two_postagged_word, action, m_nScoreIndex, amount, round);
+		word_word_postag.refer(st_word, n0_word, st_postag);
+		weight.m_mapSTwptN0w.getOrUpdateScore(retval, word_word_postag, action, m_nScoreIndex, amount, round);
+		word_word_postag.refer(st_word, n0_word, n0_postag);
+		weight.m_mapSTwN0wpt.getOrUpdateScore(retval, word_word_postag, action, m_nScoreIndex, amount, round);
+		word_postag_postag.refer(n0_word, st_postag, n0_postag);
+		weight.m_mapSTptN0wpt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
+		word_postag_postag.refer(st_word, st_postag, n0_postag);
+		weight.m_mapSTwptN0pt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
+		word_word_ccgtag.refer(st_word, n0_word, st_ccgtag);
+		weight.m_mapSTwctN0w.getOrUpdateScore(retval, word_word_ccgtag, action, m_nScoreIndex, amount, round);
+		word_word.refer(st_word, n0_word);
+		weight.m_mapSTwN0w.getOrUpdateScore(retval, word_word, action, m_nScoreIndex, amount, round);
 
-		if (n0l2d_index != -1) {
-			weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Dct.getOrUpdateScore(retval, MacrosBase.integer_cache[n0l2d_ccg], action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Di.getOrUpdateScore(retval, MacrosBase.integer_cache[n0l2d_label], action, m_nScoreIndex, amount, round);
-		}
-		
-		if (st_index != -1) {
-			st_word_postag_n0_word_postag.refer(st_word_postag, n0_word_postag);
-			weight.m_mapSTwptN0wpt.getOrUpdateScore(retval, st_word_postag_n0_word_postag, action, m_nScoreIndex, amount, round);
-			word_word_postag.refer(st_word, n0_word, st_postag);
-			weight.m_mapSTwptN0w.getOrUpdateScore(retval, word_word_postag, action, m_nScoreIndex, amount, round);
-			word_word_postag.refer(st_word, n0_word, n0_postag);
-			weight.m_mapSTwN0wpt.getOrUpdateScore(retval, word_word_postag, action, m_nScoreIndex, amount, round);
-			word_postag_postag.refer(st_word, st_postag, n0_postag);
-			weight.m_mapSTwptN0pt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
-			word_postag_postag.refer(n0_word, st_postag, n0_postag);
-			weight.m_mapSTptN0wpt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
-			set_of_2_postags.load(encodePOSTags(st_postag, n0_postag));
-			weight.m_mapSTptN0pt.getOrUpdateScore(retval, set_of_2_postags, action, m_nScoreIndex, amount, round);
-			
-			word_word_ccgtag.refer(st_word, n0_word, ccgtag);
-			weight.m_mapSTwctN0w.getOrUpdateScore(retval, word_word_ccgtag, action, m_nScoreIndex, amount, round);
+		set_of_2_postags.load(encodePOSTags(st_postag, n0_postag));
+		weight.m_mapSTptN0pt.getOrUpdateScore(retval, set_of_2_postags, action, m_nScoreIndex, amount, round);
+		set_of_2_postags.load(encodePOSTags(n0_postag, n1_postag));
+		weight.m_mapN0ptN1pt.getOrUpdateScore(retval, set_of_2_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(n0_postag, n1_postag, n2_postag));
+		weight.m_mapN0ptN1ptN2pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n1_postag));
+		weight.m_mapSTptN0ptN1pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n0ld_postag));
+		weight.m_mapSTptN0ptN0LDpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(n0_postag, n0ld_postag, n0l2d_postag));
+		weight.m_mapN0ptN0LDptN0L2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(stlh_postag, st_postag, n0_postag));
+		weight.m_mapSTLHptSTptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(strh_postag, st_postag, n0_postag));
+		weight.m_mapSTRHptSTptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(stlhlh_postag, stlh_postag, st_postag));
+		weight.m_mapSTLHLHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(stlhrh_postag, stlh_postag, st_postag));
+		weight.m_mapSTLHRHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(strhlh_postag, strh_postag, st_postag));
+		weight.m_mapSTRHLHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(strhrh_postag, strh_postag, st_postag));
+		weight.m_mapSTRHRHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, n0_postag));
+		weight.m_mapSTptSTLDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, stl2d_postag));
+		weight.m_mapSTptSTLDptSTL2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, n0_postag));
+		weight.m_mapSTptSTRDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+		set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, str2d_postag));
+		weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
 
-			st_word_n0_word.refer(st_word, n0_word);
-			weight.m_mapSTwN0w.getOrUpdateScore(retval, st_word_n0_word, action, m_nScoreIndex, amount, round);
-		}
+		set_of_3_ccgtags.load(encodeCCGTags(stlhlh_ccgtag, stlh_ccgtag, st_ccgtag));
+		weight.m_mapSTLHLHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+		set_of_3_ccgtags.load(encodeCCGTags(stlhrh_ccgtag, stlh_ccgtag, st_ccgtag));
+		weight.m_mapSTLHRHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+		set_of_3_ccgtags.load(encodeCCGTags(strhlh_ccgtag, strh_ccgtag, st_ccgtag));
+		weight.m_mapSTRHLHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+		set_of_3_ccgtags.load(encodeCCGTags(strhrh_ccgtag, strh_ccgtag, st_ccgtag));
+		weight.m_mapSTRHRHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+		set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, stld_ccgtag, stl2d_ccgtag));
+		weight.m_mapSTctSTLDctSTL2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+		set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, strd_ccgtag, str2d_ccgtag));
+		weight.m_mapSTctSTRDctSTR2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
 
-		if (st_index != -1 && n0_index != -1) {
-			set_of_2_postags.load(encodePOSTags(n0_postag, n1_postag));
-			weight.m_mapN0ptN1pt.getOrUpdateScore(retval, set_of_2_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(n0_postag, n1_postag, n2_postag));
-			weight.m_mapN0ptN1ptN2pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n1_postag));
-			weight.m_mapSTptN0ptN1pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n0ld_postag));
-			weight.m_mapSTptN0ptN0LDpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(n0_postag, n0ld_postag, n0l2d_postag));
-			weight.m_mapN0ptN0LDptN0L2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-		}
-		
-		if (st_index != -1) {
-			set_of_3_postags.load(encodePOSTags(sth_postag, st_postag, n0_postag));
-			weight.m_mapSTHptSTptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(sthh_postag, sth_postag, st_postag));
-			weight.m_mapSTHHptSTHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, n0_postag));
-			weight.m_mapSTptSTLDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, stl2d_postag));
-			weight.m_mapSTptSTLDptSTL2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, n0_postag));
-			weight.m_mapSTptSTRDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, str2d_postag));
-			weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			
-			set_of_3_ccgtags.load(encodeCCGTags(item.ccg(sthh_index), item.ccg(sth_index), item.ccg(st_index)));
-			weight.m_mapSTHHctSTHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			set_of_3_ccgtags.load(encodeCCGTags(item.ccg(stl2d_index), item.ccg(stld_index), item.ccg(st_index)));
-			weight.m_mapSTctSTLDctSTL2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			set_of_3_ccgtags.load(encodeCCGTags(item.ccg(str2d_index), item.ccg(strd_index), item.ccg(st_index)));
-			weight.m_mapSTctSTRDctSTR2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-		}
+		word_int.refer(st_word, st_dist0);
+		weight.m_mapSTwd0.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(st_postag, st_dist0);
+		weight.m_mapSTptd0.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		ccgtag_int.refer(st_ccgtag, st_dist0);
+		weight.m_mapSTctd0.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+		word_int.refer(n0_word, n0_dist0);
+		weight.m_mapN0wd0.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(n0_postag, n0_dist0);
+		weight.m_mapN0ptd0.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		word_word_int.refer(st_word, n0_word, n0_dist0);
+		weight.m_mapSTwN0wd0.getOrUpdateScore(retval, word_word_int, action, m_nScoreIndex, amount, round);
+		postag_postag_int.refer(st_postag, n0_postag, n0_dist0);
+		weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 
-		if (st_index != -1 && n0_index != -1) {
-			word_int.refer(st_word, st_n0_dist);
-			weight.m_mapSTwd.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
-			postag_int.refer(st_postag, st_n0_dist);
-			weight.m_mapSTptd.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(ccgtag, st_n0_dist);
-			weight.m_mapSTctd.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
-			
-			word_int.refer(n0_word, st_n0_dist);
-			weight.m_mapN0wd.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
-			postag_int.refer(n0_postag, st_n0_dist);
-			weight.m_mapN0ptd.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			
-			word_word_int.refer(st_word, n0_word, st_n0_dist);
-			weight.m_mapSTwN0wd.getOrUpdateScore(retval, word_word_int, action, m_nScoreIndex, amount, round);
-			postag_postag_int.refer(st_postag, n0_postag, st_n0_dist);
-			weight.m_mapSTptN0ptd.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
-		}
+		word_int.refer(st_word, st_rd_arity);
+		weight.m_mapSTwrda.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(st_postag, st_rd_arity);
+		weight.m_mapSTptrda.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		ccgtag_int.refer(st_ccgtag, st_rd_arity);
+		weight.m_mapSTctrda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+		word_int.refer(st_word, st_ld_arity);
+		weight.m_mapSTwlda.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(st_postag, st_ld_arity);
+		weight.m_mapSTptlda.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		ccgtag_int.refer(st_ccgtag, st_ld_arity);
+		weight.m_mapSTctlda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+		word_int.refer(n0_word, n0_ld_arity);
+		weight.m_mapN0wlda.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(n0_postag, n0_ld_arity);
+		weight.m_mapN0ptlda.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
 
-		if (st_index != -1) {
-			word_int.refer(st_word, st_rarity);
-			weight.m_mapSTwra.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
-			postag_int.refer(st_postag, st_rarity);
-			weight.m_mapSTptra.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(ccgtag, st_rarity);
-			weight.m_mapSTctra.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
-			
-			word_int.refer(st_word, st_larity);
-			weight.m_mapSTwla.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
-			postag_int.refer(st_postag, st_larity);
-			weight.m_mapSTptla.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(ccgtag, st_larity);
-			weight.m_mapSTctla.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
-		}
+		word_int.refer(st_word, st_rh_arity);
+		weight.m_mapSTwrha.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(st_postag, st_rh_arity);
+		weight.m_mapSTptrha.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		ccgtag_int.refer(st_ccgtag, st_rh_arity);
+		weight.m_mapSTctrha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+		word_int.refer(st_word, st_lh_arity);
+		weight.m_mapSTwlha.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(st_postag, st_lh_arity);
+		weight.m_mapSTptlha.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
+		ccgtag_int.refer(st_ccgtag, st_lh_arity);
+		weight.m_mapSTctlha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+		word_int.refer(n0_word, n0_lh_arity);
+		weight.m_mapN0wlha.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
+		postag_int.refer(n0_postag, n0_lh_arity);
+		weight.m_mapN0ptlha.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
 
-		if (n0_index != -1) {
-			word_int.refer(n0_word, n0_larity);
-			weight.m_mapN0wla.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
-			postag_int.refer(n0_postag, n0_larity);
-			weight.m_mapN0ptla.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-		}
+		word_tagset.refer(st_word, st_rtagset);
+		weight.m_mapSTwrp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
+		postag_tagset.refer(st_postag, st_rtagset);
+		weight.m_mapSTptrp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
+		ccgtag_tagset.refer(st_rtagset, st_ccgtag);
+		weight.m_mapSTctrp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
 
-		if (st_index != -1){
-			word_tagset.refer(st_word, st_rtagset);
-			weight.m_mapSTwrp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
-			postag_tagset.refer(st_postag, st_rtagset);
-			weight.m_mapSTptrp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
-			ccgtag_tagset.refer(ccgtag, st_rtagset);
-			weight.m_mapSTctrp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
-			
-			word_tagset.refer(st_word, st_ltagset);
-			weight.m_mapSTwlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
-			postag_tagset.refer(st_postag, st_ltagset);
-			weight.m_mapSTptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
-			ccgtag_tagset.refer(ccgtag, st_ltagset);
-			weight.m_mapSTctlp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
-			
-			word_ccgset.refer(st_word, st_lccgset);
-			weight.m_mapSTwlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
-			postag_ccgset.refer(st_postag, st_lccgset);
-			weight.m_mapSTptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
-			ccgtag_ccgset.refer(ccgtag, st_lccgset);
-			weight.m_mapSTctlc.getOrUpdateScore(retval, ccgtag_ccgset, action, m_nScoreIndex, amount, round);			
-		}
+		word_tagset.refer(st_word, st_ltagset);
+		weight.m_mapSTwlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
+		word_ccgset.refer(st_word, st_lccgset);
+		weight.m_mapSTwlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
+		postag_tagset.refer(st_postag, st_ltagset);
+		weight.m_mapSTptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
+		postag_ccgset.refer(st_postag, st_lccgset);
+		weight.m_mapSTptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
+		ccgtag_tagset.refer(st_ltagset, st_ccgtag);
+		weight.m_mapSTctlp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
+		ccgtag_ccgset.refer(st_lccgset, st_ccgtag);
+		weight.m_mapSTctlc.getOrUpdateScore(retval, ccgtag_ccgset, action, m_nScoreIndex, amount, round);
 
-		if (n0_index != -1){
-			word_tagset.refer(n0_word, n0_ltagset);
-			weight.m_mapN0wlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
-			postag_tagset.refer(n0_postag, n0_ltagset);
-			weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
+		word_tagset.refer(n0_word, n0_ltagset);
+		weight.m_mapN0wlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
+		word_ccgset.refer(n0_word, n0_lccgset);
+		weight.m_mapN0wlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
+		postag_tagset.refer(n0_postag, n0_ltagset);
+		weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
+		postag_ccgset.refer(n0_postag, n0_lccgset);
+		weight.m_mapN0ptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
 
-			word_ccgset.refer(n0_word, n0_lccgset);
-			weight.m_mapN0wlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
-			postag_ccgset.refer(n0_postag, n0_lccgset);
-			weight.m_mapN0ptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
-		}
 	}
 
+	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action) {
 		getOrUpdateStackScore(item, retval, action, 0, 0);
 	}
 	
 	public void updateScoreForState(final StateItemBase from, final StateItemBase output, final int amount, final int len, final String str) {
 		itemForState.copy(from);
-//		((StateItem)output).print();
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
-//			System.out.print("action " + str + " = ");
-//			Action.print(action);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
 			if (action >= Macros.AL_FIRST) {
-//				System.out.println("action = " + action);
-//				System.out.println("stack back seek = " + itemForStates.stack_back);
-//				System.out.println("stack back = " + itemForStates.m_lStack[itemForState.stack_back]);
 				++((StateItem)output).m_lRightArcsSeek[itemForState.m_lStack[itemForState.stack_back]];
 			}
 			itemForState.Move(action);
@@ -500,8 +572,6 @@ public final class DepParser extends DepParserBase {
 			int action = itemForStates.FollowMove(output);
 			int correct_action = itemForStates.FollowMove(correct);
 			if (action == correct_action) {
-//				System.out.print("action = ");
-//				Action.print(action);
 				if (action >= Macros.AL_FIRST){
 					int back = itemForStates.m_lStack[itemForStates.stack_back];
 					++((StateItem)output).m_lRightArcsSeek[back];
@@ -512,9 +582,7 @@ public final class DepParser extends DepParserBase {
 				break;
 			}
 		}
-//		((StateItem)correct).print();
 		updateScoreForState(itemForStates, correct, amount_add, len, "correct");
-//		((StateItem)output).print();
 		updateScoreForState(itemForStates, output, amount_subtract, len, "output");
 		++m_nTotalErrors;
 	}

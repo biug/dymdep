@@ -1,11 +1,19 @@
 package common.parser;
 
+import include.linguistics.SetOfCCGLabels;
+import include.linguistics.SetOfDepLabels;
+
 import java.util.ArrayList;
 
 import common.dependency.label.DependencyLabel;
 
 
 public abstract class StateItemBase {
+	
+	public final static int out_index = -1;
+	public final static SetOfDepLabels empty_tagset = new SetOfDepLabels();
+	public final static SetOfCCGLabels empty_ccgset = new SetOfCCGLabels();
+	
 	public long score;
 	
 	public abstract StateItemBase generateItem();

@@ -55,8 +55,8 @@ public class MacrosCCGDag extends MacrosBase {
 			MAX_INTEGER = POSTAG_COUNT;
 		}
 		
-		CCGTAG_NONE = CCGTAG_COUNT + 1;
-		String[] temp_strings = new String[CCGTAG_NONE];
+		CCGTAG_NONE = CCGTAG_COUNT;
+		String[] temp_strings = new String[CCGTAG_COUNT + 1];
 		System.arraycopy(CCGTAG_STRINGS, 0, temp_strings, 0, CCGTAG_COUNT);
 		temp_strings[CCGTAG_COUNT] = CCGTAG_NONE_STRING;
 		CCGTAG_STRINGS = temp_strings;

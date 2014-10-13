@@ -18,5 +18,6 @@ public abstract class WeightBase {
 	
 	public abstract void loadScores();
 	public abstract void saveScores();
+	public abstract void computeAverageFeatureWeights(final int round);
 	
 }
