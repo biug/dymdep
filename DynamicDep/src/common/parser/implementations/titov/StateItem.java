@@ -274,16 +274,16 @@ public class StateItem extends StateItemBase {
 	public final int rightsubdeplabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelR[index];
 	}
-	public final int size() {
-		return m_nNextWord;
+	public final int size(final int size) {
+		return m_nNextWord < size ? m_nNextWord : out_index;
 	}
 	
-	public final int nextbufferhead() {
-		return m_nNextWord + 1;
+	public final int nextbufferhead(final int size) {
+		return m_nNextWord + 1 < size ? m_nNextWord + 1 : out_index;
 	}
 	
-	public final int nextbuffernext() {
-		return m_nNextWord + 2;
+	public final int nextbuffernext(final int size) {
+		return m_nNextWord + 2 < size ? m_nNextWord + 2 : out_index;
 	}
 	
 	public final int leftheadarity(final int index) {
@@ -518,7 +518,7 @@ public class StateItem extends StateItemBase {
 	
 	public void GenerateTree(final TwoStringsVector input, DependencyGraphBase output) {
 		output.length = 0;
-		for (int i = 0, input_size = this.size(); i < input_size; ++i) {
+		for (int i = 0, input_size = this.size(Macros.MAX_SENTENCE_SIZE); i < input_size; ++i) {
 			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, CCGTag.str(m_lCCGLabels[i]));
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 				node.rightarcs.add(new Arc(m_lRightArcs[i][j]));

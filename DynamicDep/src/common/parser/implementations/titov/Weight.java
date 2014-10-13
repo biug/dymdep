@@ -211,177 +211,177 @@ public class Weight extends WeightBase {
 	public Weight(final String sPath, final boolean bTrain) {
 		super(sPath, bTrain);
 
-		m_mapSTw = new WordMap("");
-		m_mapSTpt = new POSTagMap("");
-		m_mapSTwpt = new WordPOSTagMap("");
-		m_mapSTct = new IntMap("");
-		m_mapSTwct = new WordIntMap("");
+		m_mapSTw = new WordMap("a");
+		m_mapSTpt = new POSTagMap("a");
+		m_mapSTwpt = new WordPOSTagMap("a");
+		m_mapSTct = new IntMap("a");
+		m_mapSTwct = new WordIntMap("a");
 
-		m_mapN0w = new WordMap("");
-		m_mapN0pt = new POSTagMap("");
-		m_mapN0wpt = new WordPOSTagMap("");
+		m_mapN0w = new WordMap("a");
+		m_mapN0pt = new POSTagMap("a");
+		m_mapN0wpt = new WordPOSTagMap("a");
 
-		m_mapN1w = new WordMap("");
-		m_mapN1pt = new POSTagMap("");
-		m_mapN1wpt = new WordPOSTagMap("");
+		m_mapN1w = new WordMap("a");
+		m_mapN1pt = new POSTagMap("a");
+		m_mapN1wpt = new WordPOSTagMap("a");
 
-		m_mapN2w = new WordMap("");
-		m_mapN2pt = new POSTagMap("");
-		m_mapN2wpt = new WordPOSTagMap("");
+		m_mapN2w = new WordMap("a");
+		m_mapN2pt = new POSTagMap("a");
+		m_mapN2wpt = new WordPOSTagMap("a");
 
-		m_mapSTLHw = new WordMap("");
-		m_mapSTLHpt = new POSTagMap("");
-		m_mapSTLHct = new IntMap("");
-		m_mapSTlhl = new IntMap("");
+		m_mapSTLHw = new WordMap("a");
+		m_mapSTLHpt = new POSTagMap("a");
+		m_mapSTLHct = new IntMap("a");
+		m_mapSTlhl = new IntMap("a");
 
-		m_mapN0LHw = new WordMap("");
-		m_mapN0LHpt = new POSTagMap("");
-		m_mapN0LHct = new IntMap("");
-		m_mapN0lhl = new IntMap("");
+		m_mapN0LHw = new WordMap("a");
+		m_mapN0LHpt = new POSTagMap("a");
+		m_mapN0LHct = new IntMap("a");
+		m_mapN0lhl = new IntMap("a");
 
-		m_mapSTRHw = new WordMap("");
-		m_mapSTRHpt = new POSTagMap("");
-		m_mapSTRHct = new IntMap("");
-		m_mapSTrhl = new IntMap("");
+		m_mapSTRHw = new WordMap("a");
+		m_mapSTRHpt = new POSTagMap("a");
+		m_mapSTRHct = new IntMap("a");
+		m_mapSTrhl = new IntMap("a");
 
-		m_mapSTL2Hw = new WordMap("");
-		m_mapSTL2Hpt = new POSTagMap("");
-		m_mapSTL2Hct = new IntMap("");
-		m_mapSTl2hl = new IntMap("");
+		m_mapSTL2Hw = new WordMap("a");
+		m_mapSTL2Hpt = new POSTagMap("a");
+		m_mapSTL2Hct = new IntMap("a");
+		m_mapSTl2hl = new IntMap("a");
 
-		m_mapN0L2Hw = new WordMap("");
-		m_mapN0L2Hpt = new POSTagMap("");
-		m_mapN0L2Hct = new IntMap("");
-		m_mapN0l2hl = new IntMap("");
+		m_mapN0L2Hw = new WordMap("a");
+		m_mapN0L2Hpt = new POSTagMap("a");
+		m_mapN0L2Hct = new IntMap("a");
+		m_mapN0l2hl = new IntMap("a");
 
-		m_mapSTR2Hw = new WordMap("");
-		m_mapSTR2Hpt = new POSTagMap("");
-		m_mapSTR2Hct = new IntMap("");
-		m_mapSTr2hl = new IntMap("");
+		m_mapSTR2Hw = new WordMap("a");
+		m_mapSTR2Hpt = new POSTagMap("a");
+		m_mapSTR2Hct = new IntMap("a");
+		m_mapSTr2hl = new IntMap("a");
 
-		m_mapSTLHLHw = new WordMap("");
-		m_mapSTLHLHpt = new POSTagMap("");
-		m_mapSTLHLHct = new IntMap("");
-		m_mapSTLHlhl = new IntMap("");
+		m_mapSTLHLHw = new WordMap("a");
+		m_mapSTLHLHpt = new POSTagMap("a");
+		m_mapSTLHLHct = new IntMap("a");
+		m_mapSTLHlhl = new IntMap("a");
 
-		m_mapSTLHRHw = new WordMap("");
-		m_mapSTLHRHpt = new POSTagMap("");
-		m_mapSTLHRHct = new IntMap("");
-		m_mapSTLHrhl = new IntMap("");
+		m_mapSTLHRHw = new WordMap("a");
+		m_mapSTLHRHpt = new POSTagMap("a");
+		m_mapSTLHRHct = new IntMap("a");
+		m_mapSTLHrhl = new IntMap("a");
 
-		m_mapSTRHLHw = new WordMap("");
-		m_mapSTRHLHpt = new POSTagMap("");
-		m_mapSTRHLHct = new IntMap("");
-		m_mapSTRHlhl = new IntMap("");
+		m_mapSTRHLHw = new WordMap("a");
+		m_mapSTRHLHpt = new POSTagMap("a");
+		m_mapSTRHLHct = new IntMap("a");
+		m_mapSTRHlhl = new IntMap("a");
 
-		m_mapSTRHRHw = new WordMap("");
-		m_mapSTRHRHpt = new POSTagMap("");
-		m_mapSTRHRHct = new IntMap("");
-		m_mapSTRHrhl = new IntMap("");
+		m_mapSTRHRHw = new WordMap("a");
+		m_mapSTRHRHpt = new POSTagMap("a");
+		m_mapSTRHRHct = new IntMap("a");
+		m_mapSTRHrhl = new IntMap("a");
 
-		m_mapSTLDw = new WordMap("");
-		m_mapSTLDpt = new POSTagMap("");
-		m_mapSTLDct = new IntMap("");
-		m_mapSTldl = new IntMap("");
+		m_mapSTLDw = new WordMap("a");
+		m_mapSTLDpt = new POSTagMap("a");
+		m_mapSTLDct = new IntMap("a");
+		m_mapSTldl = new IntMap("a");
 
-		m_mapSTRDw = new WordMap("");
-		m_mapSTRDpt = new POSTagMap("");
-		m_mapSTRDct = new IntMap("");
-		m_mapSTrdl = new IntMap("");
+		m_mapSTRDw = new WordMap("a");
+		m_mapSTRDpt = new POSTagMap("a");
+		m_mapSTRDct = new IntMap("a");
+		m_mapSTrdl = new IntMap("a");
 
-		m_mapN0LDw = new WordMap("");
-		m_mapN0LDpt = new POSTagMap("");
-		m_mapN0LDct = new IntMap("");
-		m_mapN0ldl = new IntMap("");
+		m_mapN0LDw = new WordMap("a");
+		m_mapN0LDpt = new POSTagMap("a");
+		m_mapN0LDct = new IntMap("a");
+		m_mapN0ldl = new IntMap("a");
 
-		m_mapSTL2Dw = new WordMap("");
-		m_mapSTL2Dpt = new POSTagMap("");
-		m_mapSTL2Dct = new IntMap("");
-		m_mapSTl2dl = new IntMap("");
+		m_mapSTL2Dw = new WordMap("a");
+		m_mapSTL2Dpt = new POSTagMap("a");
+		m_mapSTL2Dct = new IntMap("a");
+		m_mapSTl2dl = new IntMap("a");
 
-		m_mapSTR2Dw = new WordMap("");
-		m_mapSTR2Dpt = new POSTagMap("");
-		m_mapSTR2Dct = new IntMap("");
-		m_mapSTr2dl = new IntMap("");
+		m_mapSTR2Dw = new WordMap("a");
+		m_mapSTR2Dpt = new POSTagMap("a");
+		m_mapSTR2Dct = new IntMap("a");
+		m_mapSTr2dl = new IntMap("a");
 
-		m_mapN0L2Dw = new WordMap("");
-		m_mapN0L2Dpt = new POSTagMap("");
-		m_mapN0L2Dct = new IntMap("");
-		m_mapN0l2dl = new IntMap("");
+		m_mapN0L2Dw = new WordMap("a");
+		m_mapN0L2Dpt = new POSTagMap("a");
+		m_mapN0L2Dct = new IntMap("a");
+		m_mapN0l2dl = new IntMap("a");
 
-		m_mapSTwptN0wpt = new TwoPOSTaggedWordsMap("");
-		m_mapSTwptN0w = new WordWordPOSTagMap("");
-		m_mapSTwN0wpt = new WordWordPOSTagMap("");
-		m_mapSTptN0wpt = new WordPOSTagPOSTagMap("");
-		m_mapSTwptN0pt = new WordPOSTagPOSTagMap("");
-		m_mapSTwctN0w = new WordWordIntMap("");
-		m_mapSTwN0w = new TwoWordsMap("");
+		m_mapSTwptN0wpt = new TwoPOSTaggedWordsMap("a");
+		m_mapSTwptN0w = new WordWordPOSTagMap("a");
+		m_mapSTwN0wpt = new WordWordPOSTagMap("a");
+		m_mapSTptN0wpt = new WordPOSTagPOSTagMap("a");
+		m_mapSTwptN0pt = new WordPOSTagPOSTagMap("a");
+		m_mapSTwctN0w = new WordWordIntMap("a");
+		m_mapSTwN0w = new TwoWordsMap("a");
 
-		m_mapSTptN0pt = new POSTagSet2Map("");
-		m_mapN0ptN1pt = new POSTagSet2Map("");
-		m_mapN0ptN1ptN2pt = new POSTagSet3Map("");
-		m_mapSTptN0ptN1pt = new POSTagSet3Map("");
-		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("");
-		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("");
-		m_mapSTLHptSTptN0pt = new POSTagSet3Map("");
-		m_mapSTRHptSTptN0pt = new POSTagSet3Map("");
-		m_mapSTLHLHptSTLHptSTpt = new POSTagSet3Map("");
-		m_mapSTLHRHptSTLHptSTpt = new POSTagSet3Map("");
-		m_mapSTRHLHptSTRHptSTpt = new POSTagSet3Map("");
-		m_mapSTRHRHptSTRHptSTpt = new POSTagSet3Map("");
-		m_mapSTptSTLDptN0pt = new POSTagSet3Map("");
-		m_mapSTptSTLDptSTL2Dpt = new POSTagSet3Map("");
-		m_mapSTptSTRDptN0pt = new POSTagSet3Map("");
-		m_mapSTptSTRDptSTR2Dpt = new POSTagSet3Map("");
+		m_mapSTptN0pt = new POSTagSet2Map("a");
+		m_mapN0ptN1pt = new POSTagSet2Map("a");
+		m_mapN0ptN1ptN2pt = new POSTagSet3Map("a");
+		m_mapSTptN0ptN1pt = new POSTagSet3Map("a");
+		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("a");
+		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("a");
+		m_mapSTLHptSTptN0pt = new POSTagSet3Map("a");
+		m_mapSTRHptSTptN0pt = new POSTagSet3Map("a");
+		m_mapSTLHLHptSTLHptSTpt = new POSTagSet3Map("a");
+		m_mapSTLHRHptSTLHptSTpt = new POSTagSet3Map("a");
+		m_mapSTRHLHptSTRHptSTpt = new POSTagSet3Map("a");
+		m_mapSTRHRHptSTRHptSTpt = new POSTagSet3Map("a");
+		m_mapSTptSTLDptN0pt = new POSTagSet3Map("a");
+		m_mapSTptSTLDptSTL2Dpt = new POSTagSet3Map("a");
+		m_mapSTptSTRDptN0pt = new POSTagSet3Map("a");
+		m_mapSTptSTRDptSTR2Dpt = new POSTagSet3Map("a");
 
-		m_mapSTLHLHctSTLHctSTct = new CCGTagSet3Map("");
-		m_mapSTLHRHctSTLHctSTct = new CCGTagSet3Map("");
-		m_mapSTRHLHctSTRHctSTct = new CCGTagSet3Map("");
-		m_mapSTRHRHctSTRHctSTct = new CCGTagSet3Map("");
-		m_mapSTctSTLDctSTL2Dct = new CCGTagSet3Map("");
-		m_mapSTctSTRDctSTR2Dct = new CCGTagSet3Map("");
+		m_mapSTLHLHctSTLHctSTct = new CCGTagSet3Map("a");
+		m_mapSTLHRHctSTLHctSTct = new CCGTagSet3Map("a");
+		m_mapSTRHLHctSTRHctSTct = new CCGTagSet3Map("a");
+		m_mapSTRHRHctSTRHctSTct = new CCGTagSet3Map("a");
+		m_mapSTctSTLDctSTL2Dct = new CCGTagSet3Map("a");
+		m_mapSTctSTRDctSTR2Dct = new CCGTagSet3Map("a");
 
-		m_mapSTwd0 = new WordIntMap("");
-		m_mapSTptd0 = new POSTagIntMap("");
-		m_mapSTctd0 = new TwoIntsMap("");
-		m_mapN0wd0 = new WordIntMap("");
-		m_mapN0ptd0 = new POSTagIntMap("");
-		m_mapSTwN0wd0 = new WordWordIntMap("");
-		m_mapSTptN0ptd0 = new POSTagPOSTagIntMap("");
+		m_mapSTwd0 = new WordIntMap("a");
+		m_mapSTptd0 = new POSTagIntMap("a");
+		m_mapSTctd0 = new TwoIntsMap("a");
+		m_mapN0wd0 = new WordIntMap("a");
+		m_mapN0ptd0 = new POSTagIntMap("a");
+		m_mapSTwN0wd0 = new WordWordIntMap("a");
+		m_mapSTptN0ptd0 = new POSTagPOSTagIntMap("a");
 
-		m_mapSTwrda = new WordIntMap("");
-		m_mapSTptrda = new POSTagIntMap("");
-		m_mapSTctrda = new TwoIntsMap("");
-		m_mapSTwlda = new WordIntMap("");
-		m_mapSTptlda = new POSTagIntMap("");
-		m_mapSTctlda = new TwoIntsMap("");
-		m_mapN0wlda = new WordIntMap("");
-		m_mapN0ptlda = new POSTagIntMap("");
+		m_mapSTwrda = new WordIntMap("a");
+		m_mapSTptrda = new POSTagIntMap("a");
+		m_mapSTctrda = new TwoIntsMap("a");
+		m_mapSTwlda = new WordIntMap("a");
+		m_mapSTptlda = new POSTagIntMap("a");
+		m_mapSTctlda = new TwoIntsMap("a");
+		m_mapN0wlda = new WordIntMap("a");
+		m_mapN0ptlda = new POSTagIntMap("a");
 
-		m_mapSTwrha = new WordIntMap("");
-		m_mapSTptrha = new POSTagIntMap("");
-		m_mapSTctrha = new TwoIntsMap("");
-		m_mapSTwlha = new WordIntMap("");
-		m_mapSTptlha = new POSTagIntMap("");
-		m_mapSTctlha = new TwoIntsMap("");
-		m_mapN0wlha = new WordIntMap("");
-		m_mapN0ptlha = new POSTagIntMap("");
+		m_mapSTwrha = new WordIntMap("a");
+		m_mapSTptrha = new POSTagIntMap("a");
+		m_mapSTctrha = new TwoIntsMap("a");
+		m_mapSTwlha = new WordIntMap("a");
+		m_mapSTptlha = new POSTagIntMap("a");
+		m_mapSTctlha = new TwoIntsMap("a");
+		m_mapN0wlha = new WordIntMap("a");
+		m_mapN0ptlha = new POSTagIntMap("a");
 
-		m_mapSTwrp = new WordSetOfDepLabelsMap("");
-		m_mapSTptrp = new POSTagSetOfDepLabelsMap("");
-		m_mapSTctrp = new SetOfDepLabelsIntMap("");
+		m_mapSTwrp = new WordSetOfDepLabelsMap("a");
+		m_mapSTptrp = new POSTagSetOfDepLabelsMap("a");
+		m_mapSTctrp = new SetOfDepLabelsIntMap("a");
 
-		m_mapSTwlp = new WordSetOfDepLabelsMap("");
-		m_mapSTwlc = new WordSetOfCCGLabelsMap("");
-		m_mapSTptlp = new POSTagSetOfDepLabelsMap("");
-		m_mapSTptlc = new POSTagSetOfCCGLabelsMap("");
-		m_mapSTctlp = new SetOfDepLabelsIntMap("");
-		m_mapSTctlc = new SetOfCCGLabelsIntMap("");
+		m_mapSTwlp = new WordSetOfDepLabelsMap("a");
+		m_mapSTwlc = new WordSetOfCCGLabelsMap("a");
+		m_mapSTptlp = new POSTagSetOfDepLabelsMap("a");
+		m_mapSTptlc = new POSTagSetOfCCGLabelsMap("a");
+		m_mapSTctlp = new SetOfDepLabelsIntMap("a");
+		m_mapSTctlc = new SetOfCCGLabelsIntMap("a");
 
-		m_mapN0wlp = new WordSetOfDepLabelsMap("");
-		m_mapN0wlc = new WordSetOfCCGLabelsMap("");
-		m_mapN0ptlp = new POSTagSetOfDepLabelsMap("");
-		m_mapN0ptlc = new POSTagSetOfCCGLabelsMap("");
+		m_mapN0wlp = new WordSetOfDepLabelsMap("a");
+		m_mapN0wlc = new WordSetOfCCGLabelsMap("a");
+		m_mapN0ptlp = new POSTagSetOfDepLabelsMap("a");
+		m_mapN0ptlc = new POSTagSetOfCCGLabelsMap("a");
 
 
 		loadScores();
