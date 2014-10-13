@@ -15,12 +15,15 @@ import common.parser.MacrosBase;
 
 public class MacrosCCGDag extends MacrosBase {
 	
+	public final static String DEP_NONE_STRING = "123456";
 	public final static String CCGTAG_NONE_STRING = "1234567890";
 	
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
 	
 	public static void loadMacros(String macrosFile) throws IOException {
+		
+		String[] temp_strings;
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(macrosFile)), "UTF-8"));
 		
@@ -55,8 +58,14 @@ public class MacrosCCGDag extends MacrosBase {
 			MAX_INTEGER = POSTAG_COUNT;
 		}
 		
+		DEP_NONE = DEP_COUNT;
+		temp_strings = new String[DEP_COUNT + 1];
+		System.arraycopy(DEP_STRINGS, 0, temp_strings, 0, DEP_COUNT);
+		temp_strings[DEP_COUNT] = DEP_NONE_STRING;
+		DEP_STRINGS = temp_strings;
+		
 		CCGTAG_NONE = CCGTAG_COUNT;
-		String[] temp_strings = new String[CCGTAG_COUNT + 1];
+		temp_strings = new String[CCGTAG_COUNT + 1];
 		System.arraycopy(CCGTAG_STRINGS, 0, temp_strings, 0, CCGTAG_COUNT);
 		temp_strings[CCGTAG_COUNT] = CCGTAG_NONE_STRING;
 		CCGTAG_STRINGS = temp_strings;

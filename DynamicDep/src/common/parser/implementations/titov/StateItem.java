@@ -98,10 +98,6 @@ public class StateItem extends StateItemBase {
 		
 		for (int i = 0; i < Macros.MAX_SENTENCE_SIZE; ++i) {
 			
-			m_lCCGLabels[i] = Macros.CCGTAG_NONE;
-
-			m_lRightArcsBack[i] = -1;
-			m_lRightArcsSeek[i] = 0;
 			m_lRightArcs[i] = new Arc[Macros.MAX_SENTENCE_SIZE];
 			for (int j = 0; j < Macros.MAX_SENTENCE_SIZE; ++j) {
 				m_lRightArcs[i][j] = new Arc();
@@ -256,11 +252,11 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final int leftdeplabel(final int index) {
-		return index == out_index ? out_index : m_lDepLabelL[index];
+		return index == out_index ? Macros.DEP_NONE : m_lDepLabelL[index];
 	}
 	
 	public final int leftsubdeplabel(final int index) {
-		return index == out_index ? out_index : m_lSubDepLabelL[index];
+		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelL[index];
 	}
 	
 	public final int rightdep(final int index) {
@@ -272,11 +268,11 @@ public class StateItem extends StateItemBase {
 	}
 
 	public final int rightdeplabel(final int index) {
-		return index == out_index ? out_index : m_lDepLabelR[index];
+		return index == out_index ? Macros.DEP_NONE : m_lDepLabelR[index];
 	}
 	
 	public final int rightsubdeplabel(final int index) {
-		return index == out_index ? out_index : m_lSubDepLabelR[index];
+		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelR[index];
 	}
 	public final int size() {
 		return m_nNextWord;
@@ -424,6 +420,9 @@ public class StateItem extends StateItemBase {
 		m_lDepTagL[m_nNextWord].clear();
 		m_lDepTagR[m_nNextWord].clear();
 		m_lCCGTagL[m_nNextWord].clear();
+		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
+		m_lRightArcsBack[m_nNextWord] = -1;
+		m_lRightArcsSeek[m_nNextWord] = 0;
 	}
 	
 	@Override

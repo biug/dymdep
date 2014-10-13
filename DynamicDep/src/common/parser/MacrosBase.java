@@ -24,7 +24,7 @@ public class MacrosBase {
 	public static int CCGTAG_BITS_SIZE;
 	
 	public static String[] DEP_STRINGS;
-	public static final int DEP_NONE = -1;
+	public static int DEP_NONE;
 	public static final int DEP_FIRST = 0;
 	public static int DEP_COUNT;
 	public static int DEP_BITS_SIZE;

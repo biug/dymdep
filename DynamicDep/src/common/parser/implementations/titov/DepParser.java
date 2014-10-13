@@ -87,7 +87,9 @@ public final class DepParser extends DepParserBase {
 	private CCGTagSet3 set_of_3_ccgtags;
 	
 	private ScoredAction scoredaction;
-	
+
+	private static final SetOfDepLabels empty_tagset = new SetOfDepLabels();
+	private static final SetOfCCGLabels empty_ccgset = new SetOfCCGLabels();
 	public static final POSTaggedWord empty_postaggedword = new POSTaggedWord();
 	
 	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2) {
@@ -201,13 +203,13 @@ public final class DepParser extends DepParserBase {
 		final POSTaggedWord strd_word_postag = strd_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strd_index);
 		final POSTaggedWord stl2d_word_postag = stl2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stl2d_index);
 		final POSTaggedWord str2d_word_postag = str2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(str2d_index);
-		final POSTaggedWord n0_word_postag = n0_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0_index);
+		final POSTaggedWord n0_word_postag = n0_index >= m_lCache.size() ? empty_postaggedword : m_lCache.get(n0_index);
 		final POSTaggedWord n0ld_word_postag = n0ld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0ld_index);
 		final POSTaggedWord n0l2d_word_postag = n0l2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2d_index);
 		final POSTaggedWord n0lh_word_postag = n0lh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0lh_index);
 		final POSTaggedWord n0l2h_word_postag = n0l2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2h_index);
-		final POSTaggedWord n1_word_postag = n1_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n1_index);
-		final POSTaggedWord n2_word_postag = n2_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n2_index);
+		final POSTaggedWord n1_word_postag = n1_index >= m_lCache.size() ? empty_postaggedword : m_lCache.get(n1_index);
+		final POSTaggedWord n2_word_postag = n2_index >= m_lCache.size() ? empty_postaggedword : m_lCache.get(n2_index);
 
 		final Word st_word = st_word_postag.word;
 		final Word stlh_word = stlh_word_postag.word;
@@ -289,11 +291,11 @@ public final class DepParser extends DepParserBase {
 		final Integer st_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
 		final Integer n0_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
 
-		final SetOfDepLabels st_rtagset = st_index == -1 ? null : new SetOfDepLabels(item.righttagset(st_index));
-		final SetOfDepLabels st_ltagset = st_index == -1 ? null : new SetOfDepLabels(item.lefttagset(st_index));
-		final SetOfCCGLabels st_lccgset = st_index == -1 ? null : new SetOfCCGLabels(item.leftccgset(st_index));
-		final SetOfDepLabels n0_ltagset = n0_index == -1 ? null : new SetOfDepLabels(item.lefttagset(n0_index));
-		final SetOfCCGLabels n0_lccgset = n0_index == -1 ? null : new SetOfCCGLabels(item.leftccgset(n0_index));
+		final SetOfDepLabels st_rtagset = st_index == -1 ? empty_tagset : new SetOfDepLabels(item.righttagset(st_index));
+		final SetOfDepLabels st_ltagset = st_index == -1 ? empty_tagset : new SetOfDepLabels(item.lefttagset(st_index));
+		final SetOfCCGLabels st_lccgset = st_index == -1 ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(st_index));
+		final SetOfDepLabels n0_ltagset = n0_index == -1 ? empty_tagset : new SetOfDepLabels(item.lefttagset(n0_index));
+		final SetOfCCGLabels n0_lccgset = n0_index == -1 ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(n0_index));
 
 		Weight weight = (Weight)m_weights;
 
