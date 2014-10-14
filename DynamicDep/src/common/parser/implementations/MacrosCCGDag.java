@@ -54,6 +54,7 @@ public class MacrosCCGDag extends MacrosBase {
 		}
 		
 		TREE_STRINGS = br.readLine().split(" ");
+		TREE_MAP = new HashMap<String, Integer>();
 		TREE_COUNT = TREE_STRINGS.length;
 		TREE_BITS_SIZE = 0;
 		while ((1 << TREE_BITS_SIZE) < TREE_COUNT) {
