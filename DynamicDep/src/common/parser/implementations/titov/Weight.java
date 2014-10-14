@@ -146,7 +146,9 @@ public class Weight extends WeightBase {
 	public POSTagSet3Map m_mapN0ptN1ptN2pt;
 	public POSTagSet3Map m_mapSTptN0ptN1pt;
 	public POSTagSet3Map m_mapSTptN0ptN0LDpt;
+	public POSTagSet3Map m_mapSTptN0ptN0LHpt;
 	public POSTagSet3Map m_mapN0ptN0LDptN0L2Dpt;
+	public POSTagSet3Map m_mapN0ptN0LHptN0L2Hpt;
 	public POSTagSet3Map m_mapSTLHptSTptN0pt;
 	public POSTagSet3Map m_mapSTRHptSTptN0pt;
 	public POSTagSet3Map m_mapSTLHLHptSTLHptSTpt;
@@ -323,7 +325,9 @@ public class Weight extends WeightBase {
 		m_mapN0ptN1ptN2pt = new POSTagSet3Map("a");
 		m_mapSTptN0ptN1pt = new POSTagSet3Map("a");
 		m_mapSTptN0ptN0LDpt = new POSTagSet3Map("a");
+		m_mapSTptN0ptN0LHpt = new POSTagSet3Map("a");
 		m_mapN0ptN0LDptN0L2Dpt = new POSTagSet3Map("a");
+		m_mapN0ptN0LHptN0L2Hpt = new POSTagSet3Map("a");
 		m_mapSTLHptSTptN0pt = new POSTagSet3Map("a");
 		m_mapSTRHptSTptN0pt = new POSTagSet3Map("a");
 		m_mapSTLHLHptSTLHptSTpt = new POSTagSet3Map("a");
@@ -516,7 +520,9 @@ public class Weight extends WeightBase {
 			m_mapN0ptN1ptN2pt.loadScoresFromFileStream(br);
 			m_mapSTptN0ptN1pt.loadScoresFromFileStream(br);
 			m_mapSTptN0ptN0LDpt.loadScoresFromFileStream(br);
+			m_mapSTptN0ptN0LHpt.loadScoresFromFileStream(br);
 			m_mapN0ptN0LDptN0L2Dpt.loadScoresFromFileStream(br);
+			m_mapN0ptN0LHptN0L2Hpt.loadScoresFromFileStream(br);
 			m_mapSTLHptSTptN0pt.loadScoresFromFileStream(br);
 			m_mapSTRHptSTptN0pt.loadScoresFromFileStream(br);
 			m_mapSTLHLHptSTLHptSTpt.loadScoresFromFileStream(br);
@@ -712,7 +718,9 @@ public class Weight extends WeightBase {
 			m_mapN0ptN1ptN2pt.saveScoresToFileStream(bw);
 			m_mapSTptN0ptN1pt.saveScoresToFileStream(bw);
 			m_mapSTptN0ptN0LDpt.saveScoresToFileStream(bw);
+			m_mapSTptN0ptN0LHpt.saveScoresToFileStream(bw);
 			m_mapN0ptN0LDptN0L2Dpt.saveScoresToFileStream(bw);
+			m_mapN0ptN0LHptN0L2Hpt.saveScoresToFileStream(bw);
 			m_mapSTLHptSTptN0pt.saveScoresToFileStream(bw);
 			m_mapSTRHptSTptN0pt.saveScoresToFileStream(bw);
 			m_mapSTLHLHptSTLHptSTpt.saveScoresToFileStream(bw);
@@ -899,7 +907,9 @@ public class Weight extends WeightBase {
 		m_mapN0ptN1ptN2pt.computeAverage(round);
 		m_mapSTptN0ptN1pt.computeAverage(round);
 		m_mapSTptN0ptN0LDpt.computeAverage(round);
+		m_mapSTptN0ptN0LHpt.computeAverage(round);
 		m_mapN0ptN0LDptN0L2Dpt.computeAverage(round);
+		m_mapN0ptN0LHptN0L2Hpt.computeAverage(round);
 		m_mapSTLHptSTptN0pt.computeAverage(round);
 		m_mapSTRHptSTptN0pt.computeAverage(round);
 		m_mapSTLHLHptSTLHptSTpt.computeAverage(round);

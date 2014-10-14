@@ -43,7 +43,7 @@ public class DependencyDag extends DependencyGraphBase {
 		int k = DAG_HEAD_COL + 1;
 		for (int now = 0; now < length; ++now) {
 			nodes[now] = new DependencyDagNode(lines.get(now)[DAG_WORD_COL], lines.get(now)[DAG_POS_COL],
-					Integer.parseInt(lines.get(now)[DAG_TREEHEAD_COL]),	MacrosBase.integer_cache[TreeTag.code(lines.get(now)[DAG_TREELABEL_COL])],
+					Integer.parseInt(lines.get(now)[DAG_TREEHEAD_COL]) - 1,	MacrosBase.integer_cache[TreeTag.code(lines.get(now)[DAG_TREELABEL_COL])],
 					lines.get(now)[DAG_CCG_COL]);
 		}
 		for (int now = 0; now < length; ++now) {
@@ -96,7 +96,7 @@ public class DependencyDag extends DependencyGraphBase {
 			}
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			bw.write(String.valueOf(i + 1));
-			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + Integer.toString(node.treehead) + " " + TreeTag.str(node.treelabel.intValue()) + " ");
+			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + Integer.toString(node.treehead + 1) + " " + TreeTag.str(node.treelabel.intValue()) + " ");
 			bw.write(heads.contains(MacrosBase.integer_cache[i]) ? node.word : "_");
 			Arc arc = null;
 			for (int j = 0; j < i; ++j) {
