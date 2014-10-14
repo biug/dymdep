@@ -21,6 +21,7 @@ import common.parser.implementations.map.POSTagSetOfCCGLabelsMap;
 import common.parser.implementations.map.POSTagSetOfDepLabelsMap;
 import common.parser.implementations.map.SetOfCCGLabelsIntMap;
 import common.parser.implementations.map.SetOfDepLabelsIntMap;
+import common.parser.implementations.map.SyntaxTreePathMap;
 import common.parser.implementations.map.TwoIntsMap;
 import common.parser.implementations.map.TwoPOSTaggedWordsMap;
 import common.parser.implementations.map.TwoWordsMap;
@@ -206,7 +207,7 @@ public class Weight extends WeightBase {
 	public POSTagSetOfDepLabelsMap m_mapN0ptlp;
 	public POSTagSetOfCCGLabelsMap m_mapN0ptlc;
 
-
+	public SyntaxTreePathMap m_mapSTP;
 
 	public Weight(final String sPath, final boolean bTrain) {
 		super(sPath, bTrain);
@@ -383,7 +384,8 @@ public class Weight extends WeightBase {
 		m_mapN0ptlp = new POSTagSetOfDepLabelsMap("a");
 		m_mapN0ptlc = new POSTagSetOfCCGLabelsMap("a");
 
-
+		m_mapSTP = new SyntaxTreePathMap("a");
+		
 		loadScores();
 	}
 
@@ -575,6 +577,7 @@ public class Weight extends WeightBase {
 			m_mapN0ptlp.loadScoresFromFileStream(br);
 			m_mapN0ptlc.loadScoresFromFileStream(br);
 
+			m_mapSTP.loadScoresFromFileStream(br);
 
 			br.close();
 		} catch (IOException e) {
@@ -770,7 +773,8 @@ public class Weight extends WeightBase {
 			m_mapN0ptlp.saveScoresToFileStream(bw);
 			m_mapN0ptlc.saveScoresToFileStream(bw);
 
-
+			m_mapSTP.saveScoresToFileStream(bw);
+			
 			bw.newLine();
 			bw.close();
 		} catch (IOException e) {
@@ -956,7 +960,8 @@ public class Weight extends WeightBase {
 		m_mapN0ptlp.computeAverage(round);
 		m_mapN0ptlc.computeAverage(round);
 
-
+		m_mapSTP.computeAverage(round);
+		
 		System.out.println("done.");
 	}
 }

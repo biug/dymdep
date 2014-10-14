@@ -1,5 +1,6 @@
 package common.parser.implementations.titov;
 
+import include.linguistics.IntIntegerVector;
 import include.linguistics.SetOfCCGLabels;
 import include.linguistics.SetOfDepLabels;
 import include.linguistics.TwoStringsVector;
@@ -50,6 +51,9 @@ public class StateItem extends StateItemBase {
 	protected int[] m_lDepRNum;
 	protected int[] m_lCCGLabels;
 	
+	protected int[] m_lTreeHead;
+	protected int[] m_lTreeLabel;
+	
 	protected int[] m_lRightArcsBack;
 	protected int[] m_lRightArcsSeek;
 	protected Arc[][] m_lRightArcs;	//right arcs
@@ -87,6 +91,9 @@ public class StateItem extends StateItemBase {
 		m_lSubDepLabelR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepRNum = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lCCGLabels = new int[Macros.MAX_SENTENCE_SIZE];
+		
+		m_lTreeHead = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lTreeLabel = new int[Macros.MAX_SENTENCE_SIZE];
 		
 		m_lRightArcsBack = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lRightArcsSeek = new int[Macros.MAX_SENTENCE_SIZE];
@@ -148,6 +155,8 @@ public class StateItem extends StateItemBase {
 			System.arraycopy(item.m_lSubDepLabelR, 0, m_lSubDepLabelR, 0, length);
 			System.arraycopy(item.m_lDepRNum, 0, m_lDepRNum, 0, length);
 			System.arraycopy(item.m_lCCGLabels, 0, m_lCCGLabels, 0, length);
+			System.arraycopy(item.m_lTreeHead, 0, m_lTreeHead, 0, length);
+			System.arraycopy(item.m_lTreeLabel, 0, m_lTreeLabel, 0, length);
 			System.arraycopy(item.m_lRightArcsBack, 0, m_lRightArcsBack, 0, length);
 			System.arraycopy(item.m_lRightArcsSeek, 0, m_lRightArcsSeek, 0, length);
 			for (int i = 0; i < length; ++i) {
@@ -300,6 +309,14 @@ public class StateItem extends StateItemBase {
 	
 	public final int rightdeparity(final int index) {
 		return index == out_index ? 0 : m_lDepRNum[index];
+	}
+	
+	public final int treehead(final int index) {
+		return index == out_index ? 0 : m_lTreeHead[index];
+	}
+	
+	public final int treelabel(final int index) {
+		return index == out_index ? 0 : m_lTreeLabel[index];
 	}
 	
 	public final SetOfDepLabels lefttagset(final int index) {
@@ -516,10 +533,10 @@ public class StateItem extends StateItemBase {
 		return item.m_lActionList[action_back + 1];
 	}
 	
-	public void GenerateTree(final TwoStringsVector input, DependencyGraphBase output) {
+	public void GenerateTree(final TwoStringsVector input, final IntIntegerVector treeinput, DependencyGraphBase output) {
 		output.length = 0;
 		for (int i = 0, input_size = this.size(Macros.MAX_SENTENCE_SIZE); i < input_size; ++i) {
-			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, CCGTag.str(m_lCCGLabels[i]));
+			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, treeinput.get(i).m_index, treeinput.get(i).m_label, CCGTag.str(m_lCCGLabels[i]));
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 				node.rightarcs.add(new Arc(m_lRightArcs[i][j]));
 			}

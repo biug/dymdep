@@ -11,7 +11,7 @@ public final class CCGTag {
 	protected int m_code;
 	
 	public CCGTag() {
-		m_code = MacrosBase.CCGTAG_FIRST;
+		m_code = MacrosBase.CCGTAG_NONE;
 	}
 	
 	public CCGTag(final int t) {

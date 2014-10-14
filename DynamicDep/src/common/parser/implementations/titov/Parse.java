@@ -1,6 +1,7 @@
 package common.parser.implementations.titov;
 
 import include.SentenceReader;
+import include.linguistics.IntIntegerVector;
 import include.linguistics.TwoStringsVector;
 
 import java.io.BufferedWriter;
@@ -26,6 +27,7 @@ public class Parse {
 			BufferedWriter os_scores = null;
 			long[] scores = null;
 			TwoStringsVector input_sent = new TwoStringsVector();
+			IntIntegerVector input_tree = new IntIntegerVector();
 			DependencyDag[] output_sent = null;
 			
 			if (bScores) {
@@ -38,7 +40,7 @@ public class Parse {
 				output_sent[index] = new DependencyDag();
 			}
 			
-			while (input_reader.readCONLL08Sentence(input_sent)) {
+			while (input_reader.readCONLL08Sentence(input_sent, input_tree)) {
 				if (input_sent.size() > MacrosCCGDag.MAX_SENTENCE_SIZE) {
 					for (int index = 0; index < nBest; ++index) {
 						output_sent[index].length = 0;
@@ -47,7 +49,7 @@ public class Parse {
 						}
 					}
 				} else {
-					parser.parse(++count, input_sent, output_sent, nBest, scores);
+					parser.parse(++count, input_sent, input_tree, output_sent, nBest, scores);
 				}
 				for (int index = 0; index < nBest; ++index) {
 					output_sent[index].writeSentenceToOutputStream(os);

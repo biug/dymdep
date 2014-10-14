@@ -1,5 +1,7 @@
 package include;
 
+import include.linguistics.IntInteger;
+import include.linguistics.IntIntegerVector;
 import include.linguistics.TwoStrings;
 import include.linguistics.TwoStringsVector;
 
@@ -12,6 +14,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import common.parser.MacrosBase;
+import common.parser.implementations.DependencyDag;
+import common.pos.TreeTag;
 
 /*
  * read a sentence
@@ -61,13 +65,15 @@ public final class SentenceReader {
 		}
 	}
 	
-	public boolean readCONLL08Sentence(TwoStringsVector vReturn) {
+	public boolean readCONLL08Sentence(TwoStringsVector vReturn, IntIntegerVector tReturn) {
 		if (m_iReader == null) return false;
 		try {
 			vReturn.clear();
+			tReturn.clear();
 			String line = m_iReader.readLine();
 			while (line != null && !line.isEmpty()) {
-				vReturn.add(new TwoStrings(line.trim().split(" ")[1], line.trim().split(" ")[3]));
+				vReturn.add(new TwoStrings(line.trim().split(" ")[DependencyDag.DAG_WORD_COL], line.trim().split(" ")[DependencyDag.DAG_POS_COL]));
+				tReturn.add(new IntInteger(Integer.parseInt(line.trim().split(" ")[DependencyDag.DAG_TREEHEAD_COL]), MacrosBase.integer_cache[TreeTag.code(line.trim().split(" ")[DependencyDag.DAG_TREELABEL_COL])]));
 				line = m_iReader.readLine();
 			}
 			return line != null;

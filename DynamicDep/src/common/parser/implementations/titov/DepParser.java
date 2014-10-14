@@ -5,6 +5,8 @@ import include.AgendaSimple;
 import include.learning.perceptron.PackedScoreType;
 import include.learning.perceptron.Score;
 import include.linguistics.CCGTagSet3;
+import include.linguistics.IntInteger;
+import include.linguistics.IntIntegerVector;
 import include.linguistics.POSTagInt;
 import include.linguistics.POSTagPOSTagInt;
 import include.linguistics.POSTagSet2;
@@ -16,6 +18,7 @@ import include.linguistics.SetOfCCGLabels;
 import include.linguistics.SetOfCCGLabelsInt;
 import include.linguistics.SetOfDepLabels;
 import include.linguistics.SetOfDepLabelsInt;
+import include.linguistics.SyntaxTreePath;
 import include.linguistics.TwoInts;
 import include.linguistics.TwoPOSTaggedWords;
 import include.linguistics.TwoStrings;
@@ -50,6 +53,7 @@ public final class DepParser extends DepParserBase {
 	private AgendaSimple m_Beam;
 	
 	private ArrayList<POSTaggedWord> m_lCache;
+	private IntIntegerVector m_lTree;
 	
 	private int m_nTrainingRound;
 	private int m_nTotalErrors;
@@ -63,6 +67,7 @@ public final class DepParser extends DepParserBase {
 	private PackedScoreType packed_scores;
 	
 	private TwoStringsVector trainSentence;
+	private IntIntegerVector trainSyntaxtree;
 	
 	private WordInt word_int;
 	private POSTagInt postag_int;
@@ -87,29 +92,61 @@ public final class DepParser extends DepParserBase {
 	private CCGTagSet3 set_of_3_ccgtags;
 	
 	private ScoredAction scoredaction;
+	
+	private int[] st_id_list;
+	private int[] n0_id_list;
 
 	private static final SetOfDepLabels empty_tagset = new SetOfDepLabels();
 	private static final SetOfCCGLabels empty_ccgset = new SetOfCCGLabels();
 	public static final POSTaggedWord empty_postaggedword = new POSTaggedWord();
 	
-	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2) {
+	private static final int encodePOSTags(final POSTag tag1, final POSTag tag2) {
 		return ((tag1.hashCode() << Macros.POSTAG_BITS_SIZE) | tag2.hashCode());
 	}
 	
-	public static final int encodePOSTags(final POSTag tag1, final POSTag tag2, final POSTag tag3) {
+	private static final int encodePOSTags(final POSTag tag1, final POSTag tag2, final POSTag tag3) {
 		return ((tag1.hashCode() << (Macros.POSTAG_BITS_SIZE << 1)) | (tag2.hashCode() << Macros.POSTAG_BITS_SIZE) | tag3.hashCode());
 	}
 	
-	public static final long encodeCCGTags(final long code1, final long code2) {
-		return ((code1 << Macros.CCGTAG_BITS_SIZE) | code2);
-	}
-	
-	public static final long encodeCCGTags(final long code1, final long code2, final long code3) {
+	private static final long encodeCCGTags(final long code1, final long code2, final long code3) {
 		return ((code1 << (Macros.CCGTAG_BITS_SIZE << 1)) | (code2 << Macros.CCGTAG_BITS_SIZE) | code3);
 	}
 	
-	private int minVal(final int n1, final int n2) {
+	private static final int minVal(final int n1, final int n2) {
 		return n1 < n2 ? n1 : n2; 
+	}
+	
+	private final SyntaxTreePath getPath(final StateItem item) {
+		SyntaxTreePath path = new SyntaxTreePath();
+		int st_index = item.stacktop();
+		int n0_index = item.size(m_lCache.size());
+		int st_back = 0;
+		int n0_back = 0;
+		int common = 1;
+		while (st_index != StateItem.out_index) {
+			st_id_list[st_back++] = st_index;
+			st_index = m_lTree.get(st_index).m_index;
+		}
+		while (n0_index != StateItem.out_index) {
+			n0_id_list[n0_back++] = n0_index;
+			n0_index = m_lTree.get(n0_index).m_index;
+		}
+		while (common <= st_back && common <= n0_back && st_id_list[st_back - common] == n0_id_list[n0_back - common]) {
+			++common;
+		}
+		for (int i = 0, n = st_back - common; i <= n; ++i) {
+			path.addPos(m_lCache.get(st_id_list[i]).tag.toString().substring(0, 1));
+			path.addLabel(m_lTree.get(st_id_list[i]).m_label);
+		}
+		if (common > 1) {
+			path.addPos(m_lCache.get(st_id_list[st_back - common + 1]).tag.toString().substring(0, 1));
+			path.addLabel(m_lTree.get(st_id_list[st_back - common + 1]).m_label);
+		}
+		for (int i = 0, n = n0_back - common; i <= n; ++i) {
+			path.addPos(m_lCache.get(n0_id_list[i]).tag.toString().substring(0, 1));
+			path.addLabel(m_lTree.get(n0_id_list[i]).m_label);
+		}
+		return path;
 	}
 
 	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
@@ -120,6 +157,7 @@ public final class DepParser extends DepParserBase {
 		m_Beam = new AgendaSimple(Macros.AGENDA_SIZE);
 		
 		m_lCache = new ArrayList<POSTaggedWord>();
+		m_lTree = new IntIntegerVector();
 		
 		m_weights = new Weight(sFeatureDBPath, bTrain);
 		m_nTrainingRound = 0;
@@ -134,6 +172,7 @@ public final class DepParser extends DepParserBase {
 		packed_scores = new PackedScoreType(Macros.ACTION_MAX);
 		
 		trainSentence = new TwoStringsVector();
+		trainSyntaxtree = new IntIntegerVector();
 		
 		word_int = new WordInt();
 		postag_int = new POSTagInt();
@@ -158,6 +197,9 @@ public final class DepParser extends DepParserBase {
 		set_of_3_ccgtags = new CCGTagSet3();
 		
 		scoredaction = new ScoredAction();
+		
+		st_id_list = new int[Macros.MAX_SENTENCE_SIZE];
+		n0_id_list = new int[Macros.MAX_SENTENCE_SIZE];
 	}
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
@@ -573,6 +615,8 @@ public final class DepParser extends DepParserBase {
 			postag_postag_int.refer(st_postag, n0_postag, n0_dist0);
 			weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 		}
+		
+		weight.m_mapSTP.getOrUpdateScore(retval, getPath(item), action, m_nScoreIndex, amount, round);
 
 	}
 
@@ -650,7 +694,7 @@ public final class DepParser extends DepParserBase {
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
+	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
 		final int length = sentence.size();
 		StateItem pGenerator;
 
@@ -661,6 +705,8 @@ public final class DepParser extends DepParserBase {
 		for (int index = 0; index < length; ++index) {
 			m_lCache.add(new POSTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
 		}
+		m_lTree = syntaxtree;
+		
 		m_Agenda.clear();
 		m_Finish.clear();
 		pCandidate.clear();
@@ -757,32 +803,34 @@ public final class DepParser extends DepParserBase {
 			for (int i = 0, retval_size = minVal(m_Finish.generatorSize(), nBest); i < retval_size; ++i) {
 				pGenerator = (StateItem)m_Finish.generator(i);
 				if (pGenerator != null) {
-					pGenerator.GenerateTree(sentence, retval[i]);
+					pGenerator.GenerateTree(sentence, syntaxtree, retval[i]);
 					if (scores != null) scores[i] = pGenerator.score;
 				}
 			}
 		}
 	}
 
-	public void parse(final int round, final TwoStringsVector sentence, DependencyDag[] retval,
+	public void parse(final int round, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
 			retval[i].length = 0;
 			if (scores != null) scores[i] = 0;
 		}
-		work(round, false, sentence, retval, null, nBest, scores);
+		work(round, false, sentence, syntaxtree, retval, null, nBest, scores);
 	}
 
 	public void train(final DependencyDag correct, final int round) {
 		trainSentence.clear();
+		trainSyntaxtree.clear();
 		if (correct != null) {
 			for (int i = 0; i < correct.length; ++i) {
 				DependencyDagNode node = (DependencyDagNode)correct.nodes[i];
 				trainSentence.add(new TwoStrings(node.word, node.postag));
+				trainSyntaxtree.add(new IntInteger(node.treehead, node.treelabel));
 			}
 		}
 		m_nTrainingRound = round;
-		work(round, true, trainSentence, null, correct, 1, null);
+		work(round, true, trainSentence, trainSyntaxtree, null, correct, 1, null);
 	}
 
 	@Override

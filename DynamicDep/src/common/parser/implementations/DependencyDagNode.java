@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.parser.DependencyNodeBase;
+import common.parser.MacrosBase;
 
 public class DependencyDagNode extends DependencyNodeBase {
 	
@@ -17,6 +18,8 @@ public class DependencyDagNode extends DependencyNodeBase {
 	public DependencyDagNode() {
 		word = "";
 		postag = "";
+		treehead = -1;
+		treelabel = MacrosBase.integer_cache[MacrosBase.MAX_INTEGER];
 		ccgtag = "";
 		righttail = -1;
 		rightseek = headsseek = childrenseek = 0;
@@ -25,9 +28,11 @@ public class DependencyDagNode extends DependencyNodeBase {
 		rightarcs = new ArrayList<Arc>();
 	}
 	
-	public DependencyDagNode(final String w, final String p) {
+	public DependencyDagNode(final String w, final String p, final int th, final Integer tl) {
 		word = w;
 		postag = p;
+		treehead = th;
+		treelabel = tl;
 		ccgtag = "";
 		righttail = -1;
 		rightseek = headsseek = childrenseek = 0;
@@ -36,9 +41,11 @@ public class DependencyDagNode extends DependencyNodeBase {
 		rightarcs = new ArrayList<Arc>();
 	}
 	
-	public DependencyDagNode(final String w, final String p, final String c) {
+	public DependencyDagNode(final String w, final String p, final int th, final Integer tl, final String c) {
 		word = w;
 		postag = p;
+		treehead = th;
+		treelabel = tl;
 		ccgtag = c;
 		righttail = -1;
 		rightseek = headsseek = childrenseek = 0;
@@ -52,6 +59,8 @@ public class DependencyDagNode extends DependencyNodeBase {
 		DependencyDagNode node = (DependencyDagNode)o;
 		return word.equals(node.word) &&
 				postag.equals(node.postag) &&
+				treehead == node.treehead &&
+				treelabel.equals(node.treelabel) &&
 				ccgtag.equals(node.ccgtag) &&
 				rightarcs.equals(node.rightarcs);
 	}

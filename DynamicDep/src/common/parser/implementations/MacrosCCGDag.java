@@ -53,9 +53,19 @@ public class MacrosCCGDag extends MacrosBase {
 			++DEP_BITS_SIZE;
 		}
 		
+		TREE_STRINGS = br.readLine().split(" ");
+		TREE_COUNT = TREE_STRINGS.length;
+		TREE_BITS_SIZE = 0;
+		while ((1 << TREE_BITS_SIZE) < TREE_COUNT) {
+			++TREE_BITS_SIZE;
+		}
+		
 		MAX_INTEGER = 10 + CCGTAG_COUNT + DEP_COUNT + DEP_COUNT;
 		if (MAX_INTEGER < POSTAG_COUNT) {
 			MAX_INTEGER = POSTAG_COUNT;
+		}
+		if (MAX_INTEGER < TREE_COUNT) {
+			MAX_INTEGER = TREE_COUNT;
 		}
 		
 		DEP_NONE = DEP_COUNT;
@@ -82,6 +92,10 @@ public class MacrosCCGDag extends MacrosBase {
 
 		for (int i = 0; i < CCGTAG_STRINGS.length; ++i) {
 			CCGTAG_MAP.put(CCGTAG_STRINGS[i], integer_cache[i]);
+		}
+		
+		for (int i = 0; i < TREE_STRINGS.length; ++i) {
+			TREE_MAP.put(TREE_STRINGS[i], integer_cache[i]);
 		}
 		
 		System.out.println("integer count = " + integer_cache.length);

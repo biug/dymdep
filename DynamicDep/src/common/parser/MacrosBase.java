@@ -29,6 +29,12 @@ public class MacrosBase {
 	public static int DEP_COUNT;
 	public static int DEP_BITS_SIZE;
 	
+	public static String[] TREE_STRINGS;
+	public static HashMap<String, Integer> TREE_MAP;
+	public static final int TREE_FIRST = 0;
+	public static int TREE_COUNT;
+	public static int TREE_BITS_SIZE;
+	
 	public final static int MAX_SENTENCE_SIZE = 256;
 	public final static int MAX_SENTENCE_SIZE_BITS = 8;
 	

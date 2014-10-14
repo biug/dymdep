@@ -12,12 +12,15 @@ import java.util.TreeSet;
 import common.dependency.label.DependencyLabel;
 import common.parser.DependencyGraphBase;
 import common.parser.MacrosBase;
+import common.pos.TreeTag;
 
 public class DependencyDag extends DependencyGraphBase {
 	
 	public static final int DAG_WORD_COL = 1;
 	public static final int DAG_POS_COL = 3;
 	public static final int DAG_CCG_COL = 7;
+	public static final int DAG_TREEHEAD_COL = 8;
+	public static final int DAG_TREELABEL_COL = 9;
 	public static final int DAG_HEAD_COL = 10;
 	public static final String DAG_EMPTY_STRING = "_";
 	
@@ -39,7 +42,9 @@ public class DependencyDag extends DependencyGraphBase {
 		}
 		int k = DAG_HEAD_COL + 1;
 		for (int now = 0; now < length; ++now) {
-			nodes[now] = new DependencyDagNode(lines.get(now)[DAG_WORD_COL], lines.get(now)[DAG_POS_COL], lines.get(now)[DAG_CCG_COL]);
+			nodes[now] = new DependencyDagNode(lines.get(now)[DAG_WORD_COL], lines.get(now)[DAG_POS_COL],
+					Integer.parseInt(lines.get(now)[DAG_TREEHEAD_COL]),	MacrosBase.integer_cache[TreeTag.code(lines.get(now)[DAG_TREELABEL_COL])],
+					lines.get(now)[DAG_CCG_COL]);
 		}
 		for (int now = 0; now < length; ++now) {
 			if (!lines.get(now)[DAG_HEAD_COL].equals(DAG_EMPTY_STRING)) {
@@ -91,7 +96,7 @@ public class DependencyDag extends DependencyGraphBase {
 			}
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			bw.write(String.valueOf(i + 1));
-			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + " _ _ ");
+			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + Integer.toString(node.treehead) + " " + TreeTag.str(node.treelabel.intValue()) + " ");
 			bw.write(heads.contains(MacrosBase.integer_cache[i]) ? node.word : "_");
 			Arc arc = null;
 			for (int j = 0; j < i; ++j) {
