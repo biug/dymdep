@@ -72,8 +72,8 @@ public final class SentenceReader {
 			tReturn.clear();
 			String line = m_iReader.readLine();
 			while (line != null && !line.isEmpty()) {
-				vReturn.add(new TwoStrings(line.trim().split(" ")[DependencyDag.DAG_WORD_COL], line.trim().split(" ")[DependencyDag.DAG_POS_COL]));
-				tReturn.add(new IntInteger(Integer.parseInt(line.trim().split(" ")[DependencyDag.DAG_TREEHEAD_COL]), MacrosBase.integer_cache[TreeTag.code(line.trim().split(" ")[DependencyDag.DAG_TREELABEL_COL])]));
+				vReturn.add(new TwoStrings(line.trim().split("[ \t]+")[DependencyDag.DAG_WORD_COL], line.trim().split("[ \t]+")[DependencyDag.DAG_POS_COL]));
+				tReturn.add(new IntInteger(Integer.parseInt(line.trim().split("[ \t]+")[DependencyDag.DAG_TREEHEAD_COL]) - 1, MacrosBase.integer_cache[TreeTag.code(line.trim().split("[ \t]+")[DependencyDag.DAG_TREELABEL_COL])]));
 				line = m_iReader.readLine();
 			}
 			return line != null;

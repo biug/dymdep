@@ -50,6 +50,7 @@ public class TreeTag {
 	}
 	
 	public static int code(final String s) {
-		return MacrosBase.TREE_MAP.get(s).intValue();
+		Integer i = MacrosBase.TREE_MAP.get(s);
+		return i == null ? 0 : i.intValue();
 	}
 }

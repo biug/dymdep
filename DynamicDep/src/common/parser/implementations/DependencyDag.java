@@ -96,7 +96,7 @@ public class DependencyDag extends DependencyGraphBase {
 			}
 			DependencyDagNode node = (DependencyDagNode)nodes[i];
 			bw.write(String.valueOf(i + 1));
-			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + Integer.toString(node.treehead + 1) + " " + TreeTag.str(node.treelabel.intValue()) + " ");
+			bw.write(" " + node.word + " " + node.word + " " + node.postag + " " + node.postag + " _ _ " + node.ccgtag + " " + Integer.toString(node.treehead + 1) + " " + TreeTag.str(node.treelabel.intValue()) + " ");
 			bw.write(heads.contains(MacrosBase.integer_cache[i]) ? node.word : "_");
 			Arc arc = null;
 			for (int j = 0; j < i; ++j) {

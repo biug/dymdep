@@ -46,7 +46,8 @@ public final class POSTag {
 	}
 	
 	public void load(String s) {
-		m_code = MacrosBase.POSTAG_MAP.get(s).intValue();	
+		Integer i = MacrosBase.POSTAG_MAP.get(s);
+		m_code = i == null ? 0 : i.intValue();	
 	}
 	
 	public static String str(final int t) {

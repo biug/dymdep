@@ -1,14 +1,13 @@
 package include.linguistics;
 
-import java.util.ArrayList;
 
 public class SyntaxTreePath {
-	ArrayList<String> m_poses;
-	ArrayList<Integer> m_labels;
+	String m_poses;
+	String m_labels;
 	
 	public SyntaxTreePath() {
-		m_poses = new ArrayList<String>();
-		m_labels = new ArrayList<Integer>();
+		m_poses = "";
+		m_labels = "";
 	}
 	
 	public SyntaxTreePath(final SyntaxTreePath path) {
@@ -16,30 +15,14 @@ public class SyntaxTreePath {
 		m_labels = path.m_labels;
 	}
 	
-	public SyntaxTreePath(final ArrayList<String> poses, final ArrayList<Integer> labels) {
+	public SyntaxTreePath(final String poses, final String labels) {
 		m_poses = poses;
 		m_labels = labels;
 	}
 	
 	@Override
 	public String toString() {
-		String ret = "[";
-		ret += "[";
-		if (m_poses.size() > 0) {
-			ret += m_poses.get(0);
-			for (int i = 1, n = m_poses.size(); i < n; ++i) {
-				ret += " " + m_poses.get(i);
-			}
-		}
-		ret += "] @ [";
-		if (m_labels.size() > 0) {
-			ret += m_labels.get(0).toString();
-			for (int i = 1, n = m_labels.size(); i < n; ++i) {
-				ret += " " + m_labels.get(i).toString();
-			}
-		}
-		ret += "]]";
-		return ret;
+		return "[" + m_poses + " @ " + m_labels + "]";
 	}
 	
 	@Override
@@ -49,15 +32,15 @@ public class SyntaxTreePath {
 	}
 	
 	public void clear() {
-		m_poses.clear();
-		m_labels.clear();
+		m_poses = "";
+		m_labels = "";
 	}
 	
 	public void addPos(final String pos) {
-		m_poses.add(pos);
+		m_poses += "#" + pos;
 	}
 	
 	public void addLabel(final Integer label) {
-		m_labels.add(label);
+		m_labels += "#" + label.toString();
 	}
 }
