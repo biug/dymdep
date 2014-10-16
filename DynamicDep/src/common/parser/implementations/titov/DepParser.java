@@ -321,19 +321,19 @@ public final class DepParser extends DepParserBase {
 		postag_postag_int.refer(st_postag, n0_postag, n0_dist0);
 		weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 
-		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
-			
-			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			weight.m_mapLabelPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			
-		} else {
-			
-			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-			weight.m_mapLabelPath.getOrUpdateScore(retval, analyzer.LabelPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-			
-		}
+//		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
+//			
+//			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+//			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+//			weight.m_mapLabelPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+//			
+//		} else {
+//			
+//			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+//			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+//			weight.m_mapLabelPath.getOrUpdateScore(retval, analyzer.LabelPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+//			
+//		}
 		
 		if (st_index != StateItem.out_index) {
 			
@@ -665,7 +665,6 @@ public final class DepParser extends DepParserBase {
 		}
 
 	}
-
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action) {
 		getOrUpdateStackScore(item, retval, action, 0, 0);

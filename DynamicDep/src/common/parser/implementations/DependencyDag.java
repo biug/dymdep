@@ -12,9 +12,10 @@ import java.util.TreeSet;
 import common.dependency.label.DependencyLabel;
 import common.parser.DependencyGraphBase;
 import common.parser.MacrosBase;
+import common.pos.CCGTag;
 import common.pos.TreeTag;
 
-public class DependencyDag extends DependencyGraphBase {
+public final class DependencyDag extends DependencyGraphBase {
 	
 	public static final int DAG_WORD_COL = 1;
 	public static final int DAG_POS_COL = 3;
@@ -27,6 +28,12 @@ public class DependencyDag extends DependencyGraphBase {
 	public DependencyDag() {
 		length = 0;
 		nodes = new DependencyDagNode[MacrosCCGDag.MAX_SENTENCE_SIZE];
+	}
+	
+	public void clearSuperTag() {
+		for (int i = 0; i < length; ++i) {
+			((DependencyDagNode)nodes[i]).ccgtag = CCGTag.str(MacrosBase.CCGTAG_FIRST);
+		}
 	}
 	
 	@Override

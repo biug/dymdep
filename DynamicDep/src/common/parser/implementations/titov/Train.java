@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 
 import common.parser.implementations.DependencyDag;
 
-public class Train {
+public final class Train {
 	public void auto_train(final String sOutputFile, final String sFeatureFile, final boolean supertag) throws IOException {
 		System.out.println("Training iteration is started...");
 		System.out.flush();
@@ -19,6 +19,9 @@ public class Train {
 		while (ref_sent.readSentenceFromInputStream(br)) {
 			++nCount;
 			if (nCount % 1000 == 0) System.out.println(nCount);
+			if (!supertag) {
+				ref_sent.clearSuperTag();
+			}
 			parser.train(ref_sent, nCount);
 		}
 		parser.finishtraning();
