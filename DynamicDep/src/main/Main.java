@@ -31,7 +31,7 @@ public class Main {
 	
 	public static void parse(final String sInputFile, final String sOutputFile, final String sFeatureFile) {
 		Parse parse = new Parse();
-		parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false);
+		parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false, false);
 	}
 	
 	public static void main(String[] args) throws IOException {

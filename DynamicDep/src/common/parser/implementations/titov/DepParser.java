@@ -48,6 +48,8 @@ import common.pos.POSTag;
 
 public final class DepParser extends DepParserBase {
 	
+	private boolean m_bSupertag;
+	
 	private AgendaBeam m_Agenda;
 	private AgendaBeam m_Finish;
 	private AgendaSimple m_Beam;
@@ -115,8 +117,10 @@ public final class DepParser extends DepParserBase {
 		return n1 < n2 ? n1 : n2; 
 	}
 
-	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
+	public DepParser(final String sFeatureDBPath, final boolean bTrain, final boolean supertag) {
 		super(sFeatureDBPath, bTrain);
+		
+		m_bSupertag = supertag;
 		
 		m_Agenda = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
 		m_Finish = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
@@ -277,33 +281,12 @@ public final class DepParser extends DepParserBase {
 		final Integer n0_l2h_label = Macros.integer_cache[item.leftsubheadlabel(n0_index)];
 		final Integer n0_l2d_label = Macros.integer_cache[item.leftsubdeplabel(n0_index)];
 
-		final Integer st_ccgtag = Macros.integer_cache[item.ccg(st_index)];
-		final Integer stlh_ccgtag = Macros.integer_cache[item.ccg(stlh_index)];
-		final Integer stl2h_ccgtag = Macros.integer_cache[item.ccg(stl2h_index)];
-		final Integer strh_ccgtag = Macros.integer_cache[item.ccg(strh_index)];
-		final Integer str2h_ccgtag = Macros.integer_cache[item.ccg(str2h_index)];
-		final Integer stlhlh_ccgtag = Macros.integer_cache[item.ccg(stlhlh_index)];
-		final Integer stlhrh_ccgtag = Macros.integer_cache[item.ccg(stlhrh_index)];
-		final Integer strhlh_ccgtag = Macros.integer_cache[item.ccg(strhlh_index)];
-		final Integer strhrh_ccgtag = Macros.integer_cache[item.ccg(strhrh_index)];
-		final Integer stld_ccgtag = Macros.integer_cache[item.ccg(stld_index)];
-		final Integer strd_ccgtag = Macros.integer_cache[item.ccg(strd_index)];
-		final Integer stl2d_ccgtag = Macros.integer_cache[item.ccg(stl2d_index)];
-		final Integer str2d_ccgtag = Macros.integer_cache[item.ccg(str2d_index)];
-		final Integer n0ld_ccgtag = Macros.integer_cache[item.ccg(n0ld_index)];
-		final Integer n0l2d_ccgtag = Macros.integer_cache[item.ccg(n0l2d_index)];
-		final Integer n0lh_ccgtag = Macros.integer_cache[item.ccg(n0lh_index)];
-		final Integer n0l2h_ccgtag = Macros.integer_cache[item.ccg(n0l2h_index)];
-
 		final Integer st_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
 		final Integer n0_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
 
 		final SetOfDepLabels st_rtagset = st_index == StateItem.out_index ? empty_tagset : new SetOfDepLabels(item.righttagset(st_index));
 		final SetOfDepLabels st_ltagset = st_index == StateItem.out_index ? empty_tagset : new SetOfDepLabels(item.lefttagset(st_index));
 		final SetOfDepLabels n0_ltagset = n0_index == StateItem.out_index ? empty_tagset : new SetOfDepLabels(item.lefttagset(n0_index));
-		
-		final SetOfCCGLabels st_lccgset = st_index == StateItem.out_index ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(st_index));
-		final SetOfCCGLabels n0_lccgset = n0_index == StateItem.out_index ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(n0_index));
 
 		Weight weight = (Weight)m_weights;
 
@@ -311,9 +294,6 @@ public final class DepParser extends DepParserBase {
 		weight.m_mapSTpt.getOrUpdateScore(retval, st_postag, action, m_nScoreIndex, amount, round);
 		word_postag.refer(st_word, st_postag);
 		weight.m_mapSTwpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
-		weight.m_mapSTct.getOrUpdateScore(retval, st_ccgtag, action, m_nScoreIndex, amount, round);
-		word_ccgtag.refer(st_word, st_ccgtag);
-		weight.m_mapSTwct.getOrUpdateScore(retval, word_ccgtag, action, m_nScoreIndex, amount, round);
 
 		weight.m_mapN0w.getOrUpdateScore(retval, n0_word, action, m_nScoreIndex, amount, round);
 		weight.m_mapN0pt.getOrUpdateScore(retval, n0_postag, action, m_nScoreIndex, amount, round);
@@ -330,8 +310,6 @@ public final class DepParser extends DepParserBase {
 		weight.m_mapSTptN0wpt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
 		word_postag_postag.refer(st_word, st_postag, n0_postag);
 		weight.m_mapSTwptN0pt.getOrUpdateScore(retval, word_postag_postag, action, m_nScoreIndex, amount, round);
-		word_word_ccgtag.refer(st_word, n0_word, st_ccgtag);
-		weight.m_mapSTwctN0w.getOrUpdateScore(retval, word_word_ccgtag, action, m_nScoreIndex, amount, round);
 		word_word.refer(st_word, n0_word);
 		weight.m_mapSTwN0w.getOrUpdateScore(retval, word_word, action, m_nScoreIndex, amount, round);
 
@@ -344,90 +322,69 @@ public final class DepParser extends DepParserBase {
 		weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 
 		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
+			
 			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
 			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
 			weight.m_mapLabelPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			
 		} else {
+			
 			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
 			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
 			weight.m_mapLabelPath.getOrUpdateScore(retval, analyzer.LabelPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+			
 		}
 		
 		if (st_index != StateItem.out_index) {
 			
 			weight.m_mapSTLHw.getOrUpdateScore(retval, stlh_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTLHpt.getOrUpdateScore(retval, stlh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHct.getOrUpdateScore(retval, stlh_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTlhl.getOrUpdateScore(retval, st_lh_label, action, m_nScoreIndex, amount, round);
 			
 			weight.m_mapSTRHw.getOrUpdateScore(retval, strh_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRHpt.getOrUpdateScore(retval, strh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHct.getOrUpdateScore(retval, strh_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTrhl.getOrUpdateScore(retval, st_rh_label, action, m_nScoreIndex, amount, round);
 
 			weight.m_mapSTLDw.getOrUpdateScore(retval, stld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTLDpt.getOrUpdateScore(retval, stld_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLDct.getOrUpdateScore(retval, stld_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTldl.getOrUpdateScore(retval, st_ld_label, action, m_nScoreIndex, amount, round);
 
 			weight.m_mapSTRDw.getOrUpdateScore(retval, strd_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTRDpt.getOrUpdateScore(retval, strd_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRDct.getOrUpdateScore(retval, strd_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapSTrdl.getOrUpdateScore(retval, st_rd_label, action, m_nScoreIndex, amount, round);
 
 			word_int.refer(st_word, st_dist0);
 			weight.m_mapSTwd0.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
 			postag_int.refer(st_postag, st_dist0);
 			weight.m_mapSTptd0.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(st_dist0, st_ccgtag);
-			weight.m_mapSTctd0.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
 			
 			word_int.refer(st_word, st_rd_arity);
 			weight.m_mapSTwrda.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
 			postag_int.refer(st_postag, st_rd_arity);
 			weight.m_mapSTptrda.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(st_rd_arity, st_ccgtag);
-			weight.m_mapSTctrda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
 			word_int.refer(st_word, st_ld_arity);
 			weight.m_mapSTwlda.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
 			postag_int.refer(st_postag, st_ld_arity);
 			weight.m_mapSTptlda.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(st_ld_arity, st_ccgtag);
-			weight.m_mapSTctlda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
 			
 			word_int.refer(st_word, st_rh_arity);
 			weight.m_mapSTwrha.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
 			postag_int.refer(st_postag, st_rh_arity);
 			weight.m_mapSTptrha.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(st_rh_arity, st_ccgtag);
-			weight.m_mapSTctrha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
 			word_int.refer(st_word, st_lh_arity);
 			weight.m_mapSTwlha.getOrUpdateScore(retval, word_int, action, m_nScoreIndex, amount, round);
 			postag_int.refer(st_postag, st_lh_arity);
 			weight.m_mapSTptlha.getOrUpdateScore(retval, postag_int, action, m_nScoreIndex, amount, round);
-			ccgtag_int.refer(st_lh_arity, st_ccgtag);
-			weight.m_mapSTctlha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
 
 			word_tagset.refer(st_word, st_rtagset);
 			weight.m_mapSTwrp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
 			postag_tagset.refer(st_postag, st_rtagset);
 			weight.m_mapSTptrp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
-			ccgtag_tagset.refer(st_rtagset, st_ccgtag);
-			weight.m_mapSTctrp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
 
 			word_tagset.refer(st_word, st_ltagset);
 			weight.m_mapSTwlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
 			postag_tagset.refer(st_postag, st_ltagset);
 			weight.m_mapSTptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
-			ccgtag_tagset.refer(st_ltagset, st_ccgtag);
-			weight.m_mapSTctlp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
-
-			word_ccgset.refer(st_word, st_lccgset);
-			weight.m_mapSTwlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
-			postag_ccgset.refer(st_postag, st_lccgset);
-			weight.m_mapSTptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
-			ccgtag_ccgset.refer(st_lccgset, st_ccgtag);
-			weight.m_mapSTctlc.getOrUpdateScore(retval, ccgtag_ccgset, action, m_nScoreIndex, amount, round);
 
 			set_of_3_postags.load(encodePOSTags(stlh_postag, st_postag, n0_postag));
 			weight.m_mapSTLHptSTptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
@@ -437,93 +394,70 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapSTptSTLDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
 			set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, n0_postag));
 			weight.m_mapSTptSTRDptN0pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-		}
-		
-		if (stlh_index != StateItem.out_index) {
 			
-			weight.m_mapSTL2Hw.getOrUpdateScore(retval, stl2h_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Hpt.getOrUpdateScore(retval, stl2h_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Hct.getOrUpdateScore(retval, stl2h_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTl2hl.getOrUpdateScore(retval, st_l2h_label, action, m_nScoreIndex, amount, round);
+			if (stlh_index != StateItem.out_index) {
+				
+				weight.m_mapSTL2Hw.getOrUpdateScore(retval, stl2h_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTL2Hpt.getOrUpdateScore(retval, stl2h_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTl2hl.getOrUpdateScore(retval, st_l2h_label, action, m_nScoreIndex, amount, round);
+				
+				weight.m_mapSTLHLHw.getOrUpdateScore(retval, stlhlh_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTLHLHpt.getOrUpdateScore(retval, stlhlh_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTLHlhl.getOrUpdateScore(retval, stlh_lh_label, action, m_nScoreIndex, amount, round);
+				
+				weight.m_mapSTLHRHw.getOrUpdateScore(retval, stlhrh_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTLHRHpt.getOrUpdateScore(retval, stlhrh_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTLHrhl.getOrUpdateScore(retval, stlh_rh_label, action, m_nScoreIndex, amount, round);
+				
+				set_of_3_postags.load(encodePOSTags(stlhlh_postag, stlh_postag, st_postag));
+				weight.m_mapSTLHLHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				set_of_3_postags.load(encodePOSTags(stlhrh_postag, stlh_postag, st_postag));
+				weight.m_mapSTLHRHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				
+			}
 			
-			weight.m_mapSTLHLHw.getOrUpdateScore(retval, stlhlh_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHLHpt.getOrUpdateScore(retval, stlhlh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHLHct.getOrUpdateScore(retval, stlhlh_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHlhl.getOrUpdateScore(retval, stlh_lh_label, action, m_nScoreIndex, amount, round);
-			
-			weight.m_mapSTLHRHw.getOrUpdateScore(retval, stlhrh_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHRHpt.getOrUpdateScore(retval, stlhrh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHRHct.getOrUpdateScore(retval, stlhrh_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTLHrhl.getOrUpdateScore(retval, stlh_rh_label, action, m_nScoreIndex, amount, round);
-			
-			set_of_3_postags.load(encodePOSTags(stlhlh_postag, stlh_postag, st_postag));
-			weight.m_mapSTLHLHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(stlhrh_postag, stlh_postag, st_postag));
-			weight.m_mapSTLHRHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+			if (strh_index != StateItem.out_index) {
+				
+				weight.m_mapSTR2Hw.getOrUpdateScore(retval, str2h_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTR2Hpt.getOrUpdateScore(retval, str2h_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTr2hl.getOrUpdateScore(retval, st_r2h_label, action, m_nScoreIndex, amount, round);
+				
+				weight.m_mapSTRHLHw.getOrUpdateScore(retval, strhlh_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRHLHpt.getOrUpdateScore(retval, strhlh_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRHlhl.getOrUpdateScore(retval, strh_lh_label, action, m_nScoreIndex, amount, round);
 
-			set_of_3_ccgtags.load(encodeCCGTags(stlhlh_ccgtag, stlh_ccgtag, st_ccgtag));
-			weight.m_mapSTLHLHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			set_of_3_ccgtags.load(encodeCCGTags(stlhrh_ccgtag, stlh_ccgtag, st_ccgtag));
-			weight.m_mapSTLHRHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			
-		}
-		
-		if (strh_index != StateItem.out_index) {
+				weight.m_mapSTRHRHw.getOrUpdateScore(retval, strhrh_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRHRHpt.getOrUpdateScore(retval, strhrh_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRHrhl.getOrUpdateScore(retval, strh_rh_label, action, m_nScoreIndex, amount, round);
 
-			weight.m_mapSTR2Hw.getOrUpdateScore(retval, str2h_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Hpt.getOrUpdateScore(retval, str2h_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Hct.getOrUpdateScore(retval, str2h_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTr2hl.getOrUpdateScore(retval, st_r2h_label, action, m_nScoreIndex, amount, round);
+				set_of_3_postags.load(encodePOSTags(strhlh_postag, strh_postag, st_postag));
+				weight.m_mapSTRHLHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				set_of_3_postags.load(encodePOSTags(strhrh_postag, strh_postag, st_postag));
+				weight.m_mapSTRHRHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				
+			}
 			
-			weight.m_mapSTRHLHw.getOrUpdateScore(retval, strhlh_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHLHpt.getOrUpdateScore(retval, strhlh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHLHct.getOrUpdateScore(retval, strhlh_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHlhl.getOrUpdateScore(retval, strh_lh_label, action, m_nScoreIndex, amount, round);
+			if (stld_index != StateItem.out_index) {
 
-			weight.m_mapSTRHRHw.getOrUpdateScore(retval, strhrh_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHRHpt.getOrUpdateScore(retval, strhrh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHRHct.getOrUpdateScore(retval, strhrh_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTRHrhl.getOrUpdateScore(retval, strh_rh_label, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTl2dl.getOrUpdateScore(retval, st_l2d_label, action, m_nScoreIndex, amount, round);
+				
+				set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, stl2d_postag));
+				weight.m_mapSTptSTLDptSTL2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
 
-			set_of_3_postags.load(encodePOSTags(strhlh_postag, strh_postag, st_postag));
-			weight.m_mapSTRHLHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			set_of_3_postags.load(encodePOSTags(strhrh_postag, strh_postag, st_postag));
-			weight.m_mapSTRHRHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+			}
 			
-			set_of_3_ccgtags.load(encodeCCGTags(strhlh_ccgtag, strh_ccgtag, st_ccgtag));
-			weight.m_mapSTRHLHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			set_of_3_ccgtags.load(encodeCCGTags(strhrh_ccgtag, strh_ccgtag, st_ccgtag));
-			weight.m_mapSTRHRHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			
-		}
-		
-		if (stld_index != StateItem.out_index) {
+			if (strd_index != StateItem.out_index) {
 
-			weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTL2Dct.getOrUpdateScore(retval, stl2d_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTl2dl.getOrUpdateScore(retval, st_l2d_label, action, m_nScoreIndex, amount, round);
-			
-			set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, stl2d_postag));
-			weight.m_mapSTptSTLDptSTL2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-
-			set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, stld_ccgtag, stl2d_ccgtag));
-			weight.m_mapSTctSTLDctSTL2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
-			
-		}
-		
-		if (strd_index != StateItem.out_index) {
-
-			weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTR2Dct.getOrUpdateScore(retval, str2d_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapSTr2dl.getOrUpdateScore(retval, st_r2d_label, action, m_nScoreIndex, amount, round);
-			
-			set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, str2d_postag));
-			weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-
-			set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, strd_ccgtag, str2d_ccgtag));
-			weight.m_mapSTctSTRDctSTR2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTr2dl.getOrUpdateScore(retval, st_r2d_label, action, m_nScoreIndex, amount, round);
+				
+				set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, str2d_postag));
+				weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				
+			}
 			
 		}
 		
@@ -531,12 +465,10 @@ public final class DepParser extends DepParserBase {
 
 			weight.m_mapN0LHw.getOrUpdateScore(retval, n0lh_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0LHpt.getOrUpdateScore(retval, n0lh_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LHct.getOrUpdateScore(retval, n0lh_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0lhl.getOrUpdateScore(retval, n0_lh_label, action, m_nScoreIndex, amount, round);
 
 			weight.m_mapN0LDw.getOrUpdateScore(retval, n0ld_word, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0LDpt.getOrUpdateScore(retval, n0ld_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0LDct.getOrUpdateScore(retval, n0ld_ccgtag, action, m_nScoreIndex, amount, round);
 			weight.m_mapN0ldl.getOrUpdateScore(retval, n0_ld_label, action, m_nScoreIndex, amount, round);
 			
 			weight.m_mapN1w.getOrUpdateScore(retval, n1_word, action, m_nScoreIndex, amount, round);
@@ -568,49 +500,168 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapN0wlp.getOrUpdateScore(retval, word_tagset, action, m_nScoreIndex, amount, round);
 			postag_tagset.refer(n0_postag, n0_ltagset);
 			weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
-			word_ccgset.refer(n0_word, n0_lccgset);
-			weight.m_mapN0wlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
-			postag_ccgset.refer(n0_postag, n0_lccgset);
-			weight.m_mapN0ptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
 			
 			set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n0ld_postag));
 			weight.m_mapSTptN0ptN0LDpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
 			set_of_3_postags.load(encodePOSTags(st_postag, n0_postag, n0lh_postag));
 			weight.m_mapSTptN0ptN0LHpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+			
+			if (n0lh_index != StateItem.out_index) {
+
+				weight.m_mapN0L2Hw.getOrUpdateScore(retval, n0l2h_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapN0L2Hpt.getOrUpdateScore(retval, n0l2h_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapN0l2hl.getOrUpdateScore(retval, n0_l2h_label, action, m_nScoreIndex, amount, round);
+				
+				set_of_3_postags.load(encodePOSTags(n0_postag, n0lh_postag, n0l2h_postag));
+				weight.m_mapN0ptN0LHptN0L2Hpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				
+			}
+			
+			if (n0ld_index != StateItem.out_index) {
+
+				weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
+				weight.m_mapN0l2dl.getOrUpdateScore(retval, n0_l2d_label, action, m_nScoreIndex, amount, round);
+				
+				set_of_3_postags.load(encodePOSTags(n0_postag, n0ld_postag, n0l2d_postag));
+				weight.m_mapN0ptN0LDptN0L2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+				
+			}
+			
+			if (n1_index != StateItem.out_index) {
+				weight.m_mapN2w.getOrUpdateScore(retval, n2_word, action, m_nScoreIndex, amount, round);
+				weight.m_mapN2pt.getOrUpdateScore(retval, n2_postag, action, m_nScoreIndex, amount, round);
+				word_postag.refer(n2_word, n2_postag);
+				weight.m_mapN2wpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+
+				set_of_3_postags.load(encodePOSTags(n0_postag, n1_postag, n2_postag));
+				weight.m_mapN0ptN1ptN2pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+			}
+			
 		}
 		
-		if (n0lh_index != StateItem.out_index) {
+		if (m_bSupertag) {
+			
+			final Integer st_ccgtag = Macros.integer_cache[item.ccg(st_index)];
+			final Integer stlh_ccgtag = Macros.integer_cache[item.ccg(stlh_index)];
+			final Integer stl2h_ccgtag = Macros.integer_cache[item.ccg(stl2h_index)];
+			final Integer strh_ccgtag = Macros.integer_cache[item.ccg(strh_index)];
+			final Integer str2h_ccgtag = Macros.integer_cache[item.ccg(str2h_index)];
+			final Integer stlhlh_ccgtag = Macros.integer_cache[item.ccg(stlhlh_index)];
+			final Integer stlhrh_ccgtag = Macros.integer_cache[item.ccg(stlhrh_index)];
+			final Integer strhlh_ccgtag = Macros.integer_cache[item.ccg(strhlh_index)];
+			final Integer strhrh_ccgtag = Macros.integer_cache[item.ccg(strhrh_index)];
+			final Integer stld_ccgtag = Macros.integer_cache[item.ccg(stld_index)];
+			final Integer strd_ccgtag = Macros.integer_cache[item.ccg(strd_index)];
+			final Integer stl2d_ccgtag = Macros.integer_cache[item.ccg(stl2d_index)];
+			final Integer str2d_ccgtag = Macros.integer_cache[item.ccg(str2d_index)];
+			final Integer n0ld_ccgtag = Macros.integer_cache[item.ccg(n0ld_index)];
+			final Integer n0l2d_ccgtag = Macros.integer_cache[item.ccg(n0l2d_index)];
+			final Integer n0lh_ccgtag = Macros.integer_cache[item.ccg(n0lh_index)];
+			final Integer n0l2h_ccgtag = Macros.integer_cache[item.ccg(n0l2h_index)];
+			
+			final SetOfCCGLabels st_lccgset = st_index == StateItem.out_index ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(st_index));
+			final SetOfCCGLabels n0_lccgset = n0_index == StateItem.out_index ? empty_ccgset : new SetOfCCGLabels(item.leftccgset(n0_index));
+			
+			weight.m_mapSTct.getOrUpdateScore(retval, st_ccgtag, action, m_nScoreIndex, amount, round);
+			word_ccgtag.refer(st_word, st_ccgtag);
+			weight.m_mapSTwct.getOrUpdateScore(retval, word_ccgtag, action, m_nScoreIndex, amount, round);
 
-			weight.m_mapN0L2Hw.getOrUpdateScore(retval, n0l2h_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Hpt.getOrUpdateScore(retval, n0l2h_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Hct.getOrUpdateScore(retval, n0l2h_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0l2hl.getOrUpdateScore(retval, n0_l2h_label, action, m_nScoreIndex, amount, round);
+			word_word_ccgtag.refer(st_word, n0_word, st_ccgtag);
+			weight.m_mapSTwctN0w.getOrUpdateScore(retval, word_word_ccgtag, action, m_nScoreIndex, amount, round);
 			
-			set_of_3_postags.load(encodePOSTags(n0_postag, n0lh_postag, n0l2h_postag));
-			weight.m_mapN0ptN0LHptN0L2Hpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			
-		}
-		
-		if (n0ld_index != StateItem.out_index) {
+			if (st_index != StateItem.out_index) {
+				
+				weight.m_mapSTLHct.getOrUpdateScore(retval, stlh_ccgtag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRHct.getOrUpdateScore(retval, strh_ccgtag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTLDct.getOrUpdateScore(retval, stld_ccgtag, action, m_nScoreIndex, amount, round);
+				weight.m_mapSTRDct.getOrUpdateScore(retval, strd_ccgtag, action, m_nScoreIndex, amount, round);
+				ccgtag_int.refer(st_dist0, st_ccgtag);
+				weight.m_mapSTctd0.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+				ccgtag_int.refer(st_rd_arity, st_ccgtag);
+				weight.m_mapSTctrda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+				ccgtag_int.refer(st_ld_arity, st_ccgtag);
+				weight.m_mapSTctlda.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+				ccgtag_int.refer(st_rh_arity, st_ccgtag);
+				weight.m_mapSTctrha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+				ccgtag_tagset.refer(st_rtagset, st_ccgtag);
+				weight.m_mapSTctrp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
+				ccgtag_int.refer(st_lh_arity, st_ccgtag);
+				weight.m_mapSTctlha.getOrUpdateScore(retval, ccgtag_int, action, m_nScoreIndex, amount, round);
+				ccgtag_tagset.refer(st_ltagset, st_ccgtag);
+				weight.m_mapSTctlp.getOrUpdateScore(retval, ccgtag_tagset, action, m_nScoreIndex, amount, round);
+				word_ccgset.refer(st_word, st_lccgset);
+				weight.m_mapSTwlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
+				postag_ccgset.refer(st_postag, st_lccgset);
+				weight.m_mapSTptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
+				ccgtag_ccgset.refer(st_lccgset, st_ccgtag);
+				weight.m_mapSTctlc.getOrUpdateScore(retval, ccgtag_ccgset, action, m_nScoreIndex, amount, round);
+				
+				if (stlh_index != StateItem.out_index) {
 
-			weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0L2Dct.getOrUpdateScore(retval, n0l2d_ccgtag, action, m_nScoreIndex, amount, round);
-			weight.m_mapN0l2dl.getOrUpdateScore(retval, n0_l2d_label, action, m_nScoreIndex, amount, round);
-			
-			set_of_3_postags.load(encodePOSTags(n0_postag, n0ld_postag, n0l2d_postag));
-			weight.m_mapN0ptN0LDptN0L2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-			
-		}
-		
-		if (n1_index != StateItem.out_index) {
-			weight.m_mapN2w.getOrUpdateScore(retval, n2_word, action, m_nScoreIndex, amount, round);
-			weight.m_mapN2pt.getOrUpdateScore(retval, n2_postag, action, m_nScoreIndex, amount, round);
-			word_postag.refer(n2_word, n2_postag);
-			weight.m_mapN2wpt.getOrUpdateScore(retval, word_postag, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTL2Hct.getOrUpdateScore(retval, stl2h_ccgtag, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTLHLHct.getOrUpdateScore(retval, stlhlh_ccgtag, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTLHRHct.getOrUpdateScore(retval, stlhrh_ccgtag, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(stlhlh_ccgtag, stlh_ccgtag, st_ccgtag));
+					weight.m_mapSTLHLHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(stlhrh_ccgtag, stlh_ccgtag, st_ccgtag));
+					weight.m_mapSTLHRHctSTLHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+				if (strh_index != StateItem.out_index) {
 
-			set_of_3_postags.load(encodePOSTags(n0_postag, n1_postag, n2_postag));
-			weight.m_mapN0ptN1ptN2pt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTR2Hct.getOrUpdateScore(retval, str2h_ccgtag, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTRHLHct.getOrUpdateScore(retval, strhlh_ccgtag, action, m_nScoreIndex, amount, round);
+					weight.m_mapSTRHRHct.getOrUpdateScore(retval, strhrh_ccgtag, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(strhlh_ccgtag, strh_ccgtag, st_ccgtag));
+					weight.m_mapSTRHLHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(strhrh_ccgtag, strh_ccgtag, st_ccgtag));
+					weight.m_mapSTRHRHctSTRHctSTct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+				if (stld_index != StateItem.out_index) {
+					
+					weight.m_mapSTL2Dct.getOrUpdateScore(retval, stl2d_ccgtag, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, stld_ccgtag, stl2d_ccgtag));
+					weight.m_mapSTctSTLDctSTL2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+				if (strd_index != StateItem.out_index) {
+
+					weight.m_mapSTR2Dct.getOrUpdateScore(retval, str2d_ccgtag, action, m_nScoreIndex, amount, round);
+					set_of_3_ccgtags.load(encodeCCGTags(st_ccgtag, strd_ccgtag, str2d_ccgtag));
+					weight.m_mapSTctSTRDctSTR2Dct.getOrUpdateScore(retval, set_of_3_ccgtags, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+			}
+			
+			if (n0_index != StateItem.out_index) {
+
+				weight.m_mapN0LHct.getOrUpdateScore(retval, n0lh_ccgtag, action, m_nScoreIndex, amount, round);
+				weight.m_mapN0LDct.getOrUpdateScore(retval, n0ld_ccgtag, action, m_nScoreIndex, amount, round);
+				word_ccgset.refer(n0_word, n0_lccgset);
+				weight.m_mapN0wlc.getOrUpdateScore(retval, word_ccgset, action, m_nScoreIndex, amount, round);
+				postag_ccgset.refer(n0_postag, n0_lccgset);
+				weight.m_mapN0ptlc.getOrUpdateScore(retval, postag_ccgset, action, m_nScoreIndex, amount, round);
+				
+				if (n0lh_index != StateItem.out_index) {
+
+					weight.m_mapN0L2Hct.getOrUpdateScore(retval, n0l2h_ccgtag, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+				if (n0ld_index != StateItem.out_index) {
+
+					weight.m_mapN0L2Dct.getOrUpdateScore(retval, n0l2d_ccgtag, action, m_nScoreIndex, amount, round);
+					
+				}
+				
+			}
+			
 		}
 
 	}
@@ -676,8 +727,14 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+		if (m_bSupertag) {
+			for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
+				scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+				scoredaction.score = item.score + scores.at(scoredaction.action);
+				m_Beam.insertItem(scoredaction);
+			}
+		} else {
+			scoredaction.action = Action.encodeAction(Macros.SHIFT, Macros.CCGTAG_FIRST);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
