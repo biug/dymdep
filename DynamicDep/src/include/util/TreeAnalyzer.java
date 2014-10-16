@@ -32,6 +32,7 @@ public final class TreeAnalyzer {
 	public int[][] BetweenGroup;
 	
 	public String[][] POSPath;
+	public String[][] FPOSPath;
 	public String[][] LabelPath;
 	
 	public int ceillog2(int n) {
@@ -80,6 +81,7 @@ public final class TreeAnalyzer {
 		BetweenGroup = new int[MacrosBase.MAX_SENTENCE_SIZE][Clog2[MacrosBase.MAX_SENTENCE_SIZE]];
 		
 		POSPath = new String[MacrosBase.MAX_SENTENCE_SIZE][MacrosBase.MAX_SENTENCE_SIZE];
+		FPOSPath = new String[MacrosBase.MAX_SENTENCE_SIZE][MacrosBase.MAX_SENTENCE_SIZE];
 		LabelPath = new String[MacrosBase.MAX_SENTENCE_SIZE][MacrosBase.MAX_SENTENCE_SIZE];
 	}
 	
@@ -220,7 +222,8 @@ public final class TreeAnalyzer {
 	public void loadPath(ArrayList<POSTaggedWord> sentence, IntIntegerVector syntaxtree) {
 		ArrayList<Integer> heads = new ArrayList<Integer>();
 		for (int i = 0, n = syntaxtree.size(); i < n; ++i) {
-			heads.add(MacrosBase.integer_cache[syntaxtree.get(i).m_index]);
+			int idx = syntaxtree.get(i).m_index;
+			heads.add(idx == -1 ? MacrosBase.integer_cache[MacrosBase.MAX_INTEGER] : MacrosBase.integer_cache[idx]);
 		}
 		loadTree(heads);
 		for (int i = 0, n = syntaxtree.size(); i < n; ++i) {
@@ -228,27 +231,34 @@ public final class TreeAnalyzer {
 				int si = i, sj = j;
 				int r = query(si, sj);
 				String lp = "";
+				String lfp = "";
 				String ll = "";
 				while (si != r) {
-					lp += sentence.get(si).tag.toString().substring(0, 1) + "#";
+					lp += sentence.get(si).tag.toString() + "#";
+					lfp += sentence.get(si).tag.toString().substring(0, 1) + "#";
 					ll += syntaxtree.get(si).m_label.toString() + "#";
 					si = heads.get(si).intValue();
 				}
 				if (r == syntaxtree.size()) {
 					lp += "n#";
+					lfp += "n#";
 					ll += "n#";
 				} else {
-					lp += sentence.get(si).tag.toString().substring(0, 1) + "#";
+					lp += sentence.get(si).tag.toString() + "#";
+					lfp += sentence.get(si).tag.toString().substring(0, 1) + "#";
 					ll += syntaxtree.get(si).m_label.toString() + "#";
 				}
 				String rp = "";
+				String rfp = "";
 				String rl = "";
 				while (sj != r) {
-					rp = sentence.get(sj).tag.toString().substring(0, 1) + "#" + rp;
+					rp = sentence.get(sj).tag.toString() + "#" + rp;
+					rfp = sentence.get(sj).tag.toString().substring(0, 1) + "#" + rfp;
 					rl = syntaxtree.get(sj).m_label.toString() + "#" + rl;
 					sj = heads.get(sj).intValue();
 				}
 				POSPath[i][j] = lp + rp;
+				FPOSPath[i][j] = lfp + rfp;
 				LabelPath[i][j] = ll + rl;
 			}
 		}

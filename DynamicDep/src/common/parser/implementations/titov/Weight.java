@@ -21,7 +21,7 @@ import common.parser.implementations.map.POSTagSetOfCCGLabelsMap;
 import common.parser.implementations.map.POSTagSetOfDepLabelsMap;
 import common.parser.implementations.map.SetOfCCGLabelsIntMap;
 import common.parser.implementations.map.SetOfDepLabelsIntMap;
-import common.parser.implementations.map.SyntaxTreePathMap;
+import common.parser.implementations.map.StringMap;
 import common.parser.implementations.map.TwoIntsMap;
 import common.parser.implementations.map.TwoPOSTaggedWordsMap;
 import common.parser.implementations.map.TwoWordsMap;
@@ -209,7 +209,9 @@ public class Weight extends WeightBase {
 	public POSTagSetOfDepLabelsMap m_mapN0ptlp;
 	public POSTagSetOfCCGLabelsMap m_mapN0ptlc;
 
-	public SyntaxTreePathMap m_mapSTP;
+	public StringMap m_mapPOSPath;
+	public StringMap m_mapFPOSPath;
+	public StringMap m_mapLabelPath;
 
 	public Weight(final String sPath, final boolean bTrain) {
 		super(sPath, bTrain);
@@ -388,7 +390,9 @@ public class Weight extends WeightBase {
 		m_mapN0ptlp = new POSTagSetOfDepLabelsMap("a");
 		m_mapN0ptlc = new POSTagSetOfCCGLabelsMap("a");
 
-		m_mapSTP = new SyntaxTreePathMap("a");
+		m_mapPOSPath = new StringMap("a");
+		m_mapFPOSPath = new StringMap("a");
+		m_mapLabelPath = new StringMap("a");
 		
 		loadScores();
 	}
@@ -583,7 +587,9 @@ public class Weight extends WeightBase {
 			m_mapN0ptlp.loadScoresFromFileStream(br);
 			m_mapN0ptlc.loadScoresFromFileStream(br);
 
-			m_mapSTP.loadScoresFromFileStream(br);
+			m_mapPOSPath.loadScoresFromFileStream(br);
+			m_mapFPOSPath.loadScoresFromFileStream(br);
+			m_mapLabelPath.loadScoresFromFileStream(br);
 
 			br.close();
 		} catch (IOException e) {
@@ -781,7 +787,9 @@ public class Weight extends WeightBase {
 			m_mapN0ptlp.saveScoresToFileStream(bw);
 			m_mapN0ptlc.saveScoresToFileStream(bw);
 
-			m_mapSTP.saveScoresToFileStream(bw);
+			m_mapPOSPath.saveScoresToFileStream(bw);
+			m_mapFPOSPath.saveScoresToFileStream(bw);
+			m_mapLabelPath.saveScoresToFileStream(bw);
 			
 			bw.newLine();
 			bw.close();
@@ -970,7 +978,9 @@ public class Weight extends WeightBase {
 		m_mapN0ptlp.computeAverage(round);
 		m_mapN0ptlc.computeAverage(round);
 
-		m_mapSTP.computeAverage(round);
+		m_mapPOSPath.computeAverage(round);
+		m_mapFPOSPath.computeAverage(round);
+		m_mapLabelPath.computeAverage(round);
 		
 		System.out.println("done.");
 	}

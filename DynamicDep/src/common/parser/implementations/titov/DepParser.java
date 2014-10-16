@@ -18,7 +18,6 @@ import include.linguistics.SetOfCCGLabels;
 import include.linguistics.SetOfCCGLabelsInt;
 import include.linguistics.SetOfDepLabels;
 import include.linguistics.SetOfDepLabelsInt;
-import include.linguistics.SyntaxTreePath;
 import include.linguistics.TwoInts;
 import include.linguistics.TwoPOSTaggedWords;
 import include.linguistics.TwoStrings;
@@ -93,7 +92,6 @@ public final class DepParser extends DepParserBase {
 	private POSTagSet2 set_of_2_postags;
 	private POSTagSet3 set_of_3_postags;
 	private CCGTagSet3 set_of_3_ccgtags;
-	private SyntaxTreePath path;
 	
 	private ScoredAction scoredaction;
 
@@ -165,7 +163,6 @@ public final class DepParser extends DepParserBase {
 		set_of_2_postags = new POSTagSet2();
 		set_of_3_postags = new POSTagSet3();
 		set_of_3_ccgtags = new CCGTagSet3();
-		path = new SyntaxTreePath();
 		
 		scoredaction = new ScoredAction();
 	}
@@ -347,11 +344,14 @@ public final class DepParser extends DepParserBase {
 		weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 
 		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
-			path.refer("n#", "n#");
+			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			weight.m_mapLabelPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
 		} else {
-			path.refer(analyzer.POSPath[st_index][n0_index], analyzer.LabelPath[st_index][n0_index]);
+			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+			weight.m_mapLabelPath.getOrUpdateScore(retval, analyzer.LabelPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
 		}
-		weight.m_mapSTP.getOrUpdateScore(retval, path, action, m_nScoreIndex, amount, round);
 		
 		if (st_index != StateItem.out_index) {
 			
