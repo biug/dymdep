@@ -32,6 +32,7 @@ import include.linguistics.WordSetOfCCGLabels;
 import include.linguistics.WordSetOfDepLabels;
 import include.linguistics.WordWordInt;
 import include.linguistics.WordWordPOSTag;
+import include.util.TreeAnalyzer;
 
 import java.util.ArrayList;
 
@@ -69,6 +70,8 @@ public final class DepParser extends DepParserBase {
 	private TwoStringsVector trainSentence;
 	private IntIntegerVector trainSyntaxtree;
 	
+	private TreeAnalyzer analyzer;
+	
 	private WordInt word_int;
 	private POSTagInt postag_int;
 	private TwoInts ccgtag_int;
@@ -90,11 +93,9 @@ public final class DepParser extends DepParserBase {
 	private POSTagSet2 set_of_2_postags;
 	private POSTagSet3 set_of_3_postags;
 	private CCGTagSet3 set_of_3_ccgtags;
+	private SyntaxTreePath path;
 	
 	private ScoredAction scoredaction;
-	
-	private int[] st_id_list;
-	private int[] n0_id_list;
 
 	private static final SetOfDepLabels empty_tagset = new SetOfDepLabels();
 	private static final SetOfCCGLabels empty_ccgset = new SetOfCCGLabels();
@@ -114,39 +115,6 @@ public final class DepParser extends DepParserBase {
 	
 	private static final int minVal(final int n1, final int n2) {
 		return n1 < n2 ? n1 : n2; 
-	}
-	
-	private final SyntaxTreePath getPath(final StateItem item) {
-		SyntaxTreePath path = new SyntaxTreePath();
-		int st_index = item.stacktop();
-		int n0_index = item.size(m_lCache.size());
-		int st_back = 0;
-		int n0_back = 0;
-		int common = 1;
-		while (st_index != StateItem.out_index) {
-			st_id_list[st_back++] = st_index;
-			st_index = m_lTree.get(st_index).m_index;
-		}
-		while (n0_index != StateItem.out_index) {
-			n0_id_list[n0_back++] = n0_index;
-			n0_index = m_lTree.get(n0_index).m_index;
-		}
-		while (common <= st_back && common <= n0_back && st_id_list[st_back - common] == n0_id_list[n0_back - common]) {
-			++common;
-		}
-		for (int i = 0, n = st_back - common; i <= n; ++i) {
-			path.addPos(m_lCache.get(st_id_list[i]).tag.toString().substring(0, 1));
-			path.addLabel(m_lTree.get(st_id_list[i]).m_label);
-		}
-		if (common > 1) {
-			path.addPos(m_lCache.get(st_id_list[st_back - common + 1]).tag.toString().substring(0, 1));
-			path.addLabel(m_lTree.get(st_id_list[st_back - common + 1]).m_label);
-		}
-		for (int i = 0, n = n0_back - common; i <= n; ++i) {
-			path.addPos(m_lCache.get(n0_id_list[i]).tag.toString().substring(0, 1));
-			path.addLabel(m_lTree.get(n0_id_list[i]).m_label);
-		}
-		return path;
 	}
 
 	public DepParser(final String sFeatureDBPath, final boolean bTrain) {
@@ -174,6 +142,8 @@ public final class DepParser extends DepParserBase {
 		trainSentence = new TwoStringsVector();
 		trainSyntaxtree = new IntIntegerVector();
 		
+		analyzer = new TreeAnalyzer();
+		
 		word_int = new WordInt();
 		postag_int = new POSTagInt();
 		ccgtag_int = new TwoInts();
@@ -195,11 +165,9 @@ public final class DepParser extends DepParserBase {
 		set_of_2_postags = new POSTagSet2();
 		set_of_3_postags = new POSTagSet3();
 		set_of_3_ccgtags = new CCGTagSet3();
+		path = new SyntaxTreePath();
 		
 		scoredaction = new ScoredAction();
-		
-		st_id_list = new int[Macros.MAX_SENTENCE_SIZE];
-		n0_id_list = new int[Macros.MAX_SENTENCE_SIZE];
 	}
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
@@ -378,8 +346,12 @@ public final class DepParser extends DepParserBase {
 		postag_postag_int.refer(st_postag, n0_postag, n0_dist0);
 		weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
 
-
-		weight.m_mapSTP.getOrUpdateScore(retval, getPath(item), action, m_nScoreIndex, amount, round);
+		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
+			path.refer("n#", "n#");
+		} else {
+			path.refer(analyzer.POSPath[st_index][n0_index], analyzer.LabelPath[st_index][n0_index]);
+		}
+		weight.m_mapSTP.getOrUpdateScore(retval, path, action, m_nScoreIndex, amount, round);
 		
 		if (st_index != StateItem.out_index) {
 			
@@ -729,6 +701,7 @@ public final class DepParser extends DepParserBase {
 			m_lCache.add(new POSTaggedWord(sentence.get(index).m_string1, sentence.get(index).m_string2));
 		}
 		m_lTree = syntaxtree;
+		analyzer.loadPath(m_lCache, m_lTree);
 		
 		m_Agenda.clear();
 		m_Finish.clear();

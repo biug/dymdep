@@ -1,7 +1,7 @@
 package include.linguistics;
 
 
-public class SyntaxTreePath {
+public final class SyntaxTreePath {
 	String m_poses;
 	String m_labels;
 	
@@ -36,11 +36,8 @@ public class SyntaxTreePath {
 		m_labels = "";
 	}
 	
-	public void addPos(final String pos) {
-		m_poses += "#" + pos;
-	}
-	
-	public void addLabel(final Integer label) {
-		m_labels += "#" + label.toString();
+	public void refer(final String p, final String l) {
+		m_poses = p;
+		m_labels = l;
 	}
 }
