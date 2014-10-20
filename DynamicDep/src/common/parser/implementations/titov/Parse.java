@@ -14,12 +14,12 @@ import common.parser.implementations.DependencyDag;
 import common.parser.implementations.MacrosCCGDag;
 
 public class Parse {
-	public void process(final String sInputFile, final String sOutputFile, final String sFeatureFile, final int nBest, final boolean bScores) {
+	public void process(final String sInputFile, final String sOutputFile, final String sFeatureFile, final int nBest, final boolean bScores, final boolean supertag) {
 		System.out.println("Parsing started");
 		
 		long time_start = System.currentTimeMillis();
 		
-		DepParser parser = new DepParser(sFeatureFile, false);
+		DepParser parser = new DepParser(sFeatureFile, false, supertag);
 		SentenceReader input_reader = new SentenceReader(sInputFile);
 		int count = 0;
 		try {
@@ -44,9 +44,6 @@ public class Parse {
 				if (input_sent.size() > MacrosCCGDag.MAX_SENTENCE_SIZE) {
 					for (int index = 0; index < nBest; ++index) {
 						output_sent[index].length = 0;
-						if (bScores) {
-							scores[index] = 0;
-						}
 					}
 				} else {
 					parser.parse(++count, input_sent, input_tree, output_sent, nBest, scores);
