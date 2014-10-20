@@ -726,6 +726,11 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
+//		for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
+//			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+//			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			m_Beam.insertItem(scoredaction);
+//		}
 		final String word = m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).word.toString();
 		if (Macros.MAP.containsKey(word)) {
 			for (Integer label : Macros.MAP.get(word)) {
@@ -893,6 +898,10 @@ public final class DepParser extends DepParserBase {
 		((Weight)m_weights).computeAverageFeatureWeights(m_nTrainingRound);
 		((Weight)m_weights).saveScores();
 		System.out.println("Total number of training errors are: " + m_nTotalErrors);
+	}
+	
+	public int totalerror() {
+		return m_nTotalErrors;
 	}
 
 }

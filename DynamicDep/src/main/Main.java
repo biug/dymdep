@@ -20,7 +20,7 @@ public class Main {
 		System.out.println("Training started");
 		for (int i = 0; i < training_rounds; ++i) {
 			try {
-				train.auto_train(sInputFile, sFeatureFile, false);
+				train.auto_train(sInputFile, sFeatureFile, true);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -31,7 +31,7 @@ public class Main {
 	
 	public static void parse(final String sInputFile, final String sOutputFile, final String sFeatureFile) {
 		Parse parse = new Parse();
-		parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false, false);
+		parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false, true);
 	}
 	
 	public static void main(String[] args) throws IOException {

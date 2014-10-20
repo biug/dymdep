@@ -18,7 +18,9 @@ public final class Train {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(sOutputFile)), "UTF-8"));
 		while (ref_sent.readSentenceFromInputStream(br)) {
 			++nCount;
-			if (nCount % 1000 == 0) System.out.println(nCount);
+			if (nCount % 1000 == 0) {
+				System.out.println(parser.totalerror() + "/" + nCount);
+			}
 			if (!supertag) {
 				ref_sent.clearSuperTag();
 			}
