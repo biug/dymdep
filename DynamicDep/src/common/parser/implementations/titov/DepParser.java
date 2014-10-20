@@ -676,10 +676,19 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
-			scoredaction.score = item.score + scores.at(scoredaction.action);
-			m_Beam.insertItem(scoredaction);
+		final String word = m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).word.toString();
+		if (Macros.MAP.containsKey(word)) {
+			for (Integer label : Macros.MAP.get(word)) {
+				scoredaction.action = Action.encodeAction(Macros.SHIFT, label.intValue());
+				scoredaction.score = item.score + scores.at(scoredaction.action);
+				m_Beam.insertItem(scoredaction);
+			}
+		} else {
+			for (Integer label : Macros.POSMAP.get(m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).tag.toString())) {
+				scoredaction.action = Action.encodeAction(Macros.SHIFT, label.intValue());
+				scoredaction.score = item.score + scores.at(scoredaction.action);
+				m_Beam.insertItem(scoredaction);
+			}
 		}
 	}
 	

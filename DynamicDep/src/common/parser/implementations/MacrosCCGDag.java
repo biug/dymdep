@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import common.parser.MacrosBase;
 
@@ -21,8 +24,12 @@ public class MacrosCCGDag extends MacrosBase {
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
 	
+	public static Map<String, Set<Integer>> MAP;
+	public static Map<String, Set<Integer>> POSMAP;
+	
 	public static void loadMacros(String macrosFile) throws IOException {
 		
+		String line;
 		String[] temp_strings;
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(macrosFile)), "UTF-8"));
@@ -100,6 +107,29 @@ public class MacrosCCGDag extends MacrosBase {
 		}
 		
 		System.out.println("integer count = " + integer_cache.length);
+		
+		br.readLine();
+		MAP = new HashMap<String, Set<Integer>>();
+		while (!(line = br.readLine()).equals("POSMAP")) {
+			temp_strings = line.split("[ \t]+");
+			MAP.put(temp_strings[0], new HashSet<Integer>());
+			for (String arg : temp_strings) {
+				MAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
+			}
+			MAP.get(temp_strings[0]).remove(temp_strings[0]);
+		}
+		
+		br.readLine();
+		POSMAP = new HashMap<String, Set<Integer>>();
+		while ((line = br.readLine()) != null) {
+			temp_strings = line.split("[ \t]+");
+			POSMAP.put(temp_strings[0], new HashSet<Integer>());
+			for (String arg : temp_strings) {
+				POSMAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
+			}
+			POSMAP.get(temp_strings[0]).remove(temp_strings[0]);
+		}
+		
 		br.close();
 	}
 	
