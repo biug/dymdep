@@ -203,6 +203,10 @@ public class StateItem extends StateItemBase {
 		return stack_back == -1 ? out_index : m_lStack[stack_back];
 	}
 	
+	public final int stacktop2() {
+		return stack_back > 0 ? m_lStack[stack_back - 1] : out_index;
+	}
+	
 	public final int stackitem(final int index) {
 		return index >= 0 && index <= stack_back ? m_lStack[index] : out_index;
 	}
@@ -293,6 +297,14 @@ public class StateItem extends StateItemBase {
 	
 	public final int nextbuffernext(final int size) {
 		return m_nNextWord + 2 < size ? m_nNextWord + 2 : out_index;
+	}
+	
+	public final int beforebufferhead() {
+		return m_nNextWord > 0 ? m_nNextWord - 1 : out_index;
+	}
+	
+	public final int beforebufferbefore() {
+		return m_nNextWord > 1 ? m_nNextWord - 2 : out_index;
 	}
 	
 	public final int leftheadarity(final int index) {

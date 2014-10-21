@@ -41,6 +41,9 @@ public class MacrosBase {
 
 	
 	public static final int encodeLinkDistance(final int head_index, final int dep_index) {
+		if (head_index == -1 || dep_index == -1) {
+			return MAX_INTEGER;
+		}
 		int diff;
 		diff = head_index - dep_index;
 		if (diff < 0) {
