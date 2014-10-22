@@ -371,17 +371,17 @@ public final class DepParser extends DepParserBase {
 		postag_tagset.refer(n0_postag, n0_ltagset);
 		weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
 
-//		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
-//			
-//			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-//			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-//			
-//		} else {
-//			
-//			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-//			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-//			
-//		}
+		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
+			
+			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			
+		} else {
+			
+			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+			
+		}
 		
 		if (st_index != StateItem.out_index) {
 
@@ -853,15 +853,17 @@ public final class DepParser extends DepParserBase {
 //			m_Beam.insertItem(scoredaction);
 //		}
 		final String word = m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).word.toString();
-		if (Macros.MAP.containsKey(word)) {
-			for (Integer label : Macros.MAP.get(word)) {
-				scoredaction.action = Action.encodeAction(Macros.SHIFT, label.intValue());
+		int[] list = Macros.MAP.get(word);
+		if (list != null) {
+			for (int label : list) {
+				scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
 				scoredaction.score = item.score + scores.at(scoredaction.action);
 				m_Beam.insertItem(scoredaction);
 			}
 		} else {
-			for (Integer label : Macros.POSMAP.get(m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).tag.toString())) {
-				scoredaction.action = Action.encodeAction(Macros.SHIFT, label.intValue());
+			list = Macros.POSMAP.get(m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).tag.toString());
+			for (int label : list) {
+				scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
 				scoredaction.score = item.score + scores.at(scoredaction.action);
 				m_Beam.insertItem(scoredaction);
 			}
