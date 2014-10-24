@@ -19,7 +19,7 @@ public final class POSTagIntMap extends PackedScoreMap<POSTagInt> {
 	@Override
 	public POSTagInt loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
-		return new POSTagInt(new POSTag(args[0]), MacrosBase.integer_cache[Integer.parseInt(args[1])]);
+		return new POSTagInt(new POSTag(args[0]), MacrosBase.integer_cache[Integer.parseInt(args[1]) == -1 ? MacrosBase.MAX_INTEGER : Integer.parseInt(args[1])]);
 	}
 
 	@Override

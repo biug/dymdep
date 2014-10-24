@@ -22,7 +22,7 @@ public final class POSTagPOSTagIntMap extends PackedScoreMap<POSTagPOSTagInt> {
 		return new POSTagPOSTagInt(
 				new POSTag(args[0]),
 				new POSTag(args[1]),
-				MacrosBase.integer_cache[Integer.parseInt(args[2])]);
+				MacrosBase.integer_cache[Integer.parseInt(args[2]) == -1 ? MacrosBase.MAX_INTEGER : Integer.parseInt(args[2])]);
 	}
 
 	@Override
