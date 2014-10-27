@@ -293,6 +293,10 @@ public class Weight extends WeightBase {
 
 	public StringMap m_mapPOSPath;
 	public StringMap m_mapFPOSPath;
+	public StringMap m_mapSPOSPath;
+	public StringMap m_mapSFPOSPath;
+	public StringMap m_map2POSPath;
+	public StringMap m_map2FPOSPath;
 	
 	public IntMap m_mapST_1ct;
 	public IntMap m_mapST_2ct;
@@ -569,6 +573,10 @@ public class Weight extends WeightBase {
 
 		m_mapPOSPath = new StringMap("a");
 		m_mapFPOSPath = new StringMap("a");
+		m_mapSPOSPath = new StringMap("a");
+		m_mapSFPOSPath = new StringMap("a");
+		m_map2POSPath = new StringMap("a");
+		m_map2FPOSPath = new StringMap("a");
 		
 		m_mapST_1ct = new IntMap("a");
 		m_mapST_2ct = new IntMap("a");
@@ -861,6 +869,10 @@ public class Weight extends WeightBase {
 
 			m_mapPOSPath.loadScoresFromFileStream(br);
 			m_mapFPOSPath.loadScoresFromFileStream(br);
+			m_mapSPOSPath.loadScoresFromFileStream(br);
+			m_mapSFPOSPath.loadScoresFromFileStream(br);
+			m_map2POSPath.loadScoresFromFileStream(br);
+			m_map2FPOSPath.loadScoresFromFileStream(br);
 			
 			m_mapST_1ct.loadScoresFromFileStream(br);
 			m_mapST_2ct.loadScoresFromFileStream(br);
@@ -1156,6 +1168,10 @@ public class Weight extends WeightBase {
 
 			m_mapPOSPath.saveScoresToFileStream(bw);
 			m_mapFPOSPath.saveScoresToFileStream(bw);
+			m_mapSPOSPath.saveScoresToFileStream(bw);
+			m_mapSFPOSPath.saveScoresToFileStream(bw);
+			m_map2POSPath.saveScoresToFileStream(bw);
+			m_map2FPOSPath.saveScoresToFileStream(bw);
 			
 			m_mapST_1ct.saveScoresToFileStream(bw);
 			m_mapST_2ct.saveScoresToFileStream(bw);
@@ -1442,6 +1458,10 @@ public class Weight extends WeightBase {
 
 		m_mapPOSPath.computeAverage(round);
 		m_mapFPOSPath.computeAverage(round);
+		m_mapSPOSPath.computeAverage(round);
+		m_mapSFPOSPath.computeAverage(round);
+		m_map2POSPath.computeAverage(round);
+		m_map2FPOSPath.computeAverage(round);
 		
 		m_mapST_1ct.computeAverage(round);
 		m_mapST_2ct.computeAverage(round);

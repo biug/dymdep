@@ -462,6 +462,30 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
 			
 		}
+
+		if (st2_index == StateItem.out_index || n0_index == StateItem.out_index) {
+			
+			weight.m_mapSPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			weight.m_mapSFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			
+		} else {
+			
+			weight.m_mapSPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
+			weight.m_mapSFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
+			
+		}
+
+		if (sst_index == StateItem.out_index || n0_index == StateItem.out_index) {
+			
+			weight.m_map2POSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			weight.m_map2FPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+			
+		} else {
+			
+			weight.m_map2POSPath.getOrUpdateScore(retval, analyzer.POSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
+			weight.m_map2FPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
+			
+		}
 		
 		if (st_index != StateItem.out_index) {
 
