@@ -29,6 +29,9 @@ public class MacrosCCGDag extends MacrosBase {
 	public static Map<String, int[]> MAP;
 	public static Map<String, int[]> POSMAP;
 	
+	public static Map<String, int[]> MAPA;
+	public static Map<String, int[]> POSMAPA;
+	
 	public static void loadMacros(String macrosFile) throws IOException {
 		
 		String line;
@@ -131,7 +134,6 @@ public class MacrosCCGDag extends MacrosBase {
 			MAP.put(word, list);
 		}
 		System.out.println(MAP.size());
-		
 		
 		MIDPOSMAP = new HashMap<String, ArrayList<Integer>>();
 		while ((line = br.readLine()) != null) {

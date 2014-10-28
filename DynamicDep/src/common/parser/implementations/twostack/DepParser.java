@@ -894,7 +894,7 @@ public final class DepParser extends DepParserBase {
 		getOrUpdateStackScore(item, retval, action, 0, 0);
 	}
 	
-	public void updateScoreForState(final StateItemBase from, final StateItemBase output, final int amount, final int len, final String str) {
+	public void updateScoreForState(final StateItemBase from, final StateItemBase output, final int amount, final int len) {
 		itemForState.copy(from);
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
@@ -922,8 +922,8 @@ public final class DepParser extends DepParserBase {
 				break;
 			}
 		}
-		updateScoreForState(itemForStates, correct, amount_add, len, "correct");
-		updateScoreForState(itemForStates, output, amount_subtract, len, "output");
+		updateScoreForState(itemForStates, correct, amount_add, len);
+		updateScoreForState(itemForStates, output, amount_subtract, len);
 		++m_nTotalErrors;
 	}
 	
@@ -955,21 +955,10 @@ public final class DepParser extends DepParserBase {
 //			scoredaction.score = item.score + scores.at(scoredaction.action);
 //			m_Beam.insertItem(scoredaction);
 //		}
-		final String word = m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).word.toString();
-		int[] list = Macros.MAP.get(word);
-		if (list != null) {
-			for (int label : list) {
-				scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
-				scoredaction.score = item.score + scores.at(scoredaction.action);
-				m_Beam.insertItem(scoredaction);
-			}
-		} else {
-			list = Macros.POSMAP.get(m_lCache.get(item.size(Macros.MAX_SENTENCE_SIZE)).tag.toString());
-			for (int label : list) {
-				scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
-				scoredaction.score = item.score + scores.at(scoredaction.action);
-				m_Beam.insertItem(scoredaction);
-			}
+		for (int label : Macros.SHIFT_LABELLIST) {
+			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+			scoredaction.score = item.score + scores.at(scoredaction.action);
+			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
@@ -1018,6 +1007,15 @@ public final class DepParser extends DepParserBase {
 			pGenerator = (StateItem)m_Agenda.generatorStart();
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
+				POSTaggedWord pw0 = pGenerator.m_nNextWord < m_lCache.size() ? m_lCache.get(pGenerator.m_nNextWord) : null;
+				if (pw0 == null) {
+					Macros.SHIFT_LABELLIST = null;
+				} else {
+					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw0.word.toString());
+					if (Macros.SHIFT_LABELLIST == null) {
+						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw0.tag.toString());
+					}
+				}
 				m_Beam.clear();
 				packed_scores.reset();
 				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
@@ -1030,7 +1028,7 @@ public final class DepParser extends DepParserBase {
 				/*
 				 * if can recall, try swap
 				 */
-				if (pGenerator.canmem()) {
+				if (pGenerator.canrecall()) {
 					recall(pGenerator, packed_scores);
 				}
 				/*

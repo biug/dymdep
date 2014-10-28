@@ -38,7 +38,8 @@ public class MacrosBase {
 	public final static int MAX_SENTENCE_SIZE = 256;
 	public final static int MAX_SENTENCE_SIZE_BITS = 8;
 	
-
+	public static int[] SHIFT_LABELLIST;
+	public static int[] SHIFT_LIST;
 	
 	public static final int encodeLinkDistance(final int head_index, final int dep_index) {
 		if (head_index == -1 || dep_index == -1) {
