@@ -974,7 +974,7 @@ public final class DepParser extends DepParserBase {
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
+	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, final ArrayList<int[]> superset, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
 		final int length = sentence.size();
 		StateItem pGenerator;
 
@@ -1007,15 +1007,9 @@ public final class DepParser extends DepParserBase {
 			pGenerator = (StateItem)m_Agenda.generatorStart();
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
-				POSTaggedWord pw0 = pGenerator.m_nNextWord < m_lCache.size() ? m_lCache.get(pGenerator.m_nNextWord) : null;
-				if (pw0 == null) {
-					Macros.SHIFT_LABELLIST = null;
-				} else {
-					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw0.word.toString());
-					if (Macros.SHIFT_LABELLIST == null) {
-						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw0.tag.toString());
-					}
-				}
+				
+				Macros.SHIFT_LABELLIST = pGenerator.m_nNextWord < m_lCache.size() ? superset.get(pGenerator.m_nNextWord) : null;
+				
 				m_Beam.clear();
 				packed_scores.reset();
 				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
@@ -1106,16 +1100,16 @@ public final class DepParser extends DepParserBase {
 		}
 	}
 
-	public void parse(final int round, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval,
+	public void parse(final int round, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, final ArrayList<int[]> superset, DependencyDag[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
 			retval[i].length = 0;
 			if (scores != null) scores[i] = 0;
 		}
-		work(round, false, sentence, syntaxtree, retval, null, nBest, scores);
+		work(round, false, sentence, syntaxtree, superset, retval, null, nBest, scores);
 	}
 
-	public void train(final DependencyDag correct, final int round) {
+	public void train(final DependencyDag correct, final ArrayList<int[]> superset, final int round) {
 		trainSentence.clear();
 		trainSyntaxtree.clear();
 		if (correct != null) {
@@ -1126,7 +1120,7 @@ public final class DepParser extends DepParserBase {
 			}
 		}
 		m_nTrainingRound = round;
-		work(round, true, trainSentence, trainSyntaxtree, null, correct, 1, null);
+		work(round, true, trainSentence, trainSyntaxtree, superset, null, correct, 1, null);
 	}
 
 	@Override

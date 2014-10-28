@@ -12,9 +12,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import common.parser.MacrosBase;
 import common.parser.implementations.DependencyDag;
+import common.parser.implementations.MacrosCCGDag;
 import common.pos.TreeTag;
 
 /*
@@ -74,6 +76,26 @@ public final class SentenceReader {
 			while (line != null && !line.isEmpty()) {
 				vReturn.add(new TwoStrings(line.trim().split("[ \t]+")[DependencyDag.DAG_WORD_COL], line.trim().split("[ \t]+")[DependencyDag.DAG_POS_COL]));
 				tReturn.add(new IntInteger(Integer.parseInt(line.trim().split("[ \t]+")[DependencyDag.DAG_TREEHEAD_COL]), MacrosBase.integer_cache[TreeTag.code(line.trim().split("[ \t]+")[DependencyDag.DAG_TREELABEL_COL])]));
+				line = m_iReader.readLine();
+			}
+			return line != null;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
+	public boolean readSuperTagSentence(ArrayList<int[]> superset) {
+		if (m_iReader == null) return false;
+		try {
+			superset.clear();
+			String line = m_iReader.readLine();
+			while (line != null & !line.isEmpty()) {
+				String[] args = line.split("[ \t]+");
+				int[] list = new int[args.length / 2 - 1];
+				for (int i = 3; i < args.length; i += 2) {
+					list[i / 2 - 1] = MacrosCCGDag.CCGTAG_MAP.get(args[i]).intValue();
+				}
+				superset.add(list);
 				line = m_iReader.readLine();
 			}
 			return line != null;
