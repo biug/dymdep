@@ -534,40 +534,21 @@ public class StateItem extends StateItemBase {
 					++node.childrenseek;
 				}
 				return true;
-			} else if (stack_back >= 1) {
-				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lStack[stack_back - 1]];
-				int topseek = node.rightseek, toptail = node.righttail;
-				int top2ndseek = node2nd.rightseek, top2ndtail = node2nd.righttail;
-				if (topseek <= toptail && top2ndseek <= top2ndtail) {
-					if (node.rightarcs.get(topseek).compareTo(node2nd.rightarcs.get(top2ndseek)) > 0) {
-//						System.out.println("swap1");
-						Mem();
-						return true;
-					}
-				} else if (topseek <= toptail) {
-//					System.out.println("swap2");
-					Mem();
-					return true;
-				}
-			} else if (second_stack_back >= 0) {
-				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lSecondStack[second_stack_back]];
-				int topseek = node.rightseek, toptail = node.righttail;
-				int top2ndseek = node2nd.rightseek, top2ndtail = node2nd.righttail;
-				if (topseek <= toptail && top2ndseek <= top2ndtail) {
-					if (node.rightarcs.get(topseek).compareTo(node2nd.rightarcs.get(top2ndseek)) > 0) {
-//						System.out.println("swap1");
-						Recall();
-						return true;
-					}
-				} else if (topseek <= toptail) {
-//					System.out.println("swap2");
-					Recall();
-					return true;
-				}
 			}
-		} else if (second_stack_back >= 0) {
-			Mem();
-			return true;
+		}
+		for (int i = stack_back - 1; i >= 0; --i) {
+			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lStack[i]];
+			if (node.righttail >= 0 && node.NearestChild().other == m_nNextWord) {
+				Mem();
+				return true;
+			}
+		}
+		for (int i = second_stack_back; i >= 0; --i) {
+			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lSecondStack[i]];
+			if (node.righttail >= 0 && node.NearestChild().other == m_nNextWord) {
+				Recall();
+				return true;
+			}
 		}
 		if (m_nNextWord < dag.length) {
 //			System.out.println("shift" + CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
