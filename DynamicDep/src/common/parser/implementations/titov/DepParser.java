@@ -28,6 +28,7 @@ import include.linguistics.WordWordPOSTag;
 import include.util.TreeAnalyzer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import common.parser.DepParserBase;
 import common.parser.ScoredAction;
@@ -840,6 +841,17 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
 		
+		ArrayList<Integer[]> actionset = new ArrayList<Integer[]>();
+		Iterator<int[]> itr = superset.iterator();
+		while (itr.hasNext()) {
+			int[] list = itr.next();
+			Integer[] alist = new Integer[list.length];
+			int i = 0;
+			for (int tag : list) {
+				alist[i++] = Macros.integer_cache[tag];
+			}
+			actionset.add(alist);
+		}
 		/*
 		 * finish means
 		 * 		"no more action for correct state" or
@@ -853,7 +865,12 @@ public final class DepParser extends DepParserBase {
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
 				
-				Macros.SHIFT_LABELLIST = pGenerator.m_nNextWord < m_lCache.size() ? superset.get(pGenerator.m_nNextWord) : null;
+				if (pGenerator.m_nNextWord < m_lCache.size()) {
+					Macros.SHIFT_LABELLIST = superset.get(pGenerator.m_nNextWord);
+					Macros.SHIFT_ACTIONLIST = actionset.get(pGenerator.m_nNextWord);
+				} else {
+					Macros.SHIFT_ACTIONLIST = null;
+				}
 				
 				m_Beam.clear();
 				packed_scores.reset();

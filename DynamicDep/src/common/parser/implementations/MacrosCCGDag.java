@@ -29,8 +29,11 @@ public class MacrosCCGDag extends MacrosBase {
 	public static Map<String, int[]> MAP;
 	public static Map<String, int[]> POSMAP;
 	
-	public static Map<String, int[]> MAPA;
-	public static Map<String, int[]> POSMAPA;
+	public static int[] SHIFT_LABELLIST;
+	public static Integer[] SHIFT_ACTIONLIST;
+	
+	public static Integer[] CONST_ACTIONLIST;
+	public static int CONST_ACTIONSIZE;
 	
 	public static void loadMacros(String macrosFile) throws IOException {
 		

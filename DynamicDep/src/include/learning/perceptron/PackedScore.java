@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import common.parser.MacrosBase;
+import common.parser.implementations.MacrosCCGDag;
 
 /*
  * @author ZhangXun
@@ -68,11 +69,26 @@ public final class PackedScore {
 	}
 	
 	public void add(PackedScoreType o, final int which) {
-		Set<Entry<Integer, Score>> entryset = scores.entrySet();
-		Iterator<Entry<Integer, Score>> itr = entryset.iterator();
-		while (itr.hasNext()) {
-			Entry<Integer, Score> entry = (Entry<Integer, Score>)itr.next();
-			o.addOne(entry.getKey().intValue(), entry.getValue().score(which));
+		if (MacrosCCGDag.CONST_ACTIONSIZE + MacrosCCGDag.SHIFT_LABELLIST.length < scores.size()) {
+			for (Integer action : MacrosCCGDag.CONST_ACTIONLIST) {
+				Score score = scores.get(action);
+				if (score != null) {
+					o.addOne(action.intValue(), score.score(which));
+				}
+			}
+			for (Integer action : MacrosCCGDag.SHIFT_ACTIONLIST) {
+				Score score = scores.get(action);
+				if (score != null) {
+					o.addOne(action.intValue(), score.score(which));
+				}
+			}
+		} else {
+			Set<Entry<Integer, Score>> entryset = scores.entrySet();
+			Iterator<Entry<Integer, Score>> itr = entryset.iterator();
+			while (itr.hasNext()) {
+				Entry<Integer, Score> entry = (Entry<Integer, Score>)itr.next();
+				o.addOne(entry.getKey().intValue(), entry.getValue().score(which));
+			}
 		}
 	}
 	

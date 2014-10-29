@@ -27,6 +27,14 @@ public class Macros extends MacrosCCGDag {
 		AR_FIRST = AL_FIRST + DEP_COUNT;
 		ACTION_MAX = AR_FIRST + DEP_COUNT;
 		
+		CONST_ACTIONSIZE = SHIFT - 1 + (DEP_COUNT << 1);
+		CONST_ACTIONLIST = new Integer[CONST_ACTIONSIZE];
+		for (int i = 1; i < SHIFT; ++i) {
+			CONST_ACTIONLIST[i - 1] = integer_cache[i];
+		}
+		for (int i = AL_FIRST; i < ACTION_MAX; ++i) {
+			CONST_ACTIONLIST[i - AL_FIRST + SHIFT] = integer_cache[i];
+		}
 	}
 		
 }
