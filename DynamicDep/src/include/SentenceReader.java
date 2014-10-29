@@ -91,11 +91,22 @@ public final class SentenceReader {
 			String line = m_iReader.readLine();
 			while (line != null & !line.isEmpty()) {
 				String[] args = line.split("[ \t]+");
-				int[] list = new int[args.length / 2 - 1];
-				for (int i = 3; i < args.length; i += 2) {
-					list[i / 2 - 1] = MacrosCCGDag.CCGTAG_MAP.get(args[i]).intValue();
+				int size = (args.length >> 1) - 1;
+				int[] list = new int[size];
+				for (int i = 2, j = 0; i < args.length; i += 2) {
+					Integer ii = MacrosCCGDag.CCGTAG_MAP.get(args[i]);
+					if (ii == null) {
+						--size;
+					} else {
+						list[j++] = ii.intValue();
+					}
 				}
-				superset.add(list);
+				if (size == 0) {
+					System.out.println("fuck");
+				}
+				int[] alist = new int[size];
+				System.arraycopy(list, 0, alist, 0, size);
+				superset.add(alist);
 				line = m_iReader.readLine();
 			}
 			return line != null;
