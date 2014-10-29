@@ -29,6 +29,9 @@ public class MacrosCCGDag extends MacrosBase {
 	public static Map<String, int[]> MAP;
 	public static Map<String, int[]> POSMAP;
 	
+	public static Map<String, Integer[]> ACTIONMAP;
+	public static Map<String, Integer[]> ACTIONPOSMAP;
+	
 	public static int[] SHIFT_LABELLIST;
 	public static Integer[] SHIFT_ACTIONLIST;
 	

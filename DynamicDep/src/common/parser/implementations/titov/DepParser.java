@@ -28,7 +28,6 @@ import include.linguistics.WordWordPOSTag;
 import include.util.TreeAnalyzer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import common.parser.DepParserBase;
 import common.parser.ScoredAction;
@@ -802,11 +801,6 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-//		for (int label = Macros.CCGTAG_FIRST; label < Macros.CCGTAG_COUNT; ++label) {
-//			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
-//			scoredaction.score = item.score + scores.at(scoredaction.action);
-//			m_Beam.insertItem(scoredaction);
-//		}
 		for (int label : Macros.SHIFT_LABELLIST) {
 			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
@@ -820,7 +814,7 @@ public final class DepParser extends DepParserBase {
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, final ArrayList<int[]> superset, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
+	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
 		final int length = sentence.size();
 		StateItem pGenerator;
 
@@ -840,18 +834,7 @@ public final class DepParser extends DepParserBase {
 		m_Agenda.pushCandidate(pCandidate);
 		m_Agenda.nextRound();
 		if (bTrain) correctState.clear();
-		
-		ArrayList<Integer[]> actionset = new ArrayList<Integer[]>();
-		Iterator<int[]> itr = superset.iterator();
-		while (itr.hasNext()) {
-			int[] list = itr.next();
-			Integer[] alist = new Integer[list.length];
-			int i = 0;
-			for (int tag : list) {
-				alist[i++] = Macros.integer_cache[tag];
-			}
-			actionset.add(alist);
-		}
+				
 		/*
 		 * finish means
 		 * 		"no more action for correct state" or
@@ -866,10 +849,17 @@ public final class DepParser extends DepParserBase {
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
 				
 				if (pGenerator.m_nNextWord < m_lCache.size()) {
-					Macros.SHIFT_LABELLIST = superset.get(pGenerator.m_nNextWord);
-					Macros.SHIFT_ACTIONLIST = actionset.get(pGenerator.m_nNextWord);
+					POSTaggedWord pw = m_lCache.get(pGenerator.m_nNextWord);
+					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw.word.toString());
+					if (Macros.SHIFT_LABELLIST == null) {
+						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw.tag.toString());
+						Macros.SHIFT_ACTIONLIST = Macros.ACTIONPOSMAP.get(pw.tag.toString());
+					} else {
+						Macros.SHIFT_ACTIONLIST = Macros.ACTIONMAP.get(pw.word.toString());
+					}
+					
 				} else {
-					Macros.SHIFT_ACTIONLIST = null;
+					Macros.SHIFT_ACTIONLIST = Macros.CONST_ACTIONLIST;
 				}
 				
 				m_Beam.clear();
@@ -956,16 +946,16 @@ public final class DepParser extends DepParserBase {
 		}
 	}
 
-	public void parse(final int round, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, final ArrayList<int[]> superset, DependencyDag[] retval,
+	public void parse(final int round, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval,
 			final int nBest, long[] scores) {
 		for (int i = 0; i < nBest; ++i) {
 			retval[i].length = 0;
 			if (scores != null) scores[i] = 0;
 		}
-		work(round, false, sentence, syntaxtree, superset, retval, null, nBest, scores);
+		work(round, false, sentence, syntaxtree, retval, null, nBest, scores);
 	}
 
-	public void train(final DependencyDag correct, final ArrayList<int[]> superset, final int round) {
+	public void train(final DependencyDag correct, final int round) {
 		trainSentence.clear();
 		trainSyntaxtree.clear();
 		if (correct != null) {
@@ -976,7 +966,7 @@ public final class DepParser extends DepParserBase {
 			}
 		}
 		m_nTrainingRound = round;
-		work(round, true, trainSentence, trainSyntaxtree, superset, null, correct, 1, null);
+		work(round, true, trainSentence, trainSyntaxtree, null, correct, 1, null);
 	}
 
 	@Override

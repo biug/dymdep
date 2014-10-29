@@ -69,13 +69,7 @@ public final class PackedScore {
 	}
 	
 	public void add(PackedScoreType o, final int which) {
-		if (MacrosCCGDag.CONST_ACTIONSIZE + MacrosCCGDag.SHIFT_LABELLIST.length < scores.size()) {
-			for (Integer action : MacrosCCGDag.CONST_ACTIONLIST) {
-				Score score = scores.get(action);
-				if (score != null) {
-					o.addOne(action.intValue(), score.score(which));
-				}
-			}
+		if (MacrosCCGDag.SHIFT_ACTIONLIST.length < (scores.size() >> 1)) {
 			for (Integer action : MacrosCCGDag.SHIFT_ACTIONLIST) {
 				Score score = scores.get(action);
 				if (score != null) {
