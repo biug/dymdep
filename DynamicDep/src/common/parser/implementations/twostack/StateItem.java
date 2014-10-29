@@ -440,12 +440,12 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void Mem() {
-		m_lSecondStack[second_stack_back++] = m_lStack[stack_back--];
+		m_lSecondStack[++second_stack_back] = m_lStack[stack_back--];
 		m_lActionList[++action_back] = Macros.MEM;
 	}
 	
 	public void Recall() {
-		m_lStack[stack_back++] = m_lSecondStack[second_stack_back--];
+		m_lStack[++stack_back] = m_lSecondStack[second_stack_back--];
 		m_lActionList[++action_back] = Macros.RECALL;
 	}
 	
