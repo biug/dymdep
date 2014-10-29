@@ -226,11 +226,11 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean canmem() {
-		return m_lActionList[action_back] != Macros.RECALL && stack_back > 0;
+		return m_lActionList[action_back] != Macros.RECALL && stack_back >= 0;
 	}
 	
 	public final boolean canrecall() {
-		return m_lActionList[action_back] != Macros.MEM && second_stack_back > 0;
+		return m_lActionList[action_back] != Macros.MEM && second_stack_back >= 0;
 	}
 	
 	public final boolean canarc() {
