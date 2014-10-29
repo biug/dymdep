@@ -43,6 +43,7 @@ import common.pos.POSTag;
 public final class DepParser extends DepParserBase {
 	
 	private boolean m_bSupertag;
+	private boolean m_bPath;
 	
 	private AgendaBeam m_Agenda;
 	private AgendaBeam m_Finish;
@@ -99,10 +100,11 @@ public final class DepParser extends DepParserBase {
 		return n1 < n2 ? n1 : n2; 
 	}
 
-	public DepParser(final String sFeatureDBPath, final boolean bTrain, final boolean supertag) {
+	public DepParser(final String sFeatureDBPath, final boolean bTrain, final boolean supertag, final boolean upath) {
 		super(sFeatureDBPath, bTrain);
 		
 		m_bSupertag = supertag;
+		m_bPath = upath;
 		
 		m_Agenda = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
 		m_Finish = new AgendaBeam(Macros.AGENDA_SIZE, new StateItem());
@@ -451,40 +453,42 @@ public final class DepParser extends DepParserBase {
 		postag_tagset.refer(n0_postag, n0_ltagset);
 		weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
 
-		if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
-			
-			weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			
-		} else {
-			
-			weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-			weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-			
-		}
-
-		if (st2_index == StateItem.out_index || n0_index == StateItem.out_index) {
-			
-			weight.m_mapSPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			weight.m_mapSFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			
-		} else {
-			
-			weight.m_mapSPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
-			weight.m_mapSFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
-			
-		}
-
-		if (sst_index == StateItem.out_index || n0_index == StateItem.out_index) {
-			
-			weight.m_map2POSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			weight.m_map2FPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
-			
-		} else {
-			
-			weight.m_map2POSPath.getOrUpdateScore(retval, analyzer.POSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
-			weight.m_map2FPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
-			
+		if (m_bPath) {
+			if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
+				
+				weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				
+			} else {
+				
+				weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+				weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+				
+			}
+	
+			if (st2_index == StateItem.out_index || n0_index == StateItem.out_index) {
+				
+				weight.m_mapSPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				weight.m_mapSFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				
+			} else {
+				
+				weight.m_mapSPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
+				weight.m_mapSFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
+				
+			}
+	
+			if (sst_index == StateItem.out_index || n0_index == StateItem.out_index) {
+				
+				weight.m_map2POSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				weight.m_map2FPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
+				
+			} else {
+				
+				weight.m_map2POSPath.getOrUpdateScore(retval, analyzer.POSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
+				weight.m_map2FPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[sst_index][n0_index], action, m_nScoreIndex, amount, round);
+				
+			}
 		}
 		
 		if (st_index != StateItem.out_index) {

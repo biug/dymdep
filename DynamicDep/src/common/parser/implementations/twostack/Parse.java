@@ -14,12 +14,12 @@ import common.parser.implementations.DependencyDag;
 import common.parser.implementations.MacrosCCGDag;
 
 public class Parse {
-	public void process(final String sInputFile, final String sOutputFile, final String sFeatureFile, final int nBest, final boolean bScores, final boolean supertag) {
+	public void process(final String sInputFile, final String sOutputFile, final String sFeatureFile, final int nBest, final boolean bScores, final boolean supertag, final boolean upath) {
 		System.out.println("Parsing started");
 		
 		long time_start = System.currentTimeMillis();
 		
-		DepParser parser = new DepParser(sFeatureFile, false, supertag);
+		DepParser parser = new DepParser(sFeatureFile, false, supertag, upath);
 		SentenceReader input_reader = new SentenceReader(sInputFile);
 		int count = 0;
 		try {
