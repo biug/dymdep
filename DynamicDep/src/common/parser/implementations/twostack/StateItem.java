@@ -538,14 +538,14 @@ public class StateItem extends StateItemBase {
 		}
 		for (int i = stack_back - 1; i >= 0; --i) {
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lStack[i]];
-			if (node.rightseek <= node.righttail && node.NearestChild().other == m_nNextWord) {
+			if (node.rightseek <= node.righttail && node.NearestRight().other == m_nNextWord) {
 				Mem();
 				return true;
 			}
 		}
 		for (int i = second_stack_back; i >= 0; --i) {
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lSecondStack[i]];
-			if (node.rightseek <= node.righttail && node.NearestChild().other == m_nNextWord) {
+			if (node.rightseek <= node.righttail && node.NearestRight().other == m_nNextWord) {
 				Recall();
 				return true;
 			}
