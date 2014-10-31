@@ -79,14 +79,6 @@ public class MacrosCCGDag extends MacrosBase {
 			++TREE_BITS_SIZE;
 		}
 		
-		MAX_INTEGER = 10 + CCGTAG_COUNT + DEP_COUNT + DEP_COUNT;
-		if (MAX_INTEGER < POSTAG_COUNT) {
-			MAX_INTEGER = POSTAG_COUNT;
-		}
-		if (MAX_INTEGER < TREE_COUNT) {
-			MAX_INTEGER = TREE_COUNT;
-		}
-		
 		DEP_NONE = DEP_COUNT;
 		temp_strings = new String[DEP_COUNT + 1];
 		System.arraycopy(DEP_STRINGS, 0, temp_strings, 0, DEP_COUNT);

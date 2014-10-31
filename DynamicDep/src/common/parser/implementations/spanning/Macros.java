@@ -1,4 +1,4 @@
-package common.parser.implementations.rotate;
+package common.parser.implementations.spanning;
 
 import java.util.HashMap;
 
@@ -15,9 +15,8 @@ public class Macros extends MacrosCCGDag {
 	public static int AL_FIRST;
 	public static int AR_FIRST;
 	public static int ACTION_MAX;
-	
-	public static int[] LEFT_ARC_LIST;
-	public static int[] RIGHT_ARC_LIST;
+
+	public static Integer[][] ARC_ACTIONLIST;
 	
 	public static void calcConstant() {
 
@@ -48,5 +47,18 @@ public class Macros extends MacrosCCGDag {
 			}
 			ACTIONPOSMAP.put(tag, ilist);
 		}
+		
+		ARC_ACTIONLIST = new Integer[MAX_SENTENCE_SIZE][];
+		ARC_ACTIONLIST[0] = new Integer[0];
+		for (int i = 1; i < MAX_SENTENCE_SIZE; ++i) {
+			ARC_ACTIONLIST[i] = new Integer[2 * DEP_COUNT * i];
+			for (int j = 0; j < (DEP_COUNT * i); ++j) {
+				ARC_ACTIONLIST[i][j] = integer_cache[(((j % DEP_COUNT) << MAX_SENTENCE_SIZE_BITS) | (j / DEP_COUNT)) + AL_FIRST];
+			}
+			for (int j = 0; j < (DEP_COUNT * i); ++j) {
+				ARC_ACTIONLIST[i][j + (DEP_COUNT * i)] = integer_cache[(((j % DEP_COUNT) << MAX_SENTENCE_SIZE_BITS) | (j / DEP_COUNT)) + AR_FIRST];
+			}
+		}
+		
 	}
 }

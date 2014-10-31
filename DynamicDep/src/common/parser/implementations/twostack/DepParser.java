@@ -1091,7 +1091,6 @@ public final class DepParser extends DepParserBase {
 		}
 		
 		if (bTrain) {
-			correctState.StandardFinish();
 			if (!correctState.equals(m_Agenda.bestGenerator())) {				
 				updateScoreForStates(m_Agenda.bestGenerator(), correctState, 1, -1, length);
 				return;

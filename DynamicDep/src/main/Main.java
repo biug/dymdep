@@ -18,6 +18,7 @@ public class Main {
 			System.out.println("Training started");
 			for (int i = 0; i < training_rounds; ++i) {
 				try {
+					System.out.println("iteration " + (i + 1));
 					train.auto_train(sInputFile, sFeatureFile, true, upath);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -29,6 +30,19 @@ public class Main {
 			System.out.println("Training started");
 			for (int i = 0; i < training_rounds; ++i) {
 				try {
+					System.out.println("iteration " + (i + 1));
+					train.auto_train(sInputFile, sFeatureFile, true, upath);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} else if (system.equals("spanning")) {
+			common.parser.implementations.spanning.Train train = new common.parser.implementations.spanning.Train();
+			final int training_rounds = nRound;
+			System.out.println("Training started");
+			for (int i = 0; i < training_rounds; ++i) {
+				try {
+					System.out.println("iteration " + (i + 1));
 					train.auto_train(sInputFile, sFeatureFile, true, upath);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -46,6 +60,9 @@ public class Main {
 		} else if (system.equals("twostack")) {
 			common.parser.implementations.twostack.Parse parse = new common.parser.implementations.twostack.Parse();
 			parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false, true, upath);
+		} else if (system.equals("spanning")) {
+			common.parser.implementations.spanning.Parse parse = new common.parser.implementations.spanning.Parse();
+			parse.process(sInputFile, sOutputFile, sFeatureFile, 1, false, true, upath);
 		}
 	}
 	
@@ -56,6 +73,8 @@ public class Main {
 			common.parser.implementations.titov.Macros.calcConstant();
 		} else if (args[1].equals("twostack")) {
 			common.parser.implementations.twostack.Macros.calcConstant();
+		} else if (args[1].equals("spanning")) {
+			common.parser.implementations.spanning.Macros.calcConstant();
 		}
 		if (args[2].equals("train")) {
 			train(args[3], args[4], Integer.parseInt(args[5]), args[1], upath);

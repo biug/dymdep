@@ -1,4 +1,4 @@
-package common.parser.implementations.titov;
+package common.parser.implementations.spanning;
 
 import include.AgendaBeam;
 import include.AgendaSimple;
@@ -150,21 +150,13 @@ public final class DepParser extends DepParserBase {
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
 
-		final int st_index = item.stacktop();
+		final int st_index = item.stacktop();  //change this
 		final int stlh_index = item.lefthead(st_index);
-		final int stl2h_index = item.leftsubhead(st_index);
 		final int strh_index = item.righthead(st_index);
-		final int str2h_index = item.rightsubhead(st_index);
-		final int stlhlh_index = item.lefthead(stlh_index);
-		final int stlhrh_index = item.righthead(stlh_index);
-		final int strhlh_index = item.lefthead(strh_index);
-		final int strhrh_index = item.righthead(strh_index);
 		final int stld_index = item.leftdep(st_index);
 		final int strd_index = item.rightdep(st_index);
-		final int stl2d_index = item.leftsubdep(st_index);
-		final int str2d_index = item.rightsubdep(st_index);
 		
-		final int st2_index = item.stacktop2();
+		final int st2_index = item.stacktop2(); //and this
 		final int st2lh_index = item.lefthead(st2_index);
 		final int st2rh_index = item.righthead(st2_index);
 		final int st2ld_index = item.leftdep(st2_index);
@@ -172,9 +164,7 @@ public final class DepParser extends DepParserBase {
 		
 		final int n0_index = item.size(m_lCache.size());
 		final int n0ld_index = item.leftdep(n0_index);
-		final int n0l2d_index = item.leftsubdep(n0_index);
 		final int n0lh_index = item.lefthead(n0_index);
-		final int n0l2h_index = item.leftsubhead(n0_index);
 		final int n1_index = item.nextbufferhead(m_lCache.size());
 		final int n2_index = item.nextbuffernext(m_lCache.size());
 		final int n_1_index = item.beforebufferhead();
@@ -193,17 +183,9 @@ public final class DepParser extends DepParserBase {
 
 		final POSTaggedWord st_word_postag = st_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(st_index);
 		final POSTaggedWord stlh_word_postag = stlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlh_index);
-		final POSTaggedWord stl2h_word_postag = stl2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stl2h_index);
 		final POSTaggedWord strh_word_postag = strh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strh_index);
-		final POSTaggedWord str2h_word_postag = str2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(str2h_index);
-		final POSTaggedWord stlhlh_word_postag = stlhlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlhlh_index);
-		final POSTaggedWord stlhrh_word_postag = stlhrh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stlhrh_index);
-		final POSTaggedWord strhlh_word_postag = strhlh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strhlh_index);
-		final POSTaggedWord strhrh_word_postag = strhrh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strhrh_index);
 		final POSTaggedWord stld_word_postag = stld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stld_index);
 		final POSTaggedWord strd_word_postag = strd_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(strd_index);
-		final POSTaggedWord stl2d_word_postag = stl2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(stl2d_index);
-		final POSTaggedWord str2d_word_postag = str2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(str2d_index);
 
 		final POSTaggedWord st2_word_postag = st2_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(st2_index);
 		final POSTaggedWord st2ld_word_postag = st2ld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(st2ld_index);
@@ -213,9 +195,7 @@ public final class DepParser extends DepParserBase {
 		
 		final POSTaggedWord n0_word_postag = n0_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0_index);
 		final POSTaggedWord n0ld_word_postag = n0ld_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0ld_index);
-		final POSTaggedWord n0l2d_word_postag = n0l2d_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2d_index);
 		final POSTaggedWord n0lh_word_postag = n0lh_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0lh_index);
-		final POSTaggedWord n0l2h_word_postag = n0l2h_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n0l2h_index);
 		final POSTaggedWord n1_word_postag = n1_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n1_index);
 		final POSTaggedWord n2_word_postag = n2_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n2_index);
 		final POSTaggedWord n_1_word_postag = n_1_index == StateItem.out_index ? empty_postaggedword : m_lCache.get(n_1_index);
@@ -223,17 +203,9 @@ public final class DepParser extends DepParserBase {
 
 		final Word st_word = st_word_postag.word;
 		final Word stlh_word = stlh_word_postag.word;
-		final Word stl2h_word = stl2h_word_postag.word;
 		final Word strh_word = strh_word_postag.word;
-		final Word str2h_word = str2h_word_postag.word;
-		final Word stlhlh_word = stlhlh_word_postag.word;
-		final Word stlhrh_word = stlhrh_word_postag.word;
-		final Word strhlh_word = strhlh_word_postag.word;
-		final Word strhrh_word = strhrh_word_postag.word;
 		final Word stld_word = stld_word_postag.word;
 		final Word strd_word = strd_word_postag.word;
-		final Word stl2d_word = stl2d_word_postag.word;
-		final Word str2d_word = str2d_word_postag.word;
 		
 		final Word st2_word = st2_word_postag.word;
 		final Word st2ld_word = st2ld_word_postag.word;
@@ -243,9 +215,7 @@ public final class DepParser extends DepParserBase {
 		
 		final Word n0_word = n0_word_postag.word;
 		final Word n0ld_word = n0ld_word_postag.word;
-		final Word n0l2d_word = n0l2d_word_postag.word;
 		final Word n0lh_word = n0lh_word_postag.word;
-		final Word n0l2h_word = n0l2h_word_postag.word;
 		final Word n1_word = n1_word_postag.word;
 		final Word n2_word = n2_word_postag.word;
 		final Word n_1_word = n_1_word_postag.word;
@@ -253,18 +223,10 @@ public final class DepParser extends DepParserBase {
 
 		final POSTag st_postag = st_word_postag.tag;
 		final POSTag stlh_postag = stlh_word_postag.tag;
-		final POSTag stl2h_postag = stl2h_word_postag.tag;
 		final POSTag strh_postag = strh_word_postag.tag;
-		final POSTag str2h_postag = str2h_word_postag.tag;
-		final POSTag stlhlh_postag = stlhlh_word_postag.tag;
-		final POSTag stlhrh_postag = stlhrh_word_postag.tag;
-		final POSTag strhlh_postag = strhlh_word_postag.tag;
-		final POSTag strhrh_postag = strhrh_word_postag.tag;
 		final POSTag stld_postag = stld_word_postag.tag;
 		final POSTag strd_postag = strd_word_postag.tag;
-		final POSTag stl2d_postag = stl2d_word_postag.tag;
-		final POSTag str2d_postag = str2d_word_postag.tag;
-
+		
 		final POSTag st2_postag = st2_word_postag.tag;
 		final POSTag st2ld_postag = st2ld_word_postag.tag;
 		final POSTag st2rd_postag = st2rd_word_postag.tag;
@@ -273,26 +235,16 @@ public final class DepParser extends DepParserBase {
 
 		final POSTag n0_postag = n0_word_postag.tag;
 		final POSTag n0ld_postag = n0ld_word_postag.tag;
-		final POSTag n0l2d_postag = n0l2d_word_postag.tag;
 		final POSTag n0lh_postag = n0lh_word_postag.tag;
-		final POSTag n0l2h_postag = n0l2h_word_postag.tag;
 		final POSTag n1_postag = n1_word_postag.tag;
 		final POSTag n2_postag = n2_word_postag.tag;
 		final POSTag n_1_postag = n_1_word_postag.tag;
 		final POSTag n_2_postag = n_2_word_postag.tag;
 
 		final Integer st_lh_label = Macros.integer_cache[item.leftheadlabel(st_index)];
-		final Integer st_l2h_label = Macros.integer_cache[item.leftsubheadlabel(st_index)];
 		final Integer st_rh_label = Macros.integer_cache[item.rightheadlabel(st_index)];
-		final Integer st_r2h_label = Macros.integer_cache[item.rightsubheadlabel(st_index)];
 		final Integer st_ld_label = Macros.integer_cache[item.leftdeplabel(st_index)];
-		final Integer st_l2d_label = Macros.integer_cache[item.leftsubdeplabel(st_index)];
 		final Integer st_rd_label = Macros.integer_cache[item.rightdeplabel(st_index)];
-		final Integer st_r2d_label = Macros.integer_cache[item.rightsubdeplabel(st_index)];
-		final Integer stlh_lh_label = Macros.integer_cache[item.leftheadlabel(stlh_index)];
-		final Integer stlh_rh_label = Macros.integer_cache[item.rightheadlabel(stlh_index)];
-		final Integer strh_lh_label = Macros.integer_cache[item.leftheadlabel(strh_index)];
-		final Integer strh_rh_label = Macros.integer_cache[item.rightheadlabel(strh_index)];
 		
 		final Integer st2_lh_label = Macros.integer_cache[item.leftheadlabel(st2_index)];
 		final Integer st2_rh_label = Macros.integer_cache[item.rightheadlabel(st2_index)];
@@ -301,8 +253,6 @@ public final class DepParser extends DepParserBase {
 		
 		final Integer n0_lh_label = Macros.integer_cache[item.leftheadlabel(n0_index)];
 		final Integer n0_ld_label = Macros.integer_cache[item.leftdeplabel(n0_index)];
-		final Integer n0_l2h_label = Macros.integer_cache[item.leftsubheadlabel(n0_index)];
-		final Integer n0_l2d_label = Macros.integer_cache[item.leftsubdeplabel(n0_index)];
 
 		final Integer st_n0_dist0 = Macros.integer_cache[Macros.encodeLinkDistance(st_index, n0_index)];
 		final Integer st2_n0_dist1 = Macros.integer_cache[Macros.encodeLinkDistance(st2_index, n0_index)];
@@ -462,71 +412,7 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapSTwN0wd0.getOrUpdateScore(retval, word_word_int, action, m_nScoreIndex, amount, round);
 			postag_postag_int.refer(st_postag, n0_postag, st_n0_dist0);
 			weight.m_mapSTptN0ptd0.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
-			
-			if (stlh_index != StateItem.out_index) {
-				
-				weight.m_mapSTL2Hw.getOrUpdateScore(retval, stl2h_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTL2Hpt.getOrUpdateScore(retval, stl2h_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTl2hl.getOrUpdateScore(retval, st_l2h_label, action, m_nScoreIndex, amount, round);
-				
-				weight.m_mapSTLHLHw.getOrUpdateScore(retval, stlhlh_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTLHLHpt.getOrUpdateScore(retval, stlhlh_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTLHlhl.getOrUpdateScore(retval, stlh_lh_label, action, m_nScoreIndex, amount, round);
-				
-				weight.m_mapSTLHRHw.getOrUpdateScore(retval, stlhrh_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTLHRHpt.getOrUpdateScore(retval, stlhrh_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTLHrhl.getOrUpdateScore(retval, stlh_rh_label, action, m_nScoreIndex, amount, round);
-				
-				set_of_3_postags.load(encodePOSTags(stlhlh_postag, stlh_postag, st_postag));
-				weight.m_mapSTLHLHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				set_of_3_postags.load(encodePOSTags(stlhrh_postag, stlh_postag, st_postag));
-				weight.m_mapSTLHRHptSTLHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				
-			}
-			
-			if (strh_index != StateItem.out_index) {
-				
-				weight.m_mapSTR2Hw.getOrUpdateScore(retval, str2h_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTR2Hpt.getOrUpdateScore(retval, str2h_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTr2hl.getOrUpdateScore(retval, st_r2h_label, action, m_nScoreIndex, amount, round);
-				
-				weight.m_mapSTRHLHw.getOrUpdateScore(retval, strhlh_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTRHLHpt.getOrUpdateScore(retval, strhlh_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTRHlhl.getOrUpdateScore(retval, strh_lh_label, action, m_nScoreIndex, amount, round);
-
-				weight.m_mapSTRHRHw.getOrUpdateScore(retval, strhrh_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTRHRHpt.getOrUpdateScore(retval, strhrh_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTRHrhl.getOrUpdateScore(retval, strh_rh_label, action, m_nScoreIndex, amount, round);
-
-				set_of_3_postags.load(encodePOSTags(strhlh_postag, strh_postag, st_postag));
-				weight.m_mapSTRHLHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				set_of_3_postags.load(encodePOSTags(strhrh_postag, strh_postag, st_postag));
-				weight.m_mapSTRHRHptSTRHptSTpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				
-			}
-			
-			if (stld_index != StateItem.out_index) {
-
-				weight.m_mapSTL2Dw.getOrUpdateScore(retval, stl2d_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTL2Dpt.getOrUpdateScore(retval, stl2d_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTl2dl.getOrUpdateScore(retval, st_l2d_label, action, m_nScoreIndex, amount, round);
-				
-				set_of_3_postags.load(encodePOSTags(st_postag, stld_postag, stl2d_postag));
-				weight.m_mapSTptSTLDptSTL2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-
-			}
-			
-			if (strd_index != StateItem.out_index) {
-
-				weight.m_mapSTR2Dw.getOrUpdateScore(retval, str2d_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTR2Dpt.getOrUpdateScore(retval, str2d_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapSTr2dl.getOrUpdateScore(retval, st_r2d_label, action, m_nScoreIndex, amount, round);
-				
-				set_of_3_postags.load(encodePOSTags(st_postag, strd_postag, str2d_postag));
-				weight.m_mapSTptSTRDptSTR2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				
-			}
-			
+						
 			if (st2_index != StateItem.out_index) {
 				
 				weight.m_mapST2LHw.getOrUpdateScore(retval, st2lh_word, action, m_nScoreIndex, amount, round);
@@ -604,28 +490,6 @@ public final class DepParser extends DepParserBase {
 			weight.m_mapST2wN0wd1.getOrUpdateScore(retval, word_word_int, action, m_nScoreIndex, amount, round);
 			postag_postag_int.refer(st2_postag, n0_postag, st2_n0_dist1);
 			weight.m_mapST2ptN0ptd1.getOrUpdateScore(retval, postag_postag_int, action, m_nScoreIndex, amount, round);
-			
-			if (n0lh_index != StateItem.out_index) {
-
-				weight.m_mapN0L2Hw.getOrUpdateScore(retval, n0l2h_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapN0L2Hpt.getOrUpdateScore(retval, n0l2h_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapN0l2hl.getOrUpdateScore(retval, n0_l2h_label, action, m_nScoreIndex, amount, round);
-				
-				set_of_3_postags.load(encodePOSTags(n0_postag, n0lh_postag, n0l2h_postag));
-				weight.m_mapN0ptN0LHptN0L2Hpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				
-			}
-			
-			if (n0ld_index != StateItem.out_index) {
-
-				weight.m_mapN0L2Dw.getOrUpdateScore(retval, n0l2d_word, action, m_nScoreIndex, amount, round);
-				weight.m_mapN0L2Dpt.getOrUpdateScore(retval, n0l2d_postag, action, m_nScoreIndex, amount, round);
-				weight.m_mapN0l2dl.getOrUpdateScore(retval, n0_l2d_label, action, m_nScoreIndex, amount, round);
-				
-				set_of_3_postags.load(encodePOSTags(n0_postag, n0ld_postag, n0l2d_postag));
-				weight.m_mapN0ptN0LDptN0L2Dpt.getOrUpdateScore(retval, set_of_3_postags, action, m_nScoreIndex, amount, round);
-				
-			}
 			
 			if (n1_index != StateItem.out_index) {
 				weight.m_mapN2w.getOrUpdateScore(retval, n2_word, action, m_nScoreIndex, amount, round);
@@ -755,7 +619,7 @@ public final class DepParser extends DepParserBase {
 			int action = itemForState.FollowMove(output);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
 			if (action >= Macros.AL_FIRST) {
-				++((StateItem)output).m_lRightArcsSeek[itemForState.m_lStack[itemForState.stack_back]];
+				++((StateItem)output).m_lLeftArcsSeek[itemForState.m_nNextWord];
 			}
 			itemForState.Move(action);
 		}
@@ -768,9 +632,9 @@ public final class DepParser extends DepParserBase {
 			int correct_action = itemForStates.FollowMove(correct);
 			if (action == correct_action) {
 				if (action >= Macros.AL_FIRST){
-					int back = itemForStates.m_lStack[itemForStates.stack_back];
-					++((StateItem)output).m_lRightArcsSeek[back];
-					++((StateItem)correct).m_lRightArcsSeek[back];
+					int back = itemForStates.m_nNextWord;
+					++((StateItem)output).m_lLeftArcsSeek[back];
+					++((StateItem)correct).m_lLeftArcsSeek[back];
 				}
 				itemForStates.Move(action);
 			} else {
@@ -782,23 +646,17 @@ public final class DepParser extends DepParserBase {
 		++m_nTotalErrors;
 	}
 	
-	public void reduce(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.REDUCE;
-		scoredaction.score = item.score + scores.at(scoredaction.action);
-		m_Beam.insertItem(scoredaction);
-	}
-	
-	public void arcleft(final StateItem item, final PackedScoreType scores) {
+	public void arcleft(final StateItem item, final PackedScoreType scores, int index) {
 		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_LEFT, label);
+			scoredaction.action = Action.encodeAction(Macros.ARC_LEFT, index, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
-	public void arcright(final StateItem item, final PackedScoreType scores) {
+	public void arcright(final StateItem item, final PackedScoreType scores, int index) {
 		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_RIGHT, label);
+			scoredaction.action = Action.encodeAction(Macros.ARC_RIGHT, index, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
@@ -806,16 +664,10 @@ public final class DepParser extends DepParserBase {
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
 		for (int label : Macros.SHIFT_LABELLIST) {
-			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+			scoredaction.action = Action.encodeAction(Macros.SHIFT, 0, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
-	}
-	
-	public void swap(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.SWAP;
-		scoredaction.score = item.score + scores.at(scoredaction.action);
-		m_Beam.insertItem(scoredaction);
 	}
 	
 	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
@@ -852,8 +704,10 @@ public final class DepParser extends DepParserBase {
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
 				
-				if (pGenerator.m_nNextWord < m_lCache.size()) {
-					POSTaggedWord pw = m_lCache.get(pGenerator.m_nNextWord);
+				int arc_back = -1;
+				int arc_index = pGenerator.m_nNextWord;
+				if (arc_index < m_lCache.size()) {
+					POSTaggedWord pw = m_lCache.get(arc_index);
 					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw.word.toString());
 					if (Macros.SHIFT_LABELLIST == null) {
 						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw.tag.toString());
@@ -861,40 +715,37 @@ public final class DepParser extends DepParserBase {
 					} else {
 						Macros.SHIFT_ACTIONLIST = Macros.ACTIONMAP.get(pw.word.toString());
 					}
-					
+					if (pGenerator.m_nNextWord > 0) {
+						// get last left arc index
+						if (pGenerator.m_lLeftArcsBack[arc_index] >= 0) {
+							arc_back = pGenerator.m_lLeftArcs[arc_index][pGenerator.m_lLeftArcsBack[arc_index]].other;
+						}
+						Integer[] alist = Macros.ARC_ACTIONLIST[pGenerator.m_nNextWord];
+						int len = (pGenerator.m_nNextWord - arc_back - 1) * Macros.DEP_COUNT;
+						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + len];
+						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, Macros.SHIFT_ACTIONLIST.length);
+						System.arraycopy(alist, alist.length - len, list, Macros.SHIFT_ACTIONLIST.length, len);
+						Macros.SHIFT_ACTIONLIST = list;
+					}
 				} else {
-					Macros.SHIFT_ACTIONLIST = Macros.CONST_ACTIONLIST;
+					Macros.SHIFT_ACTIONLIST = null;
 				}
 				
 				m_Beam.clear();
 				packed_scores.reset();
 				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
 				/*
-				 * if can swap, try swap
-				 */
-				if (pGenerator.canswap()) {
-					swap(pGenerator, packed_scores);
-				}
-				/*
 				 * if buffer not empty
 				 * try shift
 				 */
-				if (pGenerator.size(Macros.MAX_SENTENCE_SIZE) < length) {
+				if (pGenerator.m_nNextWord < length) {
 					shift(pGenerator, packed_scores);
-					/*
-					 * if can arc, try arc
-					 */
-					if (pGenerator.canarc()) {
-						arcright(pGenerator, packed_scores);
-						arcleft(pGenerator, packed_scores);
+					if (pGenerator.m_nNextWord > 0) {
+						for (int u = arc_back + 1; u < pGenerator.m_nNextWord; ++u) {
+							arcleft(pGenerator, packed_scores, u);
+							arcright(pGenerator, packed_scores, u);
+						}
 					}
-				}
-				/*
-				 * if stack not empty
-				 * try reduce
-				 */
-				if ((!pGenerator.stackempty())) {
-					reduce(pGenerator, packed_scores);
 				}
 				
 				for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {

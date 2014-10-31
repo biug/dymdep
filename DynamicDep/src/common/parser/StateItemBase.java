@@ -22,6 +22,5 @@ public abstract class StateItemBase {
 	
 	public abstract void Move(final int action);
 	public abstract boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel);
-	public abstract void StandardFinish();
 	public abstract int FollowMove(final StateItemBase itembase);
 }

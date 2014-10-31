@@ -394,8 +394,8 @@ public class StateItem extends StateItemBase {
 		int left = m_lStack[stack_back];
 		m_lSubHeadL[m_nNextWord] = m_lHeadL[m_nNextWord];
 		m_lHeadL[m_nNextWord] = left;
+		m_lSubHeadLabelL[m_nNextWord] = m_lHeadLabelL[m_nNextWord];
 		m_lHeadLabelL[m_nNextWord] = label;
-		m_lSubHeadLabelL[m_nNextWord] = label;
 		++m_lHeadLNum[m_nNextWord];
 		m_lDepTagR[left].add(label);
 		m_lSubDepR[left] = m_lDepR[left];
@@ -532,11 +532,6 @@ public class StateItem extends StateItemBase {
 		} else {
 			return false;
 		}
-	}
-	
-	@Override
-	public void StandardFinish() {
-		assert (stack_back == -1);
 	}
 	
 	@Override

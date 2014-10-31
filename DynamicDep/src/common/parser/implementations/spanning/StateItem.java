@@ -1,4 +1,4 @@
-package common.parser.implementations.twostack;
+package common.parser.implementations.spanning;
 
 import include.linguistics.IntIntegerVector;
 import include.linguistics.SetOfCCGLabels;
@@ -15,39 +15,25 @@ import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
 import common.pos.CCGTag;
 
-/*
- * @author ZhangXun
- */
-
 public class StateItem extends StateItemBase {
 	
 	protected int m_nNextWord;
 	
-	protected int stack_back;
-	protected int second_stack_back;
-	protected int[] m_lStack;		//stack
-	protected int[] m_lSecondStack;
+	protected int arc_index;
 
 	protected int action_back;
 	protected int[] m_lActionList;
 	
 	protected int[] m_lHeadL;	//heads for every node
-	protected int[] m_lSubHeadL;
 	protected int[] m_lHeadLabelL;	//label for every node
-	protected int[] m_lSubHeadLabelL;
 	protected int[] m_lHeadLNum;
 	protected int[] m_lHeadR;
-	protected int[] m_lSubHeadR;
 	protected int[] m_lHeadLabelR;
-	protected int[] m_lSubHeadLabelR;
 	protected int[] m_lHeadRNum;
 	protected int[] m_lDepL;		//left dependency children
-	protected int[] m_lSubDepL;
 	protected int[] m_lDepLabelL;
-	protected int[] m_lSubDepLabelL;
 	protected int[] m_lDepLNum;
 	protected int[] m_lDepR;		//right dependency children
-	protected int[] m_lSubDepR;
 	protected int[] m_lDepLabelR;
 	protected int[] m_lSubDepLabelR;
 	protected int[] m_lDepRNum;
@@ -56,9 +42,9 @@ public class StateItem extends StateItemBase {
 	protected int[] m_lTreeHead;
 	protected int[] m_lTreeLabel;
 	
-	protected int[] m_lRightArcsBack;
-	protected int[] m_lRightArcsSeek;
-	protected Arc[][] m_lRightArcs;	//right arcs
+	protected int[] m_lLeftArcsBack;
+	protected int[] m_lLeftArcsSeek;
+	protected Arc[][] m_lLeftArcs;	//right arcs
 	
 	protected SetOfDepLabels[] m_lDepTagL;
 	protected SetOfDepLabels[] m_lDepTagR;
@@ -66,31 +52,19 @@ public class StateItem extends StateItemBase {
 	
 	public StateItem() {
 		
-		stack_back = -1;
-		second_stack_back = -1;
-		m_lStack = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSecondStack = new int[Macros.MAX_SENTENCE_SIZE];
-		
 		action_back = 0;
 		m_lActionList = new int[Macros.MAX_SENTENCE_SIZE * Macros.MAX_SENTENCE_SIZE];
 		
 		m_lHeadL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubHeadL = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeadLabelL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubHeadLabelL = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeadLNum = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeadR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubHeadR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeadLabelR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubHeadLabelR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lHeadRNum = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubDepL = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepLabelL = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubDepLabelL = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepLNum = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepR = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lSubDepR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepLabelR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lSubDepLabelR = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lDepRNum = new int[Macros.MAX_SENTENCE_SIZE];
@@ -99,9 +73,9 @@ public class StateItem extends StateItemBase {
 		m_lTreeHead = new int[Macros.MAX_SENTENCE_SIZE];
 		m_lTreeLabel = new int[Macros.MAX_SENTENCE_SIZE];
 		
-		m_lRightArcsBack = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lRightArcsSeek = new int[Macros.MAX_SENTENCE_SIZE];
-		m_lRightArcs = new Arc[Macros.MAX_SENTENCE_SIZE][];
+		m_lLeftArcsBack = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lLeftArcsSeek = new int[Macros.MAX_SENTENCE_SIZE];
+		m_lLeftArcs = new Arc[Macros.MAX_SENTENCE_SIZE][];
 		
 		m_lDepTagL = new SetOfDepLabels[Macros.MAX_SENTENCE_SIZE];
 		m_lDepTagR = new SetOfDepLabels[Macros.MAX_SENTENCE_SIZE];
@@ -109,9 +83,9 @@ public class StateItem extends StateItemBase {
 		
 		for (int i = 0; i < Macros.MAX_SENTENCE_SIZE; ++i) {
 			
-			m_lRightArcs[i] = new Arc[Macros.MAX_SENTENCE_SIZE];
+			m_lLeftArcs[i] = new Arc[Macros.MAX_SENTENCE_SIZE];
 			for (int j = 0; j < Macros.MAX_SENTENCE_SIZE; ++j) {
-				m_lRightArcs[i][j] = new Arc();
+				m_lLeftArcs[i][j] = new Arc();
 			}
 			
 			m_lDepTagL[i] = new SetOfDepLabels();
@@ -131,43 +105,32 @@ public class StateItem extends StateItemBase {
 	public void copy(final StateItemBase itembase) {
 		StateItem item = (StateItem)itembase;
 		score = item.score;
-		stack_back = item.stack_back;
-		second_stack_back = item.second_stack_back;
 		m_nNextWord = item.m_nNextWord;
 		action_back = item.action_back;
-		System.arraycopy(item.m_lStack, 0, m_lStack, 0, stack_back + 1);
-		System.arraycopy(item.m_lSecondStack, 0, m_lSecondStack, 0, second_stack_back + 1);
 		System.arraycopy(item.m_lActionList, 0, m_lActionList, 0, action_back + 1);
 		int length = m_nNextWord + 1;
 		if (length > 0) {
 			System.arraycopy(item.m_lHeadL, 0, m_lHeadL, 0, length);
-			System.arraycopy(item.m_lSubHeadL, 0, m_lSubHeadL, 0, length);
 			System.arraycopy(item.m_lHeadLabelL, 0, m_lHeadLabelL, 0, length);
-			System.arraycopy(item.m_lSubHeadLabelL, 0, m_lSubHeadLabelL, 0, length);
 			System.arraycopy(item.m_lHeadLNum, 0, m_lHeadLNum, 0, length);
 			System.arraycopy(item.m_lHeadR, 0, m_lHeadR, 0, length);
-			System.arraycopy(item.m_lSubHeadR, 0, m_lSubHeadR, 0, length);
 			System.arraycopy(item.m_lHeadLabelR, 0, m_lHeadLabelR, 0, length);
-			System.arraycopy(item.m_lSubHeadLabelR, 0, m_lSubHeadLabelR, 0, length);
 			System.arraycopy(item.m_lHeadRNum, 0, m_lHeadRNum, 0, length);
 			System.arraycopy(item.m_lDepL, 0, m_lDepL, 0, length);
-			System.arraycopy(item.m_lSubDepL, 0, m_lSubDepL, 0, length);
 			System.arraycopy(item.m_lDepLabelL, 0, m_lDepLabelL, 0, length);
-			System.arraycopy(item.m_lSubDepLabelL, 0, m_lSubDepLabelL, 0, length);
 			System.arraycopy(item.m_lDepLNum, 0, m_lDepLNum, 0, length);
 			System.arraycopy(item.m_lDepR, 0, m_lDepR, 0, length);
-			System.arraycopy(item.m_lSubDepR, 0, m_lSubDepR, 0, length);
 			System.arraycopy(item.m_lDepLabelR, 0, m_lDepLabelR, 0, length);
 			System.arraycopy(item.m_lSubDepLabelR, 0, m_lSubDepLabelR, 0, length);
 			System.arraycopy(item.m_lDepRNum, 0, m_lDepRNum, 0, length);
 			System.arraycopy(item.m_lCCGLabels, 0, m_lCCGLabels, 0, length);
 			System.arraycopy(item.m_lTreeHead, 0, m_lTreeHead, 0, length);
 			System.arraycopy(item.m_lTreeLabel, 0, m_lTreeLabel, 0, length);
-			System.arraycopy(item.m_lRightArcsBack, 0, m_lRightArcsBack, 0, length);
-			System.arraycopy(item.m_lRightArcsSeek, 0, m_lRightArcsSeek, 0, length);
+			System.arraycopy(item.m_lLeftArcsBack, 0, m_lLeftArcsBack, 0, length);
+			System.arraycopy(item.m_lLeftArcsSeek, 0, m_lLeftArcsSeek, 0, length);
 			for (int i = 0; i < length; ++i) {
-				for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
-					m_lRightArcs[i][j].copy(item.m_lRightArcs[i][j]);
+				for (int j = 0; j <= m_lLeftArcsBack[i]; ++j) {
+					m_lLeftArcs[i][j].copy(item.m_lLeftArcs[i][j]);
 				}
 			}
 			for (int i = 0; i < length; ++i) {
@@ -198,63 +161,26 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final int stacksize() {
-		return stack_back + 1;
+		return m_nNextWord;
 	}
 	
 	public final boolean stackempty() {
-		return stack_back == -1;
-	}
-	
-	public final boolean secstackempty() {
-		return second_stack_back == -1;
+		return m_nNextWord == 0;
 	}
 	
 	public final int stacktop() {
-		return stack_back == -1 ? out_index : m_lStack[stack_back];
+		return m_nNextWord - 1;
 	}
 	
 	public final int stacktop2() {
-		return stack_back > 0 ? m_lStack[stack_back - 1] : out_index;
-	}
-	
-	public final int secstacktop() {
-		return second_stack_back > 0 ? m_lSecondStack[second_stack_back] : out_index;
-	}
-	
-	public final int stackitem(final int index) {
-		return index >= 0 && index <= stack_back ? m_lStack[index] : out_index;
-	}
-	
-	public final boolean canmem() {
-		return m_lActionList[action_back] != Macros.RECALL && stack_back >= 0;
-	}
-	
-	public final boolean canrecall() {
-		return m_lActionList[action_back] != Macros.MEM && second_stack_back >= 0;
-	}
-	
-	public final boolean canarc() {
-		if (stack_back == -1) {
-			return false;
-		}
-		int top = m_lStack[stack_back], back = m_lRightArcsBack[top];
-		if (back == -1) return true;
-		return m_lRightArcs[top][back].other != m_nNextWord;
+		return m_nNextWord > 1 ? m_nNextWord - 2 : out_index;
 	}
 	
 	public final int lefthead(final int index) {
 		return index == out_index ? out_index : m_lHeadL[index];
 	}
 	
-	public final int leftsubhead(final int index) {
-		return index == out_index ? out_index : m_lSubHeadL[index];
-	}
-	
 	public final int leftheadlabel(final int index) {
-		return index == out_index ? Macros.DEP_NONE : m_lHeadLabelL[index];
-	}
-
-	public final int leftsubheadlabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lHeadLabelL[index];
 	}
 	
@@ -262,48 +188,24 @@ public class StateItem extends StateItemBase {
 		return index == out_index ? out_index : m_lHeadR[index];
 	}
 	
-	public final int rightsubhead(final int index) {
-		return index == out_index ? out_index : m_lSubHeadR[index];
-	}
-	
 	public final int rightheadlabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lHeadLabelR[index];
 	}
 	
-	public final int rightsubheadlabel(final int index) {
-		return index == out_index ? Macros.DEP_NONE : m_lSubHeadLabelR[index];
-	}
-	
 	public final int leftdep(final int index) {
 		return index == out_index ? out_index : m_lDepL[index];
-	}
-
-	public final int leftsubdep(final int index) {
-		return index == out_index ? out_index : m_lSubDepL[index];
 	}
 	
 	public final int leftdeplabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lDepLabelL[index];
 	}
 	
-	public final int leftsubdeplabel(final int index) {
-		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelL[index];
-	}
-	
 	public final int rightdep(final int index) {
 		return index == out_index ? out_index : m_lDepR[index];
-	}
-	
-	public final int rightsubdep(final int index) {
-		return index == out_index ? out_index : m_lSubDepL[index];
 	}
 
 	public final int rightdeplabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lDepLabelR[index];
-	}
-	
-	public final int rightsubdeplabel(final int index) {
-		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelR[index];
 	}
 	
 	public final int size(final int size) {
@@ -366,20 +268,25 @@ public class StateItem extends StateItemBase {
 		return index == out_index ? Macros.CCGTAG_NONE : m_lCCGLabels[index];
 	}
 	
-	public final boolean rightarcempty(final int index) {
-		return m_lRightArcsBack[index] == -1;
+	public final boolean leftarcempty(final int index) {
+		return m_lLeftArcsBack[index] == -1;
 	}
 	
-	public final Arc nearestright(final int index) {
-		return m_lRightArcs[index][m_lRightArcsSeek[index]];
+	public final Arc nearestleft(final int index) {
+		return m_lLeftArcs[index][m_lLeftArcsSeek[index]];
+	}
+	
+	public final void setarcindex(int index) {
+		arc_index = index;
+	}
+	
+	public final int getarcindex() {
+		return arc_index;
 	}
 	
 	public void clear() {
 		//reset buffer seek
 		m_nNextWord = 0;
-		//reset stack seek
-		stack_back = -1;
-		second_stack_back = -1;
 		//reset score
 		score = 0;
 		//reset action
@@ -388,84 +295,56 @@ public class StateItem extends StateItemBase {
 		ClearNext();
 	}
 	
-	public void ArcLeft(int label) {
-		int left = m_lStack[stack_back];
+	public void ArcLeft(int index, int label) {
+		int left = index;
 		//add new head for left and add label
-		m_lSubHeadR[left] = m_lHeadR[left];
 		m_lHeadR[left] = m_nNextWord;
-		m_lSubHeadLabelR[left] = m_lHeadLabelR[left];
 		m_lHeadLabelR[left] = label;
 		++m_lHeadRNum[left];
 		m_lDepTagL[m_nNextWord].add(label);
 		m_lCCGTagL[m_nNextWord].add(m_lCCGLabels[left]);
 		//sibling is the previous child of buffer seek
-		m_lSubDepL[m_nNextWord] = m_lDepL[m_nNextWord];
 		//add child for buffer seek
 		m_lDepL[m_nNextWord] = left;
-		m_lSubDepLabelL[m_nNextWord] = m_lDepLabelL[m_nNextWord];
 		m_lDepLabelL[m_nNextWord] = label;
 		++m_lDepLNum[m_nNextWord];
 		//add right arcs for stack seek
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.LEFT_DIRECTION);
-		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_LEFT, label);
+		m_lLeftArcs[m_nNextWord][++m_lLeftArcsBack[left]] = new Arc(left, label, Macros.LEFT_DIRECTION);
+		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_LEFT, index, label);
 	}
 	
-	public void ArcRight(int label) {
-		int left = m_lStack[stack_back];
-		m_lSubHeadL[m_nNextWord] = m_lHeadL[m_nNextWord];
+	public void ArcRight(int index, int label) {
+		int left = index;
 		m_lHeadL[m_nNextWord] = left;
-		m_lSubHeadLabelL[m_nNextWord] = m_lHeadLabelL[m_nNextWord];
 		m_lHeadLabelL[m_nNextWord] = label;
 		++m_lHeadLNum[m_nNextWord];
 		m_lDepTagR[left].add(label);
-		m_lSubDepR[left] = m_lDepR[left];
 		m_lDepR[left] = m_nNextWord;
 		m_lSubDepLabelR[left] = m_lDepLabelR[left];
 		m_lDepLabelR[left] = label;
 		++m_lDepRNum[left];
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.RIGHT_DIRECTION);
-		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, label);
+		m_lLeftArcs[m_nNextWord][++m_lLeftArcsBack[left]] = new Arc(left, label, Macros.RIGHT_DIRECTION);
+		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, index, label);
 	}
 
 	public void Shift(int label) {
-		m_lStack[++stack_back] = m_nNextWord;
 		m_lCCGLabels[m_nNextWord++] = label;
-		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, label);
+		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, 0, label);
 		ClearNext();
-	}
-	
-	public void Reduce() {
-		--stack_back;
-		m_lActionList[++action_back] = Macros.REDUCE;
-	}
-	
-	public void Mem() {
-		m_lSecondStack[++second_stack_back] = m_lStack[stack_back--];
-		m_lActionList[++action_back] = Macros.MEM;
-	}
-	
-	public void Recall() {
-		m_lStack[++stack_back] = m_lSecondStack[second_stack_back--];
-		m_lActionList[++action_back] = Macros.RECALL;
 	}
 	
 	public void ClearNext() {
 		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
 		m_lHeadL[m_nNextWord] = out_index;
-		m_lSubHeadL[m_nNextWord] = out_index;
 		m_lHeadLabelL[m_nNextWord] = Macros.DEP_NONE;
 		m_lHeadLNum[m_nNextWord] = 0;
 		m_lHeadR[m_nNextWord] = out_index;
-		m_lSubHeadR[m_nNextWord] = out_index;
 		m_lHeadLabelR[m_nNextWord] = Macros.DEP_NONE;
 		m_lHeadRNum[m_nNextWord] = 0;
 		m_lDepL[m_nNextWord] = out_index;
-		m_lSubDepL[m_nNextWord] = out_index;
 		m_lDepLabelL[m_nNextWord] = Macros.DEP_NONE;
-		m_lSubDepLabelL[m_nNextWord] = Macros.DEP_NONE;
 		m_lDepLNum[m_nNextWord] = 0;
 		m_lDepR[m_nNextWord] = out_index;
-		m_lSubDepR[m_nNextWord] = out_index;
 		m_lDepLabelR[m_nNextWord] = Macros.DEP_NONE;
 		m_lSubDepLabelR[m_nNextWord] = Macros.DEP_NONE;
 		m_lDepRNum[m_nNextWord] = 0;
@@ -473,8 +352,8 @@ public class StateItem extends StateItemBase {
 		m_lDepTagR[m_nNextWord].clear();
 		m_lCCGTagL[m_nNextWord].clear();
 		m_lCCGLabels[m_nNextWord] = Macros.CCGTAG_NONE;
-		m_lRightArcsBack[m_nNextWord] = -1;
-		m_lRightArcsSeek[m_nNextWord] = 0;
+		m_lLeftArcsBack[m_nNextWord] = -1;
+		m_lLeftArcsSeek[m_nNextWord] = 0;
 	}
 	
 	@Override
@@ -485,78 +364,43 @@ public class StateItem extends StateItemBase {
 		case Macros.SHIFT:
 			Shift(Action.getLabel(action));
 			return;
-		case Macros.REDUCE:
-			Reduce();
-			return;
-		case Macros.MEM:
-			Mem();
-			return;
-		case Macros.RECALL:
-			Recall();
-			return;
 		case Macros.ARC_LEFT:
-			ArcLeft(Action.getLabel(action));
+			ArcLeft(Action.getIndex(action), Action.getLabel(action));
 			return;
 		case Macros.ARC_RIGHT:
-			ArcRight(Action.getLabel(action));
+			ArcRight(Action.getIndex(action), Action.getLabel(action));
 			return;
 		}
 	}
 	
 	@Override
 	public boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel) {
-		int top;
 		DependencyDag dag = (DependencyDag)graph;
-		if (stack_back >= 0) {
-			top = m_lStack[stack_back];
-			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
-			// skip impossible rightarcs
-			while (node.rightseek <= node.righttail && node.NearestRight().other < m_nNextWord) {
-				++node.rightseek;
-			}
-			//if no rightarcs, reduce
-			if (node.rightseek > node.righttail) {
-				Reduce();
-//				System.out.println("reduce");
-				return true;
-			}
-			//get nearest right arc
+		for (int i = m_nNextWord - 1; i >= 0; --i) {
+			DependencyDagNode node = (DependencyDagNode)dag.nodes[i];
 			Arc rightnode = node.NearestRight();
-			if (rightnode.other == m_nNextWord) {
+			if (node.rightseek <= node.righttail && rightnode.other == m_nNextWord) {
 				++node.rightseek;
 				if (rightnode.direction == Macros.LEFT_DIRECTION) {
-					ArcLeft(rightnode.label);
-//					System.out.println("left" + rightnode.label);
+					ArcLeft(i, rightnode.label);
 					++node.headsseek;
 				} else {
-					ArcRight(rightnode.label);
-//					System.out.println("right" + rightnode.label);
+					ArcRight(i, rightnode.label);
 					++node.childrenseek;
 				}
 				return true;
 			}
 		}
-		for (int i = stack_back - 1; i >= 0; --i) {
-			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lStack[i]];
-			if (node.rightseek <= node.righttail && node.NearestRight().other == m_nNextWord) {
-				Mem();
-				return true;
-			}
-		}
-		for (int i = second_stack_back; i >= 0; --i) {
-			DependencyDagNode node = (DependencyDagNode)dag.nodes[m_lSecondStack[i]];
-			if (node.rightseek <= node.righttail && node.NearestRight().other == m_nNextWord) {
-				Recall();
-				return true;
-			}
-		}
 		if (m_nNextWord < dag.length) {
-//			System.out.println("shift" + CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
 			Shift(CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	public void StandardFinish(int size) {
+		assert (m_nNextWord == size);
 	}
 	
 	@Override
@@ -569,23 +413,13 @@ public class StateItem extends StateItemBase {
 		output.length = 0;
 		for (int i = 0, input_size = this.size(Macros.MAX_SENTENCE_SIZE); i < input_size; ++i) {
 			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, treeinput.get(i).m_index, treeinput.get(i).m_label, CCGTag.str(m_lCCGLabels[i]));
-			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
-				node.rightarcs.add(new Arc(m_lRightArcs[i][j]));
-			}
 			output.nodes[output.length++] = node;
 		}
-	}
-	
-	public void print() {
-		System.out.println("score is " + score);
-		for (int i = 0; i < m_nNextWord; ++i) {
-			System.out.println("node" + i);
-			System.out.println("ccg tag is " + m_lCCGLabels[i]);
-			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
-				m_lRightArcs[i][j].print(i);
+		for (int i = 0, input_size = this.size(Macros.MAX_SENTENCE_SIZE); i < input_size; ++i) {
+			for (int j = 0; j <= m_lLeftArcsBack[i]; ++j) {
+				((DependencyDagNode)output.nodes[m_lLeftArcs[i][j].other]).rightarcs.add(new Arc(i, m_lLeftArcs[i][j].label, m_lLeftArcs[i][j].direction));
 			}
 		}
-		System.out.println();
 	}
 	
 }

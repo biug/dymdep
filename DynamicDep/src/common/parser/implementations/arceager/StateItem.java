@@ -333,11 +333,6 @@ public class StateItem extends StateItemBase {
 	}
 	
 	@Override
-	public void StandardFinish() {
-		assert (stack_back == -1);
-	}
-	
-	@Override
 	public int FollowMove(final StateItemBase itembase) {
 		int top;
 		StateItem item = (StateItem)itembase;
