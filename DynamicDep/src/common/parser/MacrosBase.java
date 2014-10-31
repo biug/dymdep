@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class MacrosBase {
 	
-	public static final int MAX_INTEGER = 4095;
+	public static final int MAX_INTEGER = 8191;
 	public static Integer[] integer_cache;
 
 	public static int AGENDA_SIZE;

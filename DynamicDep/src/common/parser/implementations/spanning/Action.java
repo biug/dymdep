@@ -45,9 +45,9 @@ public class Action {
 		if (action < Macros.AL_FIRST) {
 			return 0;
 		} else if (action < Macros.AR_FIRST) {
-			return (action - Macros.AL_FIRST) & Macros.MAX_SENTENCE_SIZE;
+			return (action - Macros.AL_FIRST) & (Macros.MAX_SENTENCE_SIZE - 1);
 		} else {
-			return (action - Macros.AR_FIRST) & Macros.MAX_SENTENCE_SIZE;
+			return (action - Macros.AR_FIRST) & (Macros.MAX_SENTENCE_SIZE - 1);
 		}
 	}
 }

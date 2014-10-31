@@ -150,13 +150,13 @@ public final class DepParser extends DepParserBase {
 	
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
 
-		final int st_index = item.stacktop();  //change this
+		final int st_index = item.getarcindex();  //change this
 		final int stlh_index = item.lefthead(st_index);
 		final int strh_index = item.righthead(st_index);
 		final int stld_index = item.leftdep(st_index);
 		final int strd_index = item.rightdep(st_index);
 		
-		final int st2_index = item.stacktop2(); //and this
+		final int st2_index = st_index == StateItem.out_index ? st_index : st_index - 1; //and this
 		final int st2lh_index = item.lefthead(st2_index);
 		final int st2rh_index = item.righthead(st2_index);
 		final int st2ld_index = item.leftdep(st2_index);
@@ -703,10 +703,13 @@ public final class DepParser extends DepParserBase {
 			pGenerator = (StateItem)m_Agenda.generatorStart();
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {
+
+				m_Beam.clear();
+				packed_scores.reset();
 				
 				int arc_back = -1;
 				int arc_index = pGenerator.m_nNextWord;
-				if (arc_index < m_lCache.size()) {
+				if (arc_index < length) {
 					POSTaggedWord pw = m_lCache.get(arc_index);
 					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw.word.toString());
 					if (Macros.SHIFT_LABELLIST == null) {
@@ -720,40 +723,39 @@ public final class DepParser extends DepParserBase {
 						if (pGenerator.m_lLeftArcsBack[arc_index] >= 0) {
 							arc_back = pGenerator.m_lLeftArcs[arc_index][pGenerator.m_lLeftArcsBack[arc_index]].other;
 						}
-						Integer[] alist = Macros.ARC_ACTIONLIST[pGenerator.m_nNextWord];
-						int len = (pGenerator.m_nNextWord - arc_back - 1) * Macros.DEP_COUNT;
-						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + len];
-						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, Macros.SHIFT_ACTIONLIST.length);
-						System.arraycopy(alist, alist.length - len, list, Macros.SHIFT_ACTIONLIST.length, len);
+						Integer[] alist = Macros.ARC_ACTIONLIST[arc_index];
+						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT];
+						int len = Macros.SHIFT_ACTIONLIST.length;
+						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, len);
+						for (int u = (arc_back + 1) * Macros.DEP_COUNT, v = arc_index * Macros.DEP_COUNT, w = arc_back + 1; u < v; u += Macros.DEP_COUNT) {
+							System.arraycopy(alist, u, list, len, Macros.DEP_COUNT);
+							Macros.SHIFT_ACTIONLIST = list;
+							pGenerator.setarcindex(w);
+							getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
+							shift(pGenerator, packed_scores);
+							arcleft(pGenerator, packed_scores, w);
+							arcright(pGenerator, packed_scores, w);
+							++w;
+						}
 						Macros.SHIFT_ACTIONLIST = list;
+					} else {
+						pGenerator.setarcindex(arc_index - 1);
+						getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
+						shift(pGenerator, packed_scores);						
 					}
-				} else {
-					Macros.SHIFT_ACTIONLIST = null;
+					
+					for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {
+						pCandidate.copy(pGenerator);
+						pCandidate.score = m_Beam.item(i).score;
+						pCandidate.Move(m_Beam.item(i).action);
+						m_Agenda.pushCandidate(pCandidate);
+					}
 				}
-				
-				m_Beam.clear();
-				packed_scores.reset();
-				getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
 				/*
 				 * if buffer not empty
 				 * try shift
 				 */
-				if (pGenerator.m_nNextWord < length) {
-					shift(pGenerator, packed_scores);
-					if (pGenerator.m_nNextWord > 0) {
-						for (int u = arc_back + 1; u < pGenerator.m_nNextWord; ++u) {
-							arcleft(pGenerator, packed_scores, u);
-							arcright(pGenerator, packed_scores, u);
-						}
-					}
-				}
-				
-				for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {
-					pCandidate.copy(pGenerator);
-					pCandidate.score = m_Beam.item(i).score;
-					pCandidate.Move(m_Beam.item(i).action);
-					m_Agenda.pushCandidate(pCandidate);
-				}
+
 				// no action means dag complete
 				// push it into finish
 				if (m_Beam.size() != 0) {

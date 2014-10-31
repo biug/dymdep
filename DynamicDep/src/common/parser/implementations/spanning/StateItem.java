@@ -378,17 +378,19 @@ public class StateItem extends StateItemBase {
 		DependencyDag dag = (DependencyDag)graph;
 		for (int i = m_nNextWord - 1; i >= 0; --i) {
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[i];
-			Arc rightnode = node.NearestRight();
-			if (node.rightseek <= node.righttail && rightnode.other == m_nNextWord) {
-				++node.rightseek;
-				if (rightnode.direction == Macros.LEFT_DIRECTION) {
-					ArcLeft(i, rightnode.label);
-					++node.headsseek;
-				} else {
-					ArcRight(i, rightnode.label);
-					++node.childrenseek;
+			if (node.rightseek <= node.righttail) {
+				Arc rightnode = node.NearestRight();
+				if (rightnode.other == m_nNextWord) {
+					++node.rightseek;
+					if (rightnode.direction == Macros.LEFT_DIRECTION) {
+						ArcLeft(i, rightnode.label);
+						++node.headsseek;
+					} else {
+						ArcRight(i, rightnode.label);
+						++node.childrenseek;
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		if (m_nNextWord < dag.length) {
