@@ -151,6 +151,7 @@ public final class DepParser extends DepParserBase {
 	public void getOrUpdateStackScore(final StateItem item, PackedScoreType retval, final int action, final int amount, final int round) {
 
 		final int st_index = item.stacktop();
+		
 		final int stlh_index = item.lefthead(st_index);
 		final int stl2h_index = item.leftsubhead(st_index);
 		final int strh_index = item.righthead(st_index);
@@ -163,15 +164,15 @@ public final class DepParser extends DepParserBase {
 		final int strd_index = item.rightdep(st_index);
 		final int stl2d_index = item.leftsubdep(st_index);
 		final int str2d_index = item.rightsubdep(st_index);
-		
+
+		final int right = item.buffertop();
+		final int n0_index = right == m_lCache.size() ? StateItem.out_index : right;
 		final int st2_index = item.stacktop2();
 		final int st2lh_index = item.lefthead(st2_index);
 		final int st2rh_index = item.righthead(st2_index);
 		final int st2ld_index = item.leftdep(st2_index);
 		final int st2rd_index = item.rightdep(st2_index);
 		
-		final int right = item.buffertop();
-		final int n0_index = right < m_lCache.size() ? right : StateItem.out_index;
 		final int n0ld_index = item.leftdep(n0_index);
 		final int n0l2d_index = item.leftsubdep(n0_index);
 		final int n0lh_index = item.lefthead(n0_index);
@@ -378,15 +379,19 @@ public final class DepParser extends DepParserBase {
 		weight.m_mapN0ptlp.getOrUpdateScore(retval, postag_tagset, action, m_nScoreIndex, amount, round);
 
 		if (m_bPath) {
+			int l = st_index, r = n0_index;
+			if (l > r) {
+				l = n0_index;
+				r = st_index;
+			}
 			if (st_index == StateItem.out_index || n0_index == StateItem.out_index) {
 				
 				weight.m_mapPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
 				weight.m_mapFPOSPath.getOrUpdateScore(retval, "n#", action, m_nScoreIndex, amount, round);
 				
 			} else {
-				
-				weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
-				weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st_index][n0_index], action, m_nScoreIndex, amount, round);
+				weight.m_mapPOSPath.getOrUpdateScore(retval, analyzer.POSPath[l][r], action, m_nScoreIndex, amount, round);
+				weight.m_mapFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[l][r], action, m_nScoreIndex, amount, round);
 				
 			}
 	
@@ -397,8 +402,8 @@ public final class DepParser extends DepParserBase {
 				
 			} else {
 				
-				weight.m_mapSPOSPath.getOrUpdateScore(retval, analyzer.POSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
-				weight.m_mapSFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[st2_index][n0_index], action, m_nScoreIndex, amount, round);
+				weight.m_mapSPOSPath.getOrUpdateScore(retval, analyzer.POSPath[l][r], action, m_nScoreIndex, amount, round);
+				weight.m_mapSFPOSPath.getOrUpdateScore(retval, analyzer.FPOSPath[l][r], action, m_nScoreIndex, amount, round);
 				
 			}
 		}
@@ -846,9 +851,17 @@ public final class DepParser extends DepParserBase {
 		 * 		"no more action for candidates" or
 		 * 		"state correct"
 		 */
+		int max_step = length << 3;
 		while (!finish) {
 			if (bTrain) bCorrect = false;
-			
+			--max_step;
+			if (max_step == 0) {
+				if (m_Finish.candidateSize() == 0) {
+					max_step = length << 3;
+				} else {
+					break;
+				}
+			}
 			pGenerator = (StateItem)m_Agenda.generatorStart();
 			
 			for (int j = 0, agenda_size = m_Agenda.generatorSize(); j < agenda_size; ++j) {

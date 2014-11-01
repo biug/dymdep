@@ -219,12 +219,12 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean canarc() {
-		if (stack_back == -1) {
+		if (stack_back == -1 || buffer_back != -1) {
 			return false;
 		}
 		int top = m_lStack[stack_back], back = m_lRightArcsBack[top];
 		if (back == -1) return true;
-		return m_lRightArcs[top][back].other != buffertop();
+		return m_lRightArcs[top][back].other != m_nNextWord;
 	}
 	
 	public final int lefthead(final int index) {
@@ -381,41 +381,41 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public void ArcLeft(int label) {
-		int left = m_lStack[stack_back], right = buffertop();
+		int left = m_lStack[stack_back];
 		//add new head for left and add label
 		m_lSubHeadR[left] = m_lHeadR[left];
-		m_lHeadR[left] = right;
+		m_lHeadR[left] = m_nNextWord;
 		m_lSubHeadLabelR[left] = m_lHeadLabelR[left];
 		m_lHeadLabelR[left] = label;
 		++m_lHeadRNum[left];
-		m_lDepTagL[right].add(label);
-		m_lCCGTagL[right].add(m_lCCGLabels[left]);
+		m_lDepTagL[m_nNextWord].add(label);
+		m_lCCGTagL[m_nNextWord].add(m_lCCGLabels[left]);
 		//sibling is the previous child of buffer seek
-		m_lSubDepL[right] = m_lDepL[right];
+		m_lSubDepL[m_nNextWord] = m_lDepL[m_nNextWord];
 		//add child for buffer seek
-		m_lDepL[right] = left;
-		m_lSubDepLabelL[right] = m_lDepLabelL[right];
-		m_lDepLabelL[right] = label;
-		++m_lDepLNum[right];
-		//add right arcs for stack seek
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(right, label, Macros.LEFT_DIRECTION);
+		m_lDepL[m_nNextWord] = left;
+		m_lSubDepLabelL[m_nNextWord] = m_lDepLabelL[m_nNextWord];
+		m_lDepLabelL[m_nNextWord] = label;
+		++m_lDepLNum[m_nNextWord];
+		//add m_nNextWord arcs for stack seek
+		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.LEFT_DIRECTION);
 		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_LEFT, label);
 	}
 	
 	public void ArcRight(int label) {
-		int left = m_lStack[stack_back], right = buffertop();
-		m_lSubHeadL[right] = m_lHeadL[right];
-		m_lHeadL[right] = left;
-		m_lSubHeadLabelL[right] = m_lHeadLabelL[right];
-		m_lHeadLabelL[right] = label;
-		++m_lHeadLNum[right];
+		int left = m_lStack[stack_back];
+		m_lSubHeadL[m_nNextWord] = m_lHeadL[m_nNextWord];
+		m_lHeadL[m_nNextWord] = left;
+		m_lSubHeadLabelL[m_nNextWord] = m_lHeadLabelL[m_nNextWord];
+		m_lHeadLabelL[m_nNextWord] = label;
+		++m_lHeadLNum[m_nNextWord];
 		m_lDepTagR[left].add(label);
 		m_lSubDepR[left] = m_lDepR[left];
-		m_lDepR[left] = right;
+		m_lDepR[left] = m_nNextWord;
 		m_lSubDepLabelR[left] = m_lDepLabelR[left];
 		m_lDepLabelR[left] = label;
 		++m_lDepRNum[left];
-		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(right, label, Macros.RIGHT_DIRECTION);
+		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.RIGHT_DIRECTION);
 		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, label);
 	}
 
@@ -502,10 +502,6 @@ public class StateItem extends StateItemBase {
 		if (stack_back >= 0) {
 			top = m_lStack[stack_back];
 			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
-			// skip impossible rightarcs
-			while (node.rightseek <= node.righttail && node.NearestRight().other < m_nNextWord) {
-				++node.rightseek;
-			}
 			//if no rightarcs, reduce
 			if (node.rightseek > node.righttail) {
 				Reduce();
