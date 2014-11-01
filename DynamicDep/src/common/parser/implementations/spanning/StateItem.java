@@ -408,7 +408,9 @@ public class StateItem extends StateItemBase {
 	@Override
 	public int FollowMove(final StateItemBase itembase) {
 		StateItem item = (StateItem)itembase;
-		setarcindex(Action.getIndex(item.m_lActionList[action_back + 1]));
+		int index = item.m_lActionList[action_back + 1];
+		if (index == -1) index = m_nNextWord - 1;
+		setarcindex(index);
 		return item.m_lActionList[action_back + 1];
 	}
 	

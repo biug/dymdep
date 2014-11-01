@@ -43,7 +43,7 @@ public class Action {
 	
 	public static int getIndex(final int action) {
 		if (action < Macros.AL_FIRST) {
-			return 0;
+			return -1;
 		} else if (action < Macros.AR_FIRST) {
 			return (action - Macros.AL_FIRST) & (Macros.MAX_SENTENCE_SIZE - 1);
 		} else {
