@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import common.parser.DepParserBase;
 import common.parser.ScoredAction;
 import common.parser.StateItemBase;
+import common.parser.implementations.Arc;
 import common.parser.implementations.DependencyDag;
 import common.parser.implementations.DependencyDagNode;
 import common.pos.POSTag;
@@ -729,8 +730,9 @@ public final class DepParser extends DepParserBase {
 						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, len);
 						for (int u = 0, v = arc_index * Macros.DEP_COUNT, w = 0; u < v; u += Macros.DEP_COUNT) {
 							int x = 0, y = pGenerator.m_lLeftArcsBack[arc_index];
+							Arc[] arclist = pGenerator.m_lLeftArcs[arc_index];
 							for (; x <= y; ++x) {
-								if (pGenerator.m_lLeftArcs[arc_index][x].other == u) {
+								if (arclist[x].other == w) {
 									break;
 								}
 							}
