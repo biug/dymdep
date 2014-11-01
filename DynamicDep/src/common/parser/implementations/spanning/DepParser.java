@@ -727,7 +727,16 @@ public final class DepParser extends DepParserBase {
 						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT];
 						int len = Macros.SHIFT_ACTIONLIST.length;
 						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, len);
-						for (int u = (arc_back + 1) * Macros.DEP_COUNT, v = arc_index * Macros.DEP_COUNT, w = arc_back + 1; u < v; u += Macros.DEP_COUNT) {
+						for (int u = 0, v = arc_index * Macros.DEP_COUNT, w = 0; u < v; u += Macros.DEP_COUNT) {
+							int x = 0, y = pGenerator.m_lLeftArcsBack[arc_index];
+							for (; x <= y; ++x) {
+								if (pGenerator.m_lLeftArcs[arc_index][x].other == u) {
+									break;
+								}
+							}
+							if (x <= y) {
+								continue;
+							}
 							System.arraycopy(alist, u, list, len, Macros.DEP_COUNT);
 							Macros.SHIFT_ACTIONLIST = list;
 							pGenerator.setarcindex(w);

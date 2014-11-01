@@ -408,6 +408,7 @@ public class StateItem extends StateItemBase {
 	@Override
 	public int FollowMove(final StateItemBase itembase) {
 		StateItem item = (StateItem)itembase;
+		setarcindex(Action.getIndex(item.m_lActionList[action_back + 1]));
 		return item.m_lActionList[action_back + 1];
 	}
 	
