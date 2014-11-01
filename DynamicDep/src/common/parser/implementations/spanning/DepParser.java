@@ -708,7 +708,6 @@ public final class DepParser extends DepParserBase {
 				m_Beam.clear();
 				packed_scores.reset();
 				
-				int arc_back = -1;
 				int arc_index = pGenerator.m_nNextWord;
 				if (arc_index < length) {
 					POSTaggedWord pw = m_lCache.get(arc_index);
@@ -720,10 +719,6 @@ public final class DepParser extends DepParserBase {
 						Macros.SHIFT_ACTIONLIST = Macros.ACTIONMAP.get(pw.word.toString());
 					}
 					if (pGenerator.m_nNextWord > 0) {
-						// get last left arc index
-						if (pGenerator.m_lLeftArcsBack[arc_index] >= 0) {
-							arc_back = pGenerator.m_lLeftArcs[arc_index][pGenerator.m_lLeftArcsBack[arc_index]].other;
-						}
 						Integer[] alist = Macros.ARC_ACTIONLIST[arc_index];
 						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT];
 						int len = Macros.SHIFT_ACTIONLIST.length;
@@ -737,6 +732,7 @@ public final class DepParser extends DepParserBase {
 								}
 							}
 							if (x <= y) {
+								++w;
 								continue;
 							}
 							System.arraycopy(alist, u, list, len, Macros.DEP_COUNT);
