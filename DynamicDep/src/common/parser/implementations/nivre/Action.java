@@ -1,7 +1,5 @@
 package common.parser.implementations.nivre;
 
-import common.parser.implementations.titov.Macros;
-
 public class Action {
 
 	public static int encodeAction(final int action, final int label) {

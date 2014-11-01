@@ -474,6 +474,7 @@ public class StateItem extends StateItemBase {
 	
 	@Override
 	public void Move(final int action) {
+		
 		switch (Action.getUnlabeledAction(action)) {
 		case Macros.NO_ACTION:
 			return;
