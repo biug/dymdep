@@ -720,7 +720,7 @@ public final class DepParser extends DepParserBase {
 					}
 					if (pGenerator.m_nNextWord > 0) {
 						Integer[] alist = Macros.ARC_ACTIONLIST[arc_index];
-						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT];
+						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT + Macros.DEP_COUNT];
 						int len = Macros.SHIFT_ACTIONLIST.length;
 						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, len);
 						for (int u = 0, v = arc_index * Macros.DEP_COUNT, w = 0; u < v; u += Macros.DEP_COUNT) {
@@ -736,6 +736,7 @@ public final class DepParser extends DepParserBase {
 								continue;
 							}
 							System.arraycopy(alist, u, list, len, Macros.DEP_COUNT);
+							System.arraycopy(alist, u + v, list, len + Macros.DEP_COUNT, Macros.DEP_COUNT);
 							Macros.SHIFT_ACTIONLIST = list;
 							pGenerator.setarcindex(w);
 							getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
