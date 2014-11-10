@@ -17,8 +17,8 @@ import common.parser.MacrosBase;
 
 public class MacrosCCGDag extends MacrosBase {
 	
-	public final static String DEP_NONE_STRING = "123456";
-	public final static String CCGTAG_NONE_STRING = "1234567890";
+	public final static String DEP_NONE_STRING = "_";
+	public final static String CCGTAG_NONE_STRING = "_";
 	
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
@@ -156,7 +156,7 @@ public class MacrosCCGDag extends MacrosBase {
 				POS2TAGSMAP.put(tag, list);
 			} else {
 				int[] list = new int[1];
-				list[0] = -1;
+				list[0] = CCGTAG_NONE;
 				POS2TAGSMAP.put(tag, list);
 			}
 		}

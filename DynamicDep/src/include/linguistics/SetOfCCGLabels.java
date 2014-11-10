@@ -24,7 +24,11 @@ public class SetOfCCGLabels {
 	}
 	
 	public void add(final int code) {
-		ccglabels.add(MacrosCCGDag.integer_cache[code]);
+		if (code >= 0) {
+			ccglabels.add(MacrosCCGDag.integer_cache[code]);
+		} else {
+			ccglabels.add(MacrosCCGDag.integer_cache[MacrosCCGDag.CCGTAG_NONE]);
+		}
 	}
 	
 	public void remove(final CCGTag tag) {

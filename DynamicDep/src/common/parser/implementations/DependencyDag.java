@@ -32,7 +32,7 @@ public final class DependencyDag extends DependencyGraphBase {
 	
 	public void clearSuperTag() {
 		for (int i = 0; i < length; ++i) {
-			((DependencyDagNode)nodes[i]).ccgtag = CCGTag.str(MacrosBase.CCGTAG_FIRST);
+			((DependencyDagNode)nodes[i]).ccgtag = CCGTag.str(MacrosBase.CCGTAG_NONE);
 		}
 	}
 	
