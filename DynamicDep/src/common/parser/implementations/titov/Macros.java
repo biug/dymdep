@@ -22,14 +22,14 @@ public class Macros extends MacrosCCGDag {
 	public static int AR_FIRST;
 	public static int ACTION_MAX;
 	
-	public static void calcConstant() {
+	public static void calcConstant(final boolean supertag) {
 
 		SH_FIRST = ARC_RIGHT + 1;
 		AL_FIRST = SH_FIRST + CCGTAG_COUNT;
 		AR_FIRST = AL_FIRST + DEP_COUNT;
 		ACTION_MAX = AR_FIRST + DEP_COUNT;
 		
-		CONST_ACTIONSIZE = SHIFT - 1 + (DEP_COUNT << 1);
+		CONST_ACTIONSIZE = (SHIFT - 1 + (DEP_COUNT << 1));
 		CONST_ACTIONLIST = new Integer[CONST_ACTIONSIZE];
 		for (int i = 1; i < SHIFT; ++i) {
 			CONST_ACTIONLIST[i - 1] = integer_cache[i];
@@ -38,30 +38,41 @@ public class Macros extends MacrosCCGDag {
 			CONST_ACTIONLIST[i - AL_FIRST + SHIFT - 1] = integer_cache[i];
 		}
 		
-		ACTIONMAP = new HashMap<String, Integer[]>();
-		for (String word : MAP.keySet()) {
-			int[] list = MAP.get(word);
-			Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
-			for (int i = 0; i < list.length; ++i) {
-				ilist[i] = integer_cache[list[i] + SH_FIRST];
+		WORD2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String word : WORD2TAGSMAP.keySet()) {
+			if (supertag) {
+				int[] list = WORD2TAGSMAP.get(word);
+				Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
+				for (int i = 0; i < list.length; ++i) {
+					ilist[i] = integer_cache[list[i] + SH_FIRST];
+				}
+				for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
+					ilist[i] = CONST_ACTIONLIST[i - list.length];
+				}
+				WORD2ACTIONSMAP.put(word, ilist);
 			}
-			for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
-				ilist[i] = CONST_ACTIONLIST[i - list.length];
-			}
-			ACTIONMAP.put(word, ilist);
 		}
 		
-		ACTIONPOSMAP = new HashMap<String, Integer[]>();
-		for (String tag : POSMAP.keySet()) {
-			int[] list = POSMAP.get(tag);
-			Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
-			for (int i = 0; i < list.length; ++i) {
-				ilist[i] = integer_cache[list[i] + SH_FIRST];
+		POS2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String tag : POS2TAGSMAP.keySet()) {
+			if (supertag) {
+				int[] list = POS2TAGSMAP.get(tag);
+				Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
+				for (int i = 0; i < list.length; ++i) {
+					ilist[i] = integer_cache[list[i] + SH_FIRST];
+				}
+				for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
+					ilist[i] = CONST_ACTIONLIST[i - list.length];
+				}
+				POS2ACTIONSMAP.put(tag, ilist);
+			} else {
+				Integer[] ilist = new Integer[1 + CONST_ACTIONSIZE];
+				ilist[0] = integer_cache[SHIFT];
+				for (int i = 1; i < 1 + CONST_ACTIONSIZE; ++i) {
+					ilist[i] = CONST_ACTIONLIST[i - 1];
+				}
+				POS2ACTIONSMAP.put(tag, ilist);
 			}
-			for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
-				ilist[i] = CONST_ACTIONLIST[i - list.length];
-			}
-			ACTIONPOSMAP.put(tag, ilist);
 		}
 	}
 		

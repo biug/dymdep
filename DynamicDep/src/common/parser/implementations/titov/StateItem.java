@@ -287,16 +287,16 @@ public class StateItem extends StateItemBase {
 	public final int rightsubdeplabel(final int index) {
 		return index == out_index ? Macros.DEP_NONE : m_lSubDepLabelR[index];
 	}
-	public final int size(final int size) {
-		return m_nNextWord < size ? m_nNextWord : out_index;
+	public final int size() {
+		return m_nNextWord;
 	}
 	
-	public final int nextbufferhead(final int size) {
-		return m_nNextWord + 1 < size ? m_nNextWord + 1 : out_index;
+	public final int nextbufferhead() {
+		return m_nNextWord + 1;
 	}
 	
-	public final int nextbuffernext(final int size) {
-		return m_nNextWord + 2 < size ? m_nNextWord + 2 : out_index;
+	public final int nextbuffernext() {
+		return m_nNextWord + 2;
 	}
 	
 	public final int beforebufferhead() {
@@ -407,10 +407,10 @@ public class StateItem extends StateItemBase {
 		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, label);
 	}
 
-	public void Shift(int label) {
+	public void Shift(int tag) {
 		m_lStack[++stack_back] = m_nNextWord;
-		m_lCCGLabels[m_nNextWord++] = label;
-		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, label);
+		m_lCCGLabels[m_nNextWord++] = tag;
+		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, tag);
 		ClearNext();
 	}
 	
@@ -542,7 +542,7 @@ public class StateItem extends StateItemBase {
 	
 	public void GenerateTree(final TwoStringsVector input, final IntIntegerVector treeinput, DependencyGraphBase output) {
 		output.length = 0;
-		for (int i = 0, input_size = this.size(Macros.MAX_SENTENCE_SIZE); i < input_size; ++i) {
+		for (int i = 0, input_size = this.size(); i < input_size; ++i) {
 			DependencyDagNode node = new DependencyDagNode(input.get(i).m_string1, input.get(i).m_string2, treeinput.get(i).m_index, treeinput.get(i).m_label, CCGTag.str(m_lCCGLabels[i]));
 			for (int j = 0; j <= m_lRightArcsBack[i]; ++j) {
 				node.rightarcs.add(new Arc(m_lRightArcs[i][j]));

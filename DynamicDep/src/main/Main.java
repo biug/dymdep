@@ -82,11 +82,11 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		MacrosCCGDag.loadMacros(args[0]);
-		boolean usuper = args[6].equals("super") ? true : false;
-		boolean upath = args[7].equals("path") ? true : false;
+		boolean upath = args[7].equals("path");
+		boolean usuper = args[6].equals("super");
+		MacrosCCGDag.loadMacros(args[0], usuper);
 		if (args[1].equals("titov")) {
-			common.parser.implementations.titov.Macros.calcConstant();
+			common.parser.implementations.titov.Macros.calcConstant(usuper);
 		} else if (args[1].equals("twostack")) {
 			common.parser.implementations.twostack.Macros.calcConstant();
 		} else if (args[1].equals("spanning")) {

@@ -664,7 +664,7 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label : Macros.SHIFT_LABELLIST) {
+		for (int label : Macros.SHIFT_TAGLIST) {
 			scoredaction.action = Action.encodeAction(Macros.SHIFT, 0, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
@@ -711,18 +711,18 @@ public final class DepParser extends DepParserBase {
 				int arc_index = pGenerator.m_nNextWord;
 				if (arc_index < length) {
 					POSTaggedWord pw = m_lCache.get(arc_index);
-					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw.word.toString());
-					if (Macros.SHIFT_LABELLIST == null) {
-						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw.tag.toString());
-						Macros.SHIFT_ACTIONLIST = Macros.ACTIONPOSMAP.get(pw.tag.toString());
+					Macros.SHIFT_TAGLIST = Macros.WORD2TAGSMAP.get(pw.word.toString());
+					if (Macros.SHIFT_TAGLIST == null) {
+						Macros.SHIFT_TAGLIST = Macros.POS2TAGSMAP.get(pw.tag.toString());
+						Macros.SCORED_ACTIONLIST = Macros.POS2ACTIONSMAP.get(pw.tag.toString());
 					} else {
-						Macros.SHIFT_ACTIONLIST = Macros.ACTIONMAP.get(pw.word.toString());
+						Macros.SCORED_ACTIONLIST = Macros.WORD2ACTIONSMAP.get(pw.word.toString());
 					}
 					if (pGenerator.m_nNextWord > 0) {
 						Integer[] alist = Macros.ARC_ACTIONLIST[arc_index];
-						Integer[] list = new Integer[Macros.SHIFT_ACTIONLIST.length + Macros.DEP_COUNT + Macros.DEP_COUNT];
-						int len = Macros.SHIFT_ACTIONLIST.length;
-						System.arraycopy(Macros.SHIFT_ACTIONLIST, 0, list, 0, len);
+						Integer[] list = new Integer[Macros.SCORED_ACTIONLIST.length + Macros.DEP_COUNT + Macros.DEP_COUNT];
+						int len = Macros.SCORED_ACTIONLIST.length;
+						System.arraycopy(Macros.SCORED_ACTIONLIST, 0, list, 0, len);
 						for (int u = 0, v = arc_index * Macros.DEP_COUNT, w = 0; u < v; u += Macros.DEP_COUNT) {
 							int x = 0, y = pGenerator.m_lLeftArcsBack[arc_index];
 							Arc[] arclist = pGenerator.m_lLeftArcs[arc_index];
@@ -737,7 +737,7 @@ public final class DepParser extends DepParserBase {
 							}
 							System.arraycopy(alist, u, list, len, Macros.DEP_COUNT);
 							System.arraycopy(alist, u + v, list, len + Macros.DEP_COUNT, Macros.DEP_COUNT);
-							Macros.SHIFT_ACTIONLIST = list;
+							Macros.SCORED_ACTIONLIST = list;
 							pGenerator.setarcindex(w);
 							getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);
 							shift(pGenerator, packed_scores);
@@ -745,7 +745,7 @@ public final class DepParser extends DepParserBase {
 							arcright(pGenerator, packed_scores, w);
 							++w;
 						}
-						Macros.SHIFT_ACTIONLIST = list;
+						Macros.SCORED_ACTIONLIST = list;
 					} else {
 						pGenerator.setarcindex(arc_index - 1);
 						getOrUpdateStackScore(pGenerator, packed_scores, Macros.NO_ACTION);

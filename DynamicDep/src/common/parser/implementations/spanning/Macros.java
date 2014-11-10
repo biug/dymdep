@@ -28,24 +28,24 @@ public class Macros extends MacrosCCGDag {
 		CONST_ACTIONSIZE = 0;
 		CONST_ACTIONLIST = null;
 		
-		ACTIONMAP = new HashMap<String, Integer[]>();
-		for (String word : MAP.keySet()) {
-			int[] list = MAP.get(word);
+		WORD2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String word : WORD2TAGSMAP.keySet()) {
+			int[] list = WORD2TAGSMAP.get(word);
 			Integer[] ilist = new Integer[list.length];
 			for (int i = 0; i < list.length; ++i) {
 				ilist[i] = integer_cache[list[i] + SH_FIRST];
 			}
-			ACTIONMAP.put(word, ilist);
+			WORD2ACTIONSMAP.put(word, ilist);
 		}
 		
-		ACTIONPOSMAP = new HashMap<String, Integer[]>();
-		for (String tag : POSMAP.keySet()) {
-			int[] list = POSMAP.get(tag);
+		POS2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String tag : POS2TAGSMAP.keySet()) {
+			int[] list = POS2TAGSMAP.get(tag);
 			Integer[] ilist = new Integer[list.length];
 			for (int i = 0; i < list.length; ++i) {
 				ilist[i] = integer_cache[list[i] + SH_FIRST];
 			}
-			ACTIONPOSMAP.put(tag, ilist);
+			POS2ACTIONSMAP.put(tag, ilist);
 		}
 		
 		ARC_ACTIONLIST = new Integer[MAX_SENTENCE_SIZE][];

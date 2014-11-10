@@ -8,7 +8,7 @@ package common.parser.implementations.titov;
 public final class Action {
 	
 	public static int encodeAction(final int action, final int label) {
-		if (action == Macros.SHIFT){
+		if (action == Macros.SHIFT && label >= 0){
 			return Macros.SH_FIRST + label;
 		} else if (action == Macros.ARC_LEFT) {
 			return Macros.AL_FIRST + label;
@@ -37,7 +37,7 @@ public final class Action {
 	
 	public static int getLabel(final int action) {
 		if (action < Macros.SH_FIRST) {
-			return 0;
+			return -1;
 		} else if (action < Macros.AL_FIRST) {
 			return action - Macros.SH_FIRST;
 		} else if (action < Macros.AR_FIRST) {

@@ -23,22 +23,22 @@ public class MacrosCCGDag extends MacrosBase {
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
 	
-	public static Map<String, ArrayList<Integer>> MIDMAP;
-	public static Map<String, ArrayList<Integer>> MIDPOSMAP;
+	public static Map<String, ArrayList<Integer>> WORDMAP;
+	public static Map<String, ArrayList<Integer>> POSMAP;
 	
-	public static Map<String, int[]> MAP;
-	public static Map<String, int[]> POSMAP;
+	public static Map<String, int[]> WORD2TAGSMAP;
+	public static Map<String, int[]> POS2TAGSMAP;
 	
-	public static Map<String, Integer[]> ACTIONMAP;
-	public static Map<String, Integer[]> ACTIONPOSMAP;
+	public static Map<String, Integer[]> WORD2ACTIONSMAP;
+	public static Map<String, Integer[]> POS2ACTIONSMAP;
 	
-	public static int[] SHIFT_LABELLIST;
-	public static Integer[] SHIFT_ACTIONLIST;
+	public static int[] SHIFT_TAGLIST;
+	public static Integer[] SCORED_ACTIONLIST;
 	
 	public static Integer[] CONST_ACTIONLIST;
 	public static int CONST_ACTIONSIZE;
 	
-	public static void loadMacros(String macrosFile) throws IOException {
+	public static void loadMacros(final String macrosFile, final boolean supertag) throws IOException {
 		
 		String line;
 		String[] temp_strings;
@@ -112,47 +112,55 @@ public class MacrosCCGDag extends MacrosBase {
 		System.out.println("integer count = " + integer_cache.length);
 		
 		br.readLine();
-		MIDMAP = new HashMap<String, ArrayList<Integer>>();
+		WORDMAP = new HashMap<String, ArrayList<Integer>>();
 		while (!(line = br.readLine()).equals("POSMAP")) {
 			temp_strings = line.split("[ \t]+");
-			MIDMAP.put(temp_strings[0], new ArrayList<Integer>());
+			WORDMAP.put(temp_strings[0], new ArrayList<Integer>());
 			for (String arg : temp_strings) {
-				MIDMAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
+				WORDMAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
 			}
-			MIDMAP.get(temp_strings[0]).remove(CCGTAG_MAP.get(temp_strings[0]));
+			WORDMAP.get(temp_strings[0]).remove(CCGTAG_MAP.get(temp_strings[0]));
 		}
-		MAP = new HashMap<String, int[]>();
-		for (String word : MIDMAP.keySet()) {
-			ArrayList<Integer> alist = MIDMAP.get(word);
-			int size = alist.size();
-			int[] list = new int[size];
-			for (int i = 0; i < size; ++i) {
-				list[i] = alist.get(i).intValue();
+		WORD2TAGSMAP = new HashMap<String, int[]>();
+		for (String word : WORDMAP.keySet()) {
+			if (supertag) {
+				ArrayList<Integer> alist = WORDMAP.get(word);
+				int size = alist.size();
+				int[] list = new int[size];
+				for (int i = 0; i < size; ++i) {
+					list[i] = alist.get(i).intValue();
+				}
+				WORD2TAGSMAP.put(word, list);
 			}
-			MAP.put(word, list);
 		}
-		System.out.println(MAP.size());
+		System.out.println(WORD2TAGSMAP.size());
 		
-		MIDPOSMAP = new HashMap<String, ArrayList<Integer>>();
+		POSMAP = new HashMap<String, ArrayList<Integer>>();
 		while ((line = br.readLine()) != null) {
 			temp_strings = line.split("[ \t]+");
-			MIDPOSMAP.put(temp_strings[0], new ArrayList<Integer>());
+			POSMAP.put(temp_strings[0], new ArrayList<Integer>());
 			for (String arg : temp_strings) {
-				MIDPOSMAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
+				POSMAP.get(temp_strings[0]).add(CCGTAG_MAP.get(arg));
 			}
-			MIDPOSMAP.get(temp_strings[0]).remove(CCGTAG_MAP.get(temp_strings[0]));
+			POSMAP.get(temp_strings[0]).remove(CCGTAG_MAP.get(temp_strings[0]));
 		}
-		POSMAP = new HashMap<String, int[]>();
-		for (String tag : MIDPOSMAP.keySet()) {
-			ArrayList<Integer> alist = MIDPOSMAP.get(tag);
-			int size = alist.size();
-			int[] list = new int[size];
-			for (int i = 0; i < size; ++i) {
-				list[i] = alist.get(i).intValue();
+		POS2TAGSMAP = new HashMap<String, int[]>();
+		for (String tag : POSMAP.keySet()) {
+			if (supertag) {
+				ArrayList<Integer> alist = POSMAP.get(tag);
+				int size = alist.size();
+				int[] list = new int[size];
+				for (int i = 0; i < size; ++i) {
+					list[i] = alist.get(i).intValue();
+				}
+				POS2TAGSMAP.put(tag, list);
+			} else {
+				int[] list = new int[1];
+				list[0] = -1;
+				POS2TAGSMAP.put(tag, list);
 			}
-			POSMAP.put(tag, list);
 		}
-		System.out.println(POSMAP.size());
+		System.out.println(POS2TAGSMAP.size());
 		
 		br.close();
 	}

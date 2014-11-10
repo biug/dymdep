@@ -954,7 +954,7 @@ public final class DepParser extends DepParserBase {
 	}
 	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label : Macros.SHIFT_LABELLIST) {
+		for (int label : Macros.SHIFT_TAGLIST) {
 			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
@@ -1009,16 +1009,16 @@ public final class DepParser extends DepParserBase {
 
 				if (pGenerator.m_nNextWord < m_lCache.size()) {
 					POSTaggedWord pw = m_lCache.get(pGenerator.m_nNextWord);
-					Macros.SHIFT_LABELLIST = Macros.MAP.get(pw.word.toString());
-					if (Macros.SHIFT_LABELLIST == null) {
-						Macros.SHIFT_LABELLIST = Macros.POSMAP.get(pw.tag.toString());
-						Macros.SHIFT_ACTIONLIST = Macros.ACTIONPOSMAP.get(pw.tag.toString());
+					Macros.SHIFT_TAGLIST = Macros.WORD2TAGSMAP.get(pw.word.toString());
+					if (Macros.SHIFT_TAGLIST == null) {
+						Macros.SHIFT_TAGLIST = Macros.POS2TAGSMAP.get(pw.tag.toString());
+						Macros.SCORED_ACTIONLIST = Macros.POS2ACTIONSMAP.get(pw.tag.toString());
 					} else {
-						Macros.SHIFT_ACTIONLIST = Macros.ACTIONMAP.get(pw.word.toString());
+						Macros.SCORED_ACTIONLIST = Macros.WORD2ACTIONSMAP.get(pw.word.toString());
 					}
 					
 				} else {
-					Macros.SHIFT_ACTIONLIST = Macros.CONST_ACTIONLIST;
+					Macros.SCORED_ACTIONLIST = Macros.CONST_ACTIONLIST;
 				}
 				
 				m_Beam.clear();

@@ -69,8 +69,8 @@ public final class PackedScore {
 	}
 	
 	public void add(PackedScoreType o, final int which) {
-		if (MacrosCCGDag.SHIFT_ACTIONLIST.length < (scores.size() >> 1)) {
-			for (Integer action : MacrosCCGDag.SHIFT_ACTIONLIST) {
+		if (MacrosCCGDag.SCORED_ACTIONLIST.length < (scores.size() >> 1)) {
+			for (Integer action : MacrosCCGDag.SCORED_ACTIONLIST) {
 				Score score = scores.get(action);
 				if (score != null) {
 					o.addOne(action.intValue(), score.score(which));

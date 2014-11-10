@@ -35,9 +35,9 @@ public class Macros extends MacrosCCGDag {
 			CONST_ACTIONLIST[i - AL_FIRST + SHIFT - 1] = integer_cache[i];
 		}
 		
-		ACTIONMAP = new HashMap<String, Integer[]>();
-		for (String word : MAP.keySet()) {
-			int[] list = MAP.get(word);
+		WORD2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String word : WORD2TAGSMAP.keySet()) {
+			int[] list = WORD2TAGSMAP.get(word);
 			Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
 			for (int i = 0; i < list.length; ++i) {
 				ilist[i] = integer_cache[list[i] + SH_FIRST];
@@ -45,12 +45,12 @@ public class Macros extends MacrosCCGDag {
 			for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
 				ilist[i] = CONST_ACTIONLIST[i - list.length];
 			}
-			ACTIONMAP.put(word, ilist);
+			WORD2ACTIONSMAP.put(word, ilist);
 		}
 		
-		ACTIONPOSMAP = new HashMap<String, Integer[]>();
-		for (String tag : POSMAP.keySet()) {
-			int[] list = POSMAP.get(tag);
+		POS2ACTIONSMAP = new HashMap<String, Integer[]>();
+		for (String tag : POS2TAGSMAP.keySet()) {
+			int[] list = POS2TAGSMAP.get(tag);
 			Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
 			for (int i = 0; i < list.length; ++i) {
 				ilist[i] = integer_cache[list[i] + SH_FIRST];
@@ -58,7 +58,7 @@ public class Macros extends MacrosCCGDag {
 			for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
 				ilist[i] = CONST_ACTIONLIST[i - list.length];
 			}
-			ACTIONPOSMAP.put(tag, ilist);
+			POS2ACTIONSMAP.put(tag, ilist);
 		}
 	}
 }
