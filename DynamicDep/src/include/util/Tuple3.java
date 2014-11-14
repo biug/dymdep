@@ -67,8 +67,7 @@ public abstract class Tuple3<Object1, Object2, Object3> {
 	
 	protected final void computehash() {
 		int code1 = m_object1.hashCode(), code2 = m_object2.hashCode();
-		m_nHash = (code1 << 5) - code1 +
-				(code2 << 5) - (code2 << 1) - code2 +
-				m_object3.hashCode(); 
+		int code = (code1 << 5 - code1) + code2;
+		m_nHash = (code << 5) - (code << 2) - code + m_object3.hashCode();
 	}
 }
