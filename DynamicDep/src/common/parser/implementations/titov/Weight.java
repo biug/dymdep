@@ -246,6 +246,29 @@ public class Weight extends WeightBase {
 	public TwoIntsMap m_mapN_1ctN_2ct;
 	public WordIntMap m_mapSTctN0w;
 	public WordIntMap m_mapST2ctN0w;
+	
+	//=begin (wsun temporally added)
+	public TwoWordsMap m_mapSTwSTLDw;
+	public WordWordPOSTagMap m_mapSTwSTLDwN0p;
+	public WordWordPOSTagMap m_mapSTLDwN0wSTp;
+	public WordWordPOSTagMap m_mapSTwN0wSTLDp;
+
+	public TwoWordsMap m_mapSTwSTRDw;
+	public WordWordPOSTagMap m_mapSTwSTRDwN0p;
+	public WordWordPOSTagMap m_mapSTRDwN0wSTp;
+	public WordWordPOSTagMap m_mapSTwN0wSTRDp;
+
+	public TwoWordsMap m_mapSTwSTLHw;
+	public WordWordPOSTagMap m_mapSTwSTLHwN0p;
+	public WordWordPOSTagMap m_mapSTLHwN0wSTp;
+	public WordWordPOSTagMap m_mapSTwN0wSTLHp;
+
+	public TwoWordsMap m_mapSTwSTRHw;
+	public WordWordPOSTagMap m_mapSTwSTRHwN0p;
+	public WordWordPOSTagMap m_mapSTRHwN0wSTp;
+	public WordWordPOSTagMap m_mapSTwN0wSTRHp;
+
+	//=end
 
 	public Weight(final String sPath, final boolean bTrain) {
 		super(sPath, bTrain);
@@ -467,6 +490,26 @@ public class Weight extends WeightBase {
 		m_mapSTctN0w = new WordIntMap("a");
 		m_mapST2ctN0w = new WordIntMap("a");
 		
+	m_mapSTwSTLDw = new TwoWordsMap("a");
+	m_mapSTwSTLDwN0p = new WordWordPOSTagMap("a");
+	m_mapSTLDwN0wSTp = new WordWordPOSTagMap("a");
+	m_mapSTwN0wSTLDp = new WordWordPOSTagMap("a");
+
+	m_mapSTwSTRDw = new TwoWordsMap("a");
+	m_mapSTwSTRDwN0p = new WordWordPOSTagMap("a");
+	m_mapSTRDwN0wSTp = new WordWordPOSTagMap("a");
+	m_mapSTwN0wSTRDp = new WordWordPOSTagMap("a");
+
+	m_mapSTwSTLHw = new TwoWordsMap("a");
+	m_mapSTwSTLHwN0p = new WordWordPOSTagMap("a");
+	m_mapSTLHwN0wSTp = new WordWordPOSTagMap("a");
+	m_mapSTwN0wSTLHp = new WordWordPOSTagMap("a");
+
+	m_mapSTwSTRHw = new TwoWordsMap("a");
+	m_mapSTwSTRHwN0p = new WordWordPOSTagMap("a");
+	m_mapSTRHwN0wSTp = new WordWordPOSTagMap("a");
+	m_mapSTwN0wSTRHp = new WordWordPOSTagMap("a");
+
 		loadScores();
 	}
 
@@ -703,6 +746,26 @@ public class Weight extends WeightBase {
 			m_mapSTctN0w.loadScoresFromFileStream(br);
 			m_mapST2ctN0w.loadScoresFromFileStream(br);
 
+			m_mapSTwSTLDw.loadScoresFromFileStream(br);
+			m_mapSTwSTLDwN0p.loadScoresFromFileStream(br);
+			m_mapSTLDwN0wSTp.loadScoresFromFileStream(br);
+			m_mapSTwN0wSTLDp.loadScoresFromFileStream(br);
+
+			m_mapSTwSTRDw.loadScoresFromFileStream(br);
+			m_mapSTwSTRDwN0p.loadScoresFromFileStream(br);
+			m_mapSTRDwN0wSTp.loadScoresFromFileStream(br);
+			m_mapSTwN0wSTRDp.loadScoresFromFileStream(br);
+
+			m_mapSTwSTLHw.loadScoresFromFileStream(br);
+			m_mapSTwSTLHwN0p.loadScoresFromFileStream(br);
+			m_mapSTLHwN0wSTp.loadScoresFromFileStream(br);
+			m_mapSTwN0wSTLHp.loadScoresFromFileStream(br);
+
+			m_mapSTwSTRHw.loadScoresFromFileStream(br);
+			m_mapSTwSTRHwN0p.loadScoresFromFileStream(br);
+			m_mapSTRHwN0wSTp.loadScoresFromFileStream(br);
+			m_mapSTwN0wSTRHp.loadScoresFromFileStream(br);
+
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -714,6 +777,7 @@ public class Weight extends WeightBase {
 	public void saveScores() {
 		System.out.println("Saving scores...");
 		System.out.flush();
+		
 		File file = new File(m_sRecordPath);
 		try {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
@@ -942,11 +1006,32 @@ public class Weight extends WeightBase {
 			m_mapSTctN0w.saveScoresToFileStream(bw);
 			m_mapST2ctN0w.saveScoresToFileStream(bw);
 			
+			m_mapSTwSTLDw.saveScoresToFileStream(bw);
+			m_mapSTwSTLDwN0p.saveScoresToFileStream(bw);
+			m_mapSTLDwN0wSTp.saveScoresToFileStream(bw);
+			m_mapSTwN0wSTLDp.saveScoresToFileStream(bw);
+
+			m_mapSTwSTRDw.saveScoresToFileStream(bw);
+			m_mapSTwSTRDwN0p.saveScoresToFileStream(bw);
+			m_mapSTRDwN0wSTp.saveScoresToFileStream(bw);
+			m_mapSTwN0wSTRDp.saveScoresToFileStream(bw);
+
+			m_mapSTwSTLHw.saveScoresToFileStream(bw);
+			m_mapSTwSTLHwN0p.saveScoresToFileStream(bw);
+			m_mapSTLHwN0wSTp.saveScoresToFileStream(bw);
+			m_mapSTwN0wSTLHp.saveScoresToFileStream(bw);
+
+			m_mapSTwSTRHw.saveScoresToFileStream(bw);
+			m_mapSTwSTRHwN0p.saveScoresToFileStream(bw);
+			m_mapSTRHwN0wSTp.saveScoresToFileStream(bw);
+			m_mapSTwN0wSTRHp.saveScoresToFileStream(bw);
+
 			bw.newLine();
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	
 		System.out.println("done.");
 	}
 
@@ -1172,6 +1257,26 @@ public class Weight extends WeightBase {
 		m_mapSTctN0w.computeAverage(round);
 		m_mapST2ctN0w.computeAverage(round);
 		
+		m_mapSTwSTLDw.computeAverage(round);
+		m_mapSTwSTLDwN0p.computeAverage(round);
+		m_mapSTLDwN0wSTp.computeAverage(round);
+		m_mapSTwN0wSTLDp.computeAverage(round);
+
+		m_mapSTwSTRDw.computeAverage(round);
+		m_mapSTwSTRDwN0p.computeAverage(round);
+		m_mapSTRDwN0wSTp.computeAverage(round);
+		m_mapSTwN0wSTRDp.computeAverage(round);
+
+		m_mapSTwSTLHw.computeAverage(round);
+		m_mapSTwSTLHwN0p.computeAverage(round);
+		m_mapSTLHwN0wSTp.computeAverage(round);
+		m_mapSTwN0wSTLHp.computeAverage(round);
+
+		m_mapSTwSTRHw.computeAverage(round);
+		m_mapSTwSTRHwN0p.computeAverage(round);
+		m_mapSTRHwN0wSTp.computeAverage(round);
+		m_mapSTwN0wSTRHp.computeAverage(round);
+
 		System.out.println("done.");
 	}
 }
