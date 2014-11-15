@@ -155,7 +155,7 @@ public final class DepParser extends DepParserBase {
 		final int st2_index = item.stacktop2();
 		final int st2rh_index = item.righthead(st2_index);
 		final int st2rd_index = item.rightdep(st2_index);
-		final int n0_index = item.size();
+		final int n0_index = item.size() < m_lCache.size() ? item.size() : StateItem.out_index;
 		final int n0ld_index = item.leftdep(n0_index);
 		final int n0l2d_index = item.leftsubdep(n0_index);
 		final int n0lh_index = item.lefthead(n0_index);
