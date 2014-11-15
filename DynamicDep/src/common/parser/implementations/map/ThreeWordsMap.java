@@ -22,7 +22,7 @@ public final class ThreeWordsMap extends PackedScoreMap<ThreeWords> {
 
 	@Override
 	public String generateStringFromKey(final ThreeWords key) {
-		return "[" + key.first().toString() + "] , [" + key.second().toString() + "], [" + key.third().toString() + "]";
+		return "[" + key.first().toString() + "] , [" + key.second().toString() + "] , [" + key.third().toString() + "]";
 	}
 
 	@Override
