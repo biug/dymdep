@@ -18,7 +18,9 @@ public final class TwoWordsMap extends PackedScoreMap<TwoWords> {
 	@Override
 	public TwoWords loadKeyFromString(final String str) {
 		String[] args = str.split(" , ");
-		return new TwoWords(new Word(args[0].substring(1, args[0].length() - 1)), new Word(args[1].substring(1, args[1].length() - 1)));
+		return new TwoWords(
+				new Word(args[0].substring(1, args[0].length() - 1)),
+				new Word(args[1].substring(1, args[1].length() - 1)));
 	}
 
 	@Override
