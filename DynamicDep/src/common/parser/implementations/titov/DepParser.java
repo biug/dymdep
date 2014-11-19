@@ -702,12 +702,14 @@ public final class DepParser extends DepParserBase {
 	public void swap(final StateItem item, final PackedScoreType scores) {
 		scoredaction.action = Macros.SWAP;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
+//		System.out.println("swap " + scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
 	public void reduce(final StateItem item, final PackedScoreType scores) {
 		scoredaction.action = Macros.REDUCE;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
+//		System.out.println("reduce " + scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
@@ -715,6 +717,7 @@ public final class DepParser extends DepParserBase {
 		for (int tag : Macros.SHIFT_TAGLIST) {
 			scoredaction.action = Action.encodeAction(Macros.SHIFT, tag, Macros.DEP_NONE);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			System.out.println("shift " + scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
@@ -723,6 +726,7 @@ public final class DepParser extends DepParserBase {
 		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
 			scoredaction.action = Action.encodeAction(Macros.AL_SW, Macros.CCGTAG_NONE, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			System.out.println("alswap " + scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
@@ -731,6 +735,7 @@ public final class DepParser extends DepParserBase {
 		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
 			scoredaction.action = Action.encodeAction(Macros.AR_SW, Macros.CCGTAG_NONE, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			System.out.println("arswap " + scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
@@ -739,6 +744,7 @@ public final class DepParser extends DepParserBase {
 		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
 			scoredaction.action = Action.encodeAction(Macros.AL_RE, Macros.CCGTAG_NONE, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			System.out.println("alreduce " + scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
@@ -747,6 +753,7 @@ public final class DepParser extends DepParserBase {
 		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
 			scoredaction.action = Action.encodeAction(Macros.AR_RE, Macros.CCGTAG_NONE, label);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
+//			System.out.println("arreduce " + scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
@@ -756,6 +763,7 @@ public final class DepParser extends DepParserBase {
 			for (int label = 0; label < Macros.DEP_COUNT; ++label) {
 				scoredaction.action = Action.encodeAction(Macros.AL_SH, tag, label);
 				scoredaction.score = item.score + scores.at(scoredaction.action);
+//				System.out.println("alshift " + scoredaction.action);
 				m_Beam.insertItem(scoredaction);
 			}
 		}
@@ -764,8 +772,9 @@ public final class DepParser extends DepParserBase {
 	public void arcrightshift(final StateItem item, final PackedScoreType scores) {
 		for (int tag : Macros.SHIFT_TAGLIST) {
 			for (int label = 0; label < Macros.DEP_COUNT; ++label) {
-				scoredaction.action = Action.encodeAction(Macros.AR_SW, tag, label);
+				scoredaction.action = Action.encodeAction(Macros.AR_SH, tag, label);
 				scoredaction.score = item.score + scores.at(scoredaction.action);
+//				System.out.println("arshift " + scoredaction.action);
 				m_Beam.insertItem(scoredaction);
 			}
 		}
@@ -799,6 +808,9 @@ public final class DepParser extends DepParserBase {
 		 * 		"no more action for candidates" or
 		 * 		"state correct"
 		 */
+		
+//		System.out.println("Round " + round);
+		
 		while (!finish) {
 			if (bTrain) bCorrect = false;
 			
@@ -818,6 +830,17 @@ public final class DepParser extends DepParserBase {
 				} else {
 					Macros.SCORED_ACTIONLIST = Macros.CONST_ACTIONLIST;
 				}
+				
+//				System.out.println("taglist");
+//				for (int i = 0; i < Macros.SHIFT_TAGLIST.length; ++i) {
+//					System.out.print(Macros.SHIFT_TAGLIST[i] + " ");
+//				}
+//				System.out.println();
+//				System.out.println("actionlist");
+//				for (int i = 0; i < Macros.SCORED_ACTIONLIST.length; ++i) {
+//					System.out.print(Macros.SCORED_ACTIONLIST[i].intValue() + " ");
+//				}
+//				System.out.println();
 				
 				m_Beam.clear();
 				packed_scores.reset();
@@ -839,7 +862,7 @@ public final class DepParser extends DepParserBase {
 						arcrightreduce(pGenerator, packed_scores);
 						arcleftshift(pGenerator, packed_scores);
 						arcrightshift(pGenerator, packed_scores);
-						if (pGenerator.canswap()) {
+						if (pGenerator.stack_back > 0) {
 							arcleftswap(pGenerator, packed_scores);
 							arcrightswap(pGenerator, packed_scores);
 						}				
@@ -853,10 +876,16 @@ public final class DepParser extends DepParserBase {
 					reduce(pGenerator, packed_scores);
 				}
 				
+//				System.out.println("Beam");
 				for (int i = 0, beam_size = m_Beam.size(); i < beam_size; ++i) {
 					pCandidate.copy(pGenerator);
 					pCandidate.score = m_Beam.item(i).score;
+//					System.out.println(m_Beam.item(i).action);
 					pCandidate.Move(m_Beam.item(i).action);
+//					System.out.println("generator");
+//					pGenerator.print();
+//					System.out.println("candidate");
+//					pCandidate.print();
 					m_Agenda.pushCandidate(pCandidate);
 				}
 				// no action means dag complete
@@ -866,6 +895,10 @@ public final class DepParser extends DepParserBase {
 				} else if (!bTrain) {
 					m_Finish.pushCandidate(pGenerator);
 				}
+				
+//				System.out.println("CORRECT");
+//				correctState.print();
+				
 				if (bTrain && correctState.equals(pGenerator)) {
 					bCorrect = true;
 				}
@@ -881,6 +914,7 @@ public final class DepParser extends DepParserBase {
 					return;
 				}
 				correctState.StandardMoveStep(correct, null);
+//				System.out.println(correctState.m_lActionList[correctState.action_back]);
 			}
 			m_Agenda.nextRound();
 		}

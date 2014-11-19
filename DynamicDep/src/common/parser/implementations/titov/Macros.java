@@ -30,7 +30,7 @@ public class Macros extends MacrosCCGDag {
 	public static int AR_SH_FIRST;
 	public static int ACTION_MAX;
 	
-	public static void calcConstant(final boolean supertag) {
+	public static void calcConstant(final boolean bs) {
 
 		SH_FIRST = AR_SH + 1;
 		AL_SW_FIRST = SH_FIRST + CCGTAG_COUNT;

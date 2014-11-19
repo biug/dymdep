@@ -212,7 +212,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean canswap() {
-		return stack_back > 0;
+		return m_lActionList[action_back] != Macros.SWAP && stack_back > 0;
 	}
 	
 	public final boolean canarc() {
@@ -407,8 +407,9 @@ public class StateItem extends StateItemBase {
 
 	public void Shift(int tag) {
 		m_lStack[++stack_back] = m_nNextWord;
-		ClearNext();
+		m_lCCGLabels[m_nNextWord++] = tag;
 		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, tag, Macros.DEP_NONE);
+		ClearNext();
 	}
 	
 	public void Reduce() {

@@ -25,9 +25,9 @@ public final class Train {
 //			if (nCount % 10000 == 0) {
 //				parser.finishtraning();
 //			}
-			if (!supertag) {
-				ref_sent.clearSuperTag();
-			}
+//			if (!supertag) {
+//				ref_sent.clearSuperTag();
+//			}
 			parser.train(ref_sent, nCount);
 		}
 		parser.finishtraning();

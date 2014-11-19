@@ -17,8 +17,8 @@ import common.parser.MacrosBase;
 
 public class MacrosCCGDag extends MacrosBase {
 	
-	public final static String DEP_NONE_STRING = "_";
-	public final static String CCGTAG_NONE_STRING = "_";
+	public final static String DEP_NONE_STRING = "000";
+	public final static String CCGTAG_NONE_STRING = "000";
 	
 	public final static int LEFT_DIRECTION = 0;
 	public final static int RIGHT_DIRECTION = 1;
@@ -120,15 +120,13 @@ public class MacrosCCGDag extends MacrosBase {
 		}
 		WORD2TAGSMAP = new HashMap<String, int[]>();
 		for (String word : WORDMAP.keySet()) {
-			if (supertag) {
-				ArrayList<Integer> alist = WORDMAP.get(word);
-				int size = alist.size();
-				int[] list = new int[size];
-				for (int i = 0; i < size; ++i) {
-					list[i] = alist.get(i).intValue();
-				}
-				WORD2TAGSMAP.put(word, list);
+			ArrayList<Integer> alist = WORDMAP.get(word);
+			int size = alist.size();
+			int[] list = new int[size];
+			for (int i = 0; i < size; ++i) {
+				list[i] = alist.get(i).intValue();
 			}
+			WORD2TAGSMAP.put(word, list);
 		}
 		System.out.println(WORD2TAGSMAP.size());
 		
@@ -143,19 +141,13 @@ public class MacrosCCGDag extends MacrosBase {
 		}
 		POS2TAGSMAP = new HashMap<String, int[]>();
 		for (String tag : POSMAP.keySet()) {
-			if (supertag) {
-				ArrayList<Integer> alist = POSMAP.get(tag);
-				int size = alist.size();
-				int[] list = new int[size];
-				for (int i = 0; i < size; ++i) {
-					list[i] = alist.get(i).intValue();
-				}
-				POS2TAGSMAP.put(tag, list);
-			} else {
-				int[] list = new int[1];
-				list[0] = CCGTAG_NONE;
-				POS2TAGSMAP.put(tag, list);
+			ArrayList<Integer> alist = POSMAP.get(tag);
+			int size = alist.size();
+			int[] list = new int[size];
+			for (int i = 0; i < size; ++i) {
+				list[i] = alist.get(i).intValue();
 			}
+			POS2TAGSMAP.put(tag, list);
 		}
 		System.out.println(POS2TAGSMAP.size());
 		
