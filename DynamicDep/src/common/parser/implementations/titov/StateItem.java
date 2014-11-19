@@ -212,7 +212,7 @@ public class StateItem extends StateItemBase {
 	}
 	
 	public final boolean canswap() {
-		return m_lActionList[action_back] != Macros.SWAP && stack_back > 0;
+		return stack_back > 0;
 	}
 	
 	public final boolean canarc() {
@@ -387,7 +387,6 @@ public class StateItem extends StateItemBase {
 		++m_lDepLNum[m_nNextWord];
 		//add right arcs for stack seek
 		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.LEFT_DIRECTION);
-		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_LEFT, label);
 	}
 	
 	public void ArcRight(int label) {
@@ -404,26 +403,60 @@ public class StateItem extends StateItemBase {
 		m_lDepLabelR[left] = label;
 		++m_lDepRNum[left];
 		m_lRightArcs[left][++m_lRightArcsBack[left]] = new Arc(m_nNextWord, label, Macros.RIGHT_DIRECTION);
-		m_lActionList[++action_back] = Action.encodeAction(Macros.ARC_RIGHT, label);
 	}
 
 	public void Shift(int tag) {
 		m_lStack[++stack_back] = m_nNextWord;
-		m_lCCGLabels[m_nNextWord++] = tag;
-		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, tag);
 		ClearNext();
+		m_lActionList[++action_back] = Action.encodeAction(Macros.SHIFT, tag, Macros.DEP_NONE);
 	}
 	
 	public void Reduce() {
 		--stack_back;
-		m_lActionList[++action_back] = Macros.REDUCE;
+		m_lActionList[++action_back] = Action.encodeAction(Macros.REDUCE, Macros.CCGTAG_NONE, Macros.DEP_NONE);
 	}
 	
 	public void Swap() {
 		int tail = m_lStack[stack_back];
 		m_lStack[stack_back] = m_lStack[stack_back - 1];
 		m_lStack[stack_back - 1] = tail;
-		m_lActionList[++action_back] = Macros.SWAP;
+		m_lActionList[++action_back] = Action.encodeAction(Macros.SWAP, Macros.CCGTAG_NONE, Macros.DEP_NONE);
+	}
+	
+	public void ArcLeftSwap(int label) {
+		ArcLeft(label);
+		Swap();
+		m_lActionList[action_back] = Action.encodeAction(Macros.AL_SW, Macros.CCGTAG_NONE, label);
+	}
+
+	public void ArcRightSwap(int label) {
+		ArcRight(label);
+		Swap();
+		m_lActionList[action_back] = Action.encodeAction(Macros.AR_SW, Macros.CCGTAG_NONE, label);
+	}
+	
+	public void ArcLeftReduce(int label) {
+		ArcLeft(label);
+		Reduce();
+		m_lActionList[action_back] = Action.encodeAction(Macros.AL_RE, Macros.CCGTAG_NONE, label);
+	}
+
+	public void ArcRightReduce(int label) {
+		ArcRight(label);
+		Reduce();
+		m_lActionList[action_back] = Action.encodeAction(Macros.AR_RE, Macros.CCGTAG_NONE, label);
+	}
+	
+	public void ArcLeftShift(int tag, int label) {
+		ArcLeft(label);
+		Shift(tag);
+		m_lActionList[action_back] = Action.encodeAction(Macros.AL_SH, tag, label);
+	}
+	
+	public void ArcRightShift(int tag, int label) {
+		ArcRight(label);
+		Shift(tag);
+		m_lActionList[action_back] = Action.encodeAction(Macros.AR_SH, tag, label);
 	}
 	
 	public void ClearNext() {
@@ -459,20 +492,32 @@ public class StateItem extends StateItemBase {
 		switch (Action.getUnlabeledAction(action)) {
 		case Macros.NO_ACTION:
 			return;
-		case Macros.SHIFT:
-			Shift(Action.getLabel(action));
-			return;
 		case Macros.REDUCE:
 			Reduce();
 			return;
 		case Macros.SWAP:
 			Swap();
 			return;
-		case Macros.ARC_LEFT:
-			ArcLeft(Action.getLabel(action));
+		case Macros.SHIFT:
+			Shift(Action.getTag(action));
 			return;
-		case Macros.ARC_RIGHT:
-			ArcRight(Action.getLabel(action));
+		case Macros.AL_SW:
+			ArcLeftSwap(Action.getLabel(action));
+			return;
+		case Macros.AR_SW:
+			ArcRightSwap(Action.getLabel(action));
+			return;
+		case Macros.AL_RE:
+			ArcLeftReduce(Action.getLabel(action));
+			return;
+		case Macros.AR_RE:
+			ArcRightReduce(Action.getLabel(action));
+			return;
+		case Macros.AL_SH:
+			ArcLeftShift(Action.getTag(action), Action.getLabel(action));
+			return;
+		case Macros.AR_SH:
+			ArcRightShift(Action.getTag(action), Action.getLabel(action));
 			return;
 		}
 	}
@@ -495,19 +540,10 @@ public class StateItem extends StateItemBase {
 				return true;
 			}
 			//get nearest right arc
-			Arc rightnode = node.NearestRight();
-			if (rightnode.other == m_nNextWord) {
+			Arc rightarc = node.NearestRight();
+			if (rightarc.other == m_nNextWord) {
 				++node.rightseek;
-				if (rightnode.direction == Macros.LEFT_DIRECTION) {
-					ArcLeft(rightnode.label);
-//					System.out.println("left" + rightnode.label);
-					++node.headsseek;
-				} else {
-					ArcRight(rightnode.label);
-//					System.out.println("right" + rightnode.label);
-					++node.childrenseek;
-				}
-				return true;
+				return StandardMoveStep(graph, m_lCacheLabel, rightarc);
 			} else if (stack_back >= 1) {
 				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lStack[stack_back - 1]];
 				int topseek = node.rightseek, toptail = node.righttail;
@@ -532,6 +568,68 @@ public class StateItem extends StateItemBase {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean StandardMoveStep(final DependencyGraphBase graph, final ArrayList<DependencyLabel> m_lCacheLabel, Arc arc) {
+		int top;
+		DependencyDag dag = (DependencyDag)graph;
+		if (stack_back >= 0) {
+			top = m_lStack[stack_back];
+			DependencyDagNode node = (DependencyDagNode)dag.nodes[top];
+			// skip impossible rightarcs
+			while (node.rightseek <= node.righttail && node.NearestRight().other < m_nNextWord) {
+				++node.rightseek;
+			}
+			//if no rightarcs, reduce
+			if (node.rightseek > node.righttail) {
+				switch (arc.direction) {
+				case Macros.LEFT_DIRECTION:
+					ArcLeftReduce(arc.label);
+					return true;
+				case Macros.RIGHT_DIRECTION:
+					ArcRightReduce(arc.label);
+					return true;
+				}
+			}
+			if (stack_back >= 1) {
+				DependencyDagNode node2nd = (DependencyDagNode)dag.nodes[m_lStack[stack_back - 1]];
+				int topseek = node.rightseek, toptail = node.righttail;
+				int top2ndseek = node2nd.rightseek, top2ndtail = node2nd.righttail;
+				if (topseek <= toptail && top2ndseek <= top2ndtail) {
+					if (node.rightarcs.get(topseek).compareTo(node2nd.rightarcs.get(top2ndseek)) > 0) {
+						switch (arc.direction) {
+						case Macros.LEFT_DIRECTION:
+							ArcLeftSwap(arc.label);
+							return true;
+						case Macros.RIGHT_DIRECTION:
+							ArcRightSwap(arc.label);
+							return true;
+						}
+					}
+				} else if (topseek <= toptail) {
+					switch (arc.direction) {
+					case Macros.LEFT_DIRECTION:
+						ArcLeftSwap(arc.label);
+						return true;
+					case Macros.RIGHT_DIRECTION:
+						ArcRightSwap(arc.label);
+						return true;
+					}
+				}
+			}
+		}
+		if (m_nNextWord < dag.length) {
+//			System.out.println("shift" + CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag));
+			switch (arc.direction) {
+			case Macros.LEFT_DIRECTION:
+				ArcLeftShift(CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag), arc.label);
+				return true;
+			case Macros.RIGHT_DIRECTION:
+				ArcRightShift(CCGTag.code(((DependencyDagNode)dag.nodes[m_nNextWord]).ccgtag), arc.label);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override

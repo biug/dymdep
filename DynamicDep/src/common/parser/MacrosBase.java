@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class MacrosBase {
 	
-	public static final int MAX_INTEGER = 8191;
+	public static final int MAX_INTEGER = 32767;
 	public static Integer[] integer_cache;
 
 	public static int AGENDA_SIZE;
@@ -34,6 +34,9 @@ public class MacrosBase {
 	public static final int TREE_FIRST = 0;
 	public static int TREE_COUNT;
 	public static int TREE_BITS_SIZE;
+	
+	public static int CONST_ACTIONSIZE;
+	public static Integer[] CONST_ACTIONLIST;
 	
 	public final static int MAX_SENTENCE_SIZE = 256;
 	public final static int MAX_SENTENCE_SIZE_BITS = 8;

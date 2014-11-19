@@ -671,7 +671,7 @@ public final class DepParser extends DepParserBase {
 		while (!itemForState.equals(output)) {
 			int action = itemForState.FollowMove(output);
 			getOrUpdateStackScore(itemForState, null, action, amount, m_nTrainingRound);
-			if (action >= Macros.AL_FIRST) {
+			if (action >= Macros.AL_SW_FIRST) {
 				++((StateItem)output).m_lRightArcsSeek[itemForState.m_lStack[itemForState.stack_back]];
 			}
 			itemForState.Move(action);
@@ -684,7 +684,7 @@ public final class DepParser extends DepParserBase {
 			int action = itemForStates.FollowMove(output);
 			int correct_action = itemForStates.FollowMove(correct);
 			if (action == correct_action) {
-				if (action >= Macros.AL_FIRST){
+				if (action >= Macros.AL_SW_FIRST){
 					int back = itemForStates.m_lStack[itemForStates.stack_back];
 					++((StateItem)output).m_lRightArcsSeek[back];
 					++((StateItem)correct).m_lRightArcsSeek[back];
@@ -699,40 +699,76 @@ public final class DepParser extends DepParserBase {
 		++m_nTotalErrors;
 	}
 	
+	public void swap(final StateItem item, final PackedScoreType scores) {
+		scoredaction.action = Macros.SWAP;
+		scoredaction.score = item.score + scores.at(scoredaction.action);
+		m_Beam.insertItem(scoredaction);
+	}
+	
 	public void reduce(final StateItem item, final PackedScoreType scores) {
 		scoredaction.action = Macros.REDUCE;
 		scoredaction.score = item.score + scores.at(scoredaction.action);
 		m_Beam.insertItem(scoredaction);
 	}
 	
-	public void arcleft(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_LEFT, label);
-			scoredaction.score = item.score + scores.at(scoredaction.action);
-			m_Beam.insertItem(scoredaction);
-		}
-	}
-	
-	public void arcright(final StateItem item, final PackedScoreType scores) {
-		for (int label = Macros.DEP_FIRST; label < Macros.DEP_COUNT; ++label) {
-			scoredaction.action = Action.encodeAction(Macros.ARC_RIGHT, label);
-			scoredaction.score = item.score + scores.at(scoredaction.action);
-			m_Beam.insertItem(scoredaction);
-		}
-	}
-	
 	public void shift(final StateItem item, final PackedScoreType scores) {
-		for (int label : Macros.SHIFT_TAGLIST) {
-			scoredaction.action = Action.encodeAction(Macros.SHIFT, label);
+		for (int tag : Macros.SHIFT_TAGLIST) {
+			scoredaction.action = Action.encodeAction(Macros.SHIFT, tag, Macros.DEP_NONE);
 			scoredaction.score = item.score + scores.at(scoredaction.action);
 			m_Beam.insertItem(scoredaction);
 		}
 	}
 	
-	public void swap(final StateItem item, final PackedScoreType scores) {
-		scoredaction.action = Macros.SWAP;
-		scoredaction.score = item.score + scores.at(scoredaction.action);
-		m_Beam.insertItem(scoredaction);
+	public void arcleftswap(final StateItem item, final PackedScoreType scores) {
+		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.AL_SW, Macros.CCGTAG_NONE, label);
+			scoredaction.score = item.score + scores.at(scoredaction.action);
+			m_Beam.insertItem(scoredaction);
+		}
+	}
+	
+	public void arcrightswap(final StateItem item, final PackedScoreType scores) {
+		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.AR_SW, Macros.CCGTAG_NONE, label);
+			scoredaction.score = item.score + scores.at(scoredaction.action);
+			m_Beam.insertItem(scoredaction);
+		}
+	}
+	
+	public void arcleftreduce(final StateItem item, final PackedScoreType scores) {
+		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.AL_RE, Macros.CCGTAG_NONE, label);
+			scoredaction.score = item.score + scores.at(scoredaction.action);
+			m_Beam.insertItem(scoredaction);
+		}
+	}
+	
+	public void arcrightreduce(final StateItem item, final PackedScoreType scores) {
+		for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+			scoredaction.action = Action.encodeAction(Macros.AR_RE, Macros.CCGTAG_NONE, label);
+			scoredaction.score = item.score + scores.at(scoredaction.action);
+			m_Beam.insertItem(scoredaction);
+		}
+	}
+	
+	public void arcleftshift(final StateItem item, final PackedScoreType scores) {
+		for (int tag : Macros.SHIFT_TAGLIST) {
+			for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+				scoredaction.action = Action.encodeAction(Macros.AL_SH, tag, label);
+				scoredaction.score = item.score + scores.at(scoredaction.action);
+				m_Beam.insertItem(scoredaction);
+			}
+		}
+	}
+	
+	public void arcrightshift(final StateItem item, final PackedScoreType scores) {
+		for (int tag : Macros.SHIFT_TAGLIST) {
+			for (int label = 0; label < Macros.DEP_COUNT; ++label) {
+				scoredaction.action = Action.encodeAction(Macros.AR_SW, tag, label);
+				scoredaction.score = item.score + scores.at(scoredaction.action);
+				m_Beam.insertItem(scoredaction);
+			}
+		}
 	}
 	
 	public void work(final int round, final boolean bTrain, final TwoStringsVector sentence, final IntIntegerVector syntaxtree, DependencyDag[] retval, final DependencyDag correct, final int nBest, long[] scores) {
@@ -798,12 +834,15 @@ public final class DepParser extends DepParserBase {
 				 */
 				if (pGenerator.size() < length) {
 					shift(pGenerator, packed_scores);
-					/*
-					 * if can arc, try arc
-					 */
 					if (pGenerator.canarc()) {
-						arcright(pGenerator, packed_scores);
-						arcleft(pGenerator, packed_scores);
+						arcleftreduce(pGenerator, packed_scores);
+						arcrightreduce(pGenerator, packed_scores);
+						arcleftshift(pGenerator, packed_scores);
+						arcrightshift(pGenerator, packed_scores);
+						if (pGenerator.canswap()) {
+							arcleftswap(pGenerator, packed_scores);
+							arcrightswap(pGenerator, packed_scores);
+						}				
 					}
 				}
 				/*

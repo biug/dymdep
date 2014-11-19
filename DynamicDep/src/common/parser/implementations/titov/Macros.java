@@ -10,69 +10,87 @@ import common.parser.implementations.MacrosCCGDag;
 
 public class Macros extends MacrosCCGDag {
 	
-	public final static int NO_ACTION = 0;;
-	public final static int SWAP = 1;
-	public final static int REDUCE = 2;
-	public final static int SHIFT = 3;
-	public final static int ARC_LEFT = 4;
-	public final static int ARC_RIGHT = 5;
-	
+	public final static int NO_ACTION = 0;
+	public static final int SWAP = 1;
+	public static final int REDUCE = 2;
+	public static final int SHIFT = 3;
+	public static final int AL_SW = 4;
+	public static final int AR_SW = 5;
+	public static final int AL_RE = 6;
+	public static final int AR_RE = 7;
+	public static final int AL_SH = 8;
+	public static final int AR_SH = 9;
+
 	public static int SH_FIRST;
-	public static int AL_FIRST;
-	public static int AR_FIRST;
+	public static int AL_SW_FIRST;
+	public static int AR_SW_FIRST;
+	public static int AL_RE_FIRST;
+	public static int AR_RE_FIRST;
+	public static int AL_SH_FIRST;
+	public static int AR_SH_FIRST;
 	public static int ACTION_MAX;
 	
 	public static void calcConstant(final boolean supertag) {
 
-		SH_FIRST = ARC_RIGHT + 1;
-		AL_FIRST = SH_FIRST + CCGTAG_COUNT;
-		AR_FIRST = AL_FIRST + DEP_COUNT;
-		ACTION_MAX = AR_FIRST + DEP_COUNT;
+		SH_FIRST = AR_SH + 1;
+		AL_SW_FIRST = SH_FIRST + CCGTAG_COUNT;
+		AR_SW_FIRST = AL_SW_FIRST + DEP_COUNT;
+		AL_RE_FIRST = AR_SW_FIRST + DEP_COUNT;
+		AR_RE_FIRST = AL_RE_FIRST + DEP_COUNT;
+		AL_SH_FIRST = AR_RE_FIRST + DEP_COUNT;
+		AR_SH_FIRST = AL_SH_FIRST + CCGTAG_COUNT * DEP_COUNT;
+		ACTION_MAX = AR_SH_FIRST + CCGTAG_COUNT * DEP_COUNT;
 		
-		CONST_ACTIONSIZE = (SHIFT - 1 + (DEP_COUNT << 1));
+		CONST_ACTIONSIZE = 3;
 		CONST_ACTIONLIST = new Integer[CONST_ACTIONSIZE];
-		for (int i = 1; i < SHIFT; ++i) {
-			CONST_ACTIONLIST[i - 1] = integer_cache[i];
-		}
-		for (int i = AL_FIRST; i < ACTION_MAX; ++i) {
-			CONST_ACTIONLIST[i - AL_FIRST + SHIFT - 1] = integer_cache[i];
-		}
+		CONST_ACTIONLIST[0] = integer_cache[SWAP];
+		CONST_ACTIONLIST[1] = integer_cache[REDUCE];
+		CONST_ACTIONLIST[2] = integer_cache[SHIFT];
 		
 		WORD2ACTIONSMAP = new HashMap<String, Integer[]>();
 		for (String word : WORD2TAGSMAP.keySet()) {
-			if (supertag) {
-				int[] list = WORD2TAGSMAP.get(word);
-				Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
-				for (int i = 0; i < list.length; ++i) {
-					ilist[i] = integer_cache[list[i] + SH_FIRST];
+			int[] list = WORD2TAGSMAP.get(word);
+			Integer[] ilist = new Integer[(DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1) + list.length + CONST_ACTIONSIZE];
+			for (int i = 0; i < DEP_COUNT; ++i) {
+				ilist[i] = integer_cache[i + AL_SW_FIRST];
+				ilist[i + DEP_COUNT] = integer_cache[i + AR_SW_FIRST];
+				ilist[i + (DEP_COUNT << 1)] = integer_cache[i + AL_RE_FIRST];
+				ilist[i + DEP_COUNT + (DEP_COUNT << 1)] = integer_cache[i + AR_RE_FIRST];
+				for (int j = 0; j < list.length; ++j) {
+					ilist[(DEP_COUNT << 2) + j * DEP_COUNT + i] = integer_cache[list[j] * DEP_COUNT + i + AL_SH_FIRST];
+					ilist[(DEP_COUNT << 2) + (j +list.length) * DEP_COUNT + i] = integer_cache[list[j] * DEP_COUNT + i + AR_SH_FIRST];
 				}
-				for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
-					ilist[i] = CONST_ACTIONLIST[i - list.length];
-				}
-				WORD2ACTIONSMAP.put(word, ilist);
 			}
+			for (int i = 0; i < list.length; ++i) {
+				ilist[i + (DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1)] = integer_cache[list[i] + SH_FIRST];
+			}
+			for (int i = 0; i < CONST_ACTIONSIZE; ++i) {
+				ilist[i + (DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1) + list.length] = CONST_ACTIONLIST[i];
+			}
+			WORD2ACTIONSMAP.put(word, ilist);
 		}
 		
 		POS2ACTIONSMAP = new HashMap<String, Integer[]>();
 		for (String tag : POS2TAGSMAP.keySet()) {
-			if (supertag) {
-				int[] list = POS2TAGSMAP.get(tag);
-				Integer[] ilist = new Integer[list.length + CONST_ACTIONSIZE];
-				for (int i = 0; i < list.length; ++i) {
-					ilist[i] = integer_cache[list[i] + SH_FIRST];
+			int[] list = POS2TAGSMAP.get(tag);
+			Integer[] ilist = new Integer[(DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1) + list.length + CONST_ACTIONSIZE];
+			for (int i = 0; i < DEP_COUNT; ++i) {
+				ilist[i] = integer_cache[i + AL_SW_FIRST];
+				ilist[i + DEP_COUNT] = integer_cache[i + AR_SW_FIRST];
+				ilist[i + (DEP_COUNT << 1)] = integer_cache[i + AL_RE_FIRST];
+				ilist[i + DEP_COUNT + (DEP_COUNT << 1)] = integer_cache[i + AR_RE_FIRST];
+				for (int j = 0; j < list.length; ++j) {
+					ilist[(DEP_COUNT << 2) + j * DEP_COUNT + i] = integer_cache[list[j] * DEP_COUNT + i + AL_SH_FIRST];
+					ilist[(DEP_COUNT << 2) + (j +list.length) * DEP_COUNT + i] = integer_cache[list[j] * DEP_COUNT + i + AR_SH_FIRST];
 				}
-				for (int i = list.length; i < list.length + CONST_ACTIONSIZE; ++i) {
-					ilist[i] = CONST_ACTIONLIST[i - list.length];
-				}
-				POS2ACTIONSMAP.put(tag, ilist);
-			} else {
-				Integer[] ilist = new Integer[1 + CONST_ACTIONSIZE];
-				ilist[0] = integer_cache[SHIFT];
-				for (int i = 1; i < 1 + CONST_ACTIONSIZE; ++i) {
-					ilist[i] = CONST_ACTIONLIST[i - 1];
-				}
-				POS2ACTIONSMAP.put(tag, ilist);
 			}
+			for (int i = 0; i < list.length; ++i) {
+				ilist[i + (DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1)] = integer_cache[list[i] + SH_FIRST];
+			}
+			for (int i = 0; i < CONST_ACTIONSIZE; ++i) {
+				ilist[i + (DEP_COUNT << 2) + ((list.length * DEP_COUNT) << 1) + list.length] = CONST_ACTIONLIST[i];
+			}
+			POS2ACTIONSMAP.put(tag, ilist);
 		}
 	}
 		

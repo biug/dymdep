@@ -35,9 +35,6 @@ public class MacrosCCGDag extends MacrosBase {
 	public static int[] SHIFT_TAGLIST;
 	public static Integer[] SCORED_ACTIONLIST;
 	
-	public static Integer[] CONST_ACTIONLIST;
-	public static int CONST_ACTIONSIZE;
-	
 	public static void loadMacros(final String macrosFile, final boolean supertag) throws IOException {
 		
 		String line;
